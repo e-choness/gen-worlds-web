@@ -11,12 +11,15 @@ import { type CrewView, mayAct, ownedBy } from '@/ui/crew-view';
 import { partStats } from '@/ui/part-stats';
 import { StatusBadge } from '@/ui/status-badge';
 import { TEXT } from '@/ui/text';
+import { Vehicle3d } from '@/ui/vehicle-3d';
 import { VehicleDiagram } from '@/ui/vehicle-diagram';
 
 export interface DesignScreenProps {
   evaluation: DesignEvaluation;
   /** Null when playing alone. */
   crew: CrewView | null;
+  /** True when the device can draw the vehicle in 3D; otherwise the 2D diagram is shown. */
+  canRender3d: boolean;
   onSetSlot: (slot: SlotId, partId: string | null) => void;
   onToggleInstrument: (partId: string) => void;
   onToggleRedundant: (slot: SlotId) => void;
@@ -129,7 +132,11 @@ export function DesignScreen(props: DesignScreenProps) {
       </nav>
 
       <div class="part-column">
-        <VehicleDiagram resolved={resolved} propellantKg={evaluation.mass?.propellantKg ?? null} />
+        {props.canRender3d ? (
+          <Vehicle3d resolved={resolved} propellantKg={evaluation.mass?.propellantKg ?? null} />
+        ) : (
+          <VehicleDiagram resolved={resolved} propellantKg={evaluation.mass?.propellantKg ?? null} />
+        )}
         <h2>{SLOT_NAMES[category]}</h2>
         {!editable && <p class="banner owned">{ownedBy(props.crew, owner)}</p>}
         <ul class="part-list">

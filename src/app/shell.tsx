@@ -229,6 +229,7 @@ function Shell({ store }: ShellProps) {
           <DesignScreen
             evaluation={evaluation}
             crew={crew}
+            canRender3d={webgpu === 'available'}
             onSetSlot={(slot, partId) => store.setSlot(slot, partId)}
             onToggleInstrument={(partId) => store.toggleInstrument(partId)}
             onToggleRedundant={(slot) => store.toggleRedundant(slot)}

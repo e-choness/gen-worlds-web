@@ -70,6 +70,8 @@ export const TEXT = {
     loadReference: 'Load the NASA-style baseline',
     clear: 'Clear the design',
     vehicle: 'Vehicle',
+    vehicle3d: 'The vehicle in 3D. Drag, or use the arrow keys, to turn it.',
+    vehicleHint: 'Drag to turn',
     vehicleEmpty: 'Choose a frame to start the vehicle.',
     next: 'Plan the trajectory',
   },
