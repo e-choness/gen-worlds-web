@@ -3,12 +3,14 @@
  * loads the 3D engine by dynamic import only once an adapter has been confirmed and a 3D screen is
  * actually opened.
  */
-import { effect } from '@preact/signals';
+import { effect, signal } from '@preact/signals';
 import { GameStore } from '@/app/game-store';
 import { MonteCarloClient } from '@/app/monte-carlo-client';
 import { onlineAdapterFactory, scoreBoardFactory } from '@/app/online';
 import { mountShell } from '@/app/shell';
 import { hasWebgpu } from '@/app/webgpu-support';
+import { UiAudio } from '@/audio/ui-audio';
+import { Settings } from '@/core/settings';
 import { screenFromHash } from '@/ui/screen-id';
 import { vehicleSpecFromDesign } from '@/ui/vehicle-spec-from-design';
 
@@ -40,7 +42,32 @@ function main(): void {
     history.replaceState(null, '', `${location.pathname}#/design`);
     store.navigate('design');
   }
-  mountShell(shellRoot, store);
+  // Sound for the 2D screens. The 3D views bring their own audio engine, so the bed stops there.
+  const settings = new Settings();
+  const audio = new UiAudio(settings);
+  const muted = signal(settings.values.muted);
+  mountShell(shellRoot, store, {
+    muted,
+    onToggle: () => {
+      settings.set('muted', !settings.values.muted);
+      muted.value = settings.values.muted;
+    },
+    onCue: (cue) => audio.play(cue),
+  });
+  // Audio may only start from a gesture; any press on the shell is one, and presses on controls tick.
+  shellRoot.addEventListener('pointerdown', () => audio.unlock());
+  shellRoot.addEventListener('keydown', () => audio.unlock());
+  shellRoot.addEventListener('click', (event) => {
+    if (event.target instanceof Element && event.target.closest('button, select, summary'))
+      audio.play('select');
+  });
+  let lastScreen = store.screen.peek();
+  effect(() => {
+    const screen = store.screen.value;
+    audio.setMusic(screen !== 'sandbox' && screen !== 'descent');
+    if (screen === 'flight' && lastScreen !== 'flight' && lastScreen !== 'debrief') audio.play('launch');
+    lastScreen = screen;
+  });
 
   void hasWebgpu().then((supported) => {
     store.webgpu.value = supported ? 'available' : 'unavailable';

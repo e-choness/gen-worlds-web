@@ -1,3 +1,4 @@
+import type { ReadonlySignal } from '@preact/signals';
 /**
  * The 2D shell: header with the mission stepper plus the current screen. It wires the store to the
  * screens (state down as props, navigation up as callbacks) and must not import the engine.
@@ -30,8 +31,16 @@ import { TEXT } from '@/ui/text';
 
 const NO_RESPONSES: Readonly<Record<string, number>> = {};
 
+/** What the shell needs to offer sound without owning it: the app layer plays, the shell reports. */
+export interface ShellSound {
+  muted: ReadonlySignal<boolean>;
+  onToggle: () => void;
+  onCue: (cue: 'good' | 'bad' | 'neutral' | 'alert') => void;
+}
+
 interface ShellProps {
   store: GameStore;
+  sound?: ShellSound;
 }
 
 /** The room as the screens see it, or null when playing alone. */
@@ -78,7 +87,7 @@ function boardProps(store: GameStore, scenarioId: string, score: number): Leader
   };
 }
 
-function Shell({ store }: ShellProps) {
+function Shell({ store, sound }: ShellProps) {
   const screen = store.screen.value;
   const webgpu = store.webgpu.value;
   const design = store.design.value;
@@ -145,6 +154,17 @@ function Shell({ store }: ShellProps) {
         </button>
         {screen !== 'title' && screen !== 'crew' && (
           <PhaseStepper current={phase} onSelect={(target: MissionPhase) => store.navigate(target)} />
+        )}
+        {sound && (
+          <button
+            type="button"
+            class="button small sound-button"
+            title={TEXT.sound.title}
+            aria-label={sound.muted.value ? TEXT.sound.offLabel : TEXT.sound.onLabel}
+            onClick={sound.onToggle}
+          >
+            {sound.muted.value ? TEXT.sound.off : TEXT.sound.on}
+          </button>
         )}
         <button type="button" class="button small glossary-button" onClick={() => setGlossaryOpen(true)}>
           {TEXT.glossary.open}
@@ -285,6 +305,7 @@ function Shell({ store }: ShellProps) {
             responses={store.room.value?.flight?.responses ?? NO_RESPONSES}
             onAcknowledge={(key, seconds) => store.acknowledge(key, seconds)}
             onDebrief={() => store.navigate('debrief')}
+            onCue={sound?.onCue}
           />
         )}
         {phase === 'debrief' && result && scenario && (
@@ -303,6 +324,6 @@ function Shell({ store }: ShellProps) {
   );
 }
 
-export function mountShell(root: HTMLElement, store: GameStore): void {
-  render(<Shell store={store} />, root);
+export function mountShell(root: HTMLElement, store: GameStore, sound?: ShellSound): void {
+  render(<Shell store={store} sound={sound} />, root);
 }

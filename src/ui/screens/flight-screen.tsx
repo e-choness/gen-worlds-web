@@ -18,6 +18,8 @@ export interface FlightScreenProps {
   responses: Readonly<Record<string, number>>;
   onAcknowledge: (key: string, seconds: number) => void;
   onDebrief: () => void;
+  /** Reports what the log just revealed, for whoever turns it into sound. */
+  onCue?: (cue: TimelineEntry['tone'] | 'alert') => void;
 }
 
 const STEP_MS = 650;
@@ -39,6 +41,7 @@ export function FlightScreen({
   responses,
   onAcknowledge,
   onDebrief,
+  onCue,
 }: FlightScreenProps) {
   const total = result.timeline.length;
   const [shown, setShown] = useState(() => (prefersReducedMotion() && !crew ? total : 0));
@@ -61,6 +64,8 @@ export function FlightScreen({
     const timer = setTimeout(() => {
       revealedAt.current = performance.now();
       setWaited(0);
+      const entry = result.timeline[shown];
+      if (entry) onCue?.(crew && routedRole(entry) ? 'alert' : entry.tone);
       setShown(shown + 1);
     }, STEP_MS);
     return () => clearTimeout(timer);

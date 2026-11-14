@@ -1620,7 +1620,8 @@ button.card:hover {
   font-family: var(--ui-mono);
 }
 .board-name .chip {
-  margin-left: 0.5rem;
+  /* Pulls back most of the header gap so the two controls read as a pair. */
+  margin-left: -1.5rem;
 }
 .board-score {
   font-family: var(--ui-mono);
@@ -1811,4 +1812,13 @@ dialog.glossary dd {
   .briefing-art {
     display: none;
   }
+}
+
+/* Header: the sound toggle sits with the glossary on the right. */
+.sound-button {
+  margin-left: auto;
+}
+.sound-button + .glossary-button {
+  /* Pulls back most of the header gap so the two controls read as a pair. */
+  margin-left: -1.5rem;
 }

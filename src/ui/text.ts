@@ -239,6 +239,13 @@ export const TEXT = {
     linkHint:
       'Anyone who opens the link gets this design and this seed: the same storms, the same faults. Change the design and see who scores higher.',
   },
+  sound: {
+    on: '♪ On',
+    off: '♪ Off',
+    onLabel: 'Sound is on. Turn it off',
+    offLabel: 'Sound is off. Turn it on',
+    title: 'Music and sound cues',
+  },
   glossary: {
     open: 'Glossary',
     heading: 'Glossary',
