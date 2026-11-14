@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Typed helpers over three's TSL. `@types/three` types nodes by their shader type; these aliases
  * keep signatures readable, and `wgsl()` gives raw-WGSL functions a typed result.

@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Ownership primitives. Every GPU-backed or event-bound object in the app is owned by exactly one
  * `DisposableStore`; tearing down the owner tears down everything it created, in reverse order.

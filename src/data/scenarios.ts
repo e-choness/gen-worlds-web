@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /** Mission scenarios (source and units in each `scenario_*.json`). */
 import { camelize, indexById } from '@/data/camelize';
 import type { SlotId, SolarMounting } from '@/data/parts';

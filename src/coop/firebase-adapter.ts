@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Online rooms on Firestore with anonymous sign-in. One document per room (`rooms/{code}`), changed
  * by field updates so players editing different things merge; one write per decision, never per

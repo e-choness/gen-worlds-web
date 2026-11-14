@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 // Finds a Chromium flag set that exposes WebGPU inside the capture container.
 import { chromium } from 'playwright-core';
 

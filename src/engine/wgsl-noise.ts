@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Small WGSL noise primitives shared by shader modules (galaxy backdrop, aurora).
  * Hash without sine (Dave Hoskins) and trilinear value noise built on it, both in 0..1.

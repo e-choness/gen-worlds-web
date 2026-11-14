@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * The hand-flown landing: starts the 3D engine at the landing site on the landing date, lets the
  * player fly the terminal descent, and reports what they did. Like the sandbox, this module pulls

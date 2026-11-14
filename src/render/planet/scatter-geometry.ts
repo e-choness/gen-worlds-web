@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Procedural meshes for surface scatter: boulders, rock spires, crystal clusters and giant fungi.
  * All are unit-sized (about one metre) with +Y up and their base at y = 0 (boulders are centred),

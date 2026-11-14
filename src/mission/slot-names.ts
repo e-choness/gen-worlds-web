@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /** Player-facing names of the vehicle's slots, used inside explanation strings and by the UI. */
 import type { PartCategory } from '@/data/parts';
 

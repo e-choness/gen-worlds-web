@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * The budgets of a mission flown in orbit. An orbiter has no landing to pay for: its propellant
  * holds the orbit against drag and brings it down at the end, its power has to bridge an eclipse

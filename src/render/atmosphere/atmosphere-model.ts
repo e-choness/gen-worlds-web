@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 import { sampler, texture, uniform, uv } from 'three/tsl';
 import * as THREE from 'three/webgpu';
 import type { Disposable } from '@/core/disposable';

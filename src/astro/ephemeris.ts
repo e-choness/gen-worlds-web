@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Planet positions from the JPL approximate Keplerian elements (valid 1800–2050, errors of
  * arc-minutes: plenty for launch windows and for placing planets in the renderer).

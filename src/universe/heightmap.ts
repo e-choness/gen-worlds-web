@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Measured elevation of a real body as an equirectangular grid, sampled by direction. It is the
  * low-frequency base of the terrain; procedural detail fills in below the data's resolution.

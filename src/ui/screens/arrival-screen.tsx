@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 import type { Scenario } from '@/data/scenarios';
 import type { DescentPlan } from '@/mission/descent-plan';
 import { num } from '@/mission/format';

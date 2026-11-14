@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Star system generation: orbits, planet classes, physical properties, atmospheres, surface
  * palettes, life and resources. Deterministic from the star's seed.

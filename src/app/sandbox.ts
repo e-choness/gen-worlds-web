@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * The 3D sandbox: the free-flight galaxy with its own HUD and menus. This module pulls in the whole
  * engine, so it is only ever reached through a dynamic import after WebGPU has been confirmed.

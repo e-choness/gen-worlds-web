@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Live representation of one star system: where every body is, which bodies currently have a full
  * renderer, and which atmospheres feed the post pass.

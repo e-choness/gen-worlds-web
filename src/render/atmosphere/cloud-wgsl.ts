@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Volumetric cloud layer: a spherical slab between two radii, ray-marched per pixel.
  *

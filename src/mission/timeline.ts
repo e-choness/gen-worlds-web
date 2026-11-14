@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /** One line of the mission's story: what happened, when, and which design decision was behind it. */
 import type { PartCategory } from '@/data/parts';
 

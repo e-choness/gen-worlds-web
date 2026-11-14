@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * The one game-state store. Screens read its signals and ask for changes through its methods; they
  * never write the signals themselves.

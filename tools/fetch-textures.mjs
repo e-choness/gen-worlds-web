@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 // Downloads the CC0 ground textures (Poly Haven, listed in CREDITS.md) used by the terrain material into
 // public/textures.
 // Run in the tools container:  docker compose run --rm tools node tools/fetch-textures.mjs

@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * The galaxy as seen from inside it: an equirectangular HDR panorama produced by ray-marching the
  * same analytic density model that places the stars (`universe/galaxy.ts`), with dust extinction.

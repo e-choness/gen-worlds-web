@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /** Which real bodies have measured colour and elevation maps (source and format in the JSON). */
 import { camelize } from '@/data/camelize';
 import raw from '@/data/surface_maps.json';

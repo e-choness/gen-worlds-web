@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Lights for objects that use three's standard PBR materials (the robot, props, vegetation, rocks).
  * Terrain, oceans and gas giants shade themselves; this keeps everything else consistent with them:

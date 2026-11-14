@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 import type { App } from '@/app/app';
 import { formatDistance, formatSpeed } from './format';
 

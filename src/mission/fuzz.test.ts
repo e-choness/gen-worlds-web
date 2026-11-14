@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Random designs through the whole mission model: whatever the player assembles, the budgets must
  * come back finite and explained, and a launchable design must fly to a finite, repeatable result.

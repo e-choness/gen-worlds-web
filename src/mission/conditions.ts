@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /** Evaluates the design tests that event mitigations are written in (see `DesignCondition`). */
 import { camelizeKey } from '@/data/camelize';
 import type { DesignCondition } from '@/data/events';

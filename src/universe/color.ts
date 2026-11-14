@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 import type { Vec3Tuple } from './types';
 
 export function srgbToLinear(c: number): number {

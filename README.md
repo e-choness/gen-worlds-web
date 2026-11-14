@@ -130,3 +130,10 @@ workers.
 The code was written with Claude Code (Anthropic) under the team's direction, and the music and
 sound effects were generated with a locally run audio model. Details are in
 [`CREDITS.md`](CREDITS.md).
+
+## Licence
+
+Gen Worlds is a non-commercial project, © 2026 Echo Yin. The code and the project's own assets are
+under the [PolyForm Noncommercial License 1.0.0](LICENSE.md): you may use, change and share them
+for any non-commercial purpose, keeping the notice. Third-party maps and textures keep their own
+terms, listed in [`CREDITS.md`](CREDITS.md).

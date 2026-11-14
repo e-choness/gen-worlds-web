@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Aurora: emission from a thin shell high above the atmosphere, concentrated in an oval around
  * each pole of the spin axis and only on the night side. Curtains come from noise that is stretched

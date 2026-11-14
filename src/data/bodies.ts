@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /** Physical data of the real bodies (source and units in `bodies_solar_system.json`). */
 import raw from '@/data/bodies_solar_system.json';
 import { camelize, indexById } from '@/data/camelize';

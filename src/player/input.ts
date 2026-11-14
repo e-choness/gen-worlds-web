@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 import { type Disposable, DisposableStore } from '@/core/disposable';
 
 /**

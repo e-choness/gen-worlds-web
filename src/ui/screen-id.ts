@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 import { MISSION_PHASES, type MissionPhase } from '@/mission/phases';
 
 /** Every full-screen destination. The URL hash mirrors it (`#/design`) so Back and deep links work. */

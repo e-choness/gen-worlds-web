@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * One call that turns a design into everything the UI and the simulation need: the resolved parts,
  * every budget line with its explanation, the rule issues, and the derived models behind them.

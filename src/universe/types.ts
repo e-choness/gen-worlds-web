@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Pure data descriptions of everything in the universe. No rendering types here: these objects are
  * produced deterministically from seeds, are structured-cloneable (they cross into workers), and are

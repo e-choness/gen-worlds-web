@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Probes for a usable WebGPU adapter without importing the engine, so browsers without WebGPU never
  * download three.js and still get the full 2D game.

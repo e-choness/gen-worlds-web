@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /** Random mission events (source, units and effect kinds in `events_catalog.json`). */
 import { camelize, indexById } from '@/data/camelize';
 import raw from '@/data/events_catalog.json';

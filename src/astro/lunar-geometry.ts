@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Lunar trajectory mode: where the Sun and the Earth stand in the sky of a landing site on a date.
  * At the poles the Sun never climbs above about 1.5° and the Earth bobs about ±6.7° around the

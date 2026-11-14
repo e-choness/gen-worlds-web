@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Composition root: builds the engine and the long-lived services, owns the frame loop and the
  * current star system. Subsystems never reach for each other through globals; they receive what

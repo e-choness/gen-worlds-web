@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * All user-facing copy of the 2D screens lives here, so wording, tone and a later translation are
  * one file. Consequence explanations ("why" strings) come from the mission layer, not from here.

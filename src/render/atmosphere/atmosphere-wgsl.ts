@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Physically based atmosphere after Hillaire 2020 ("A Scalable and Production Ready Sky and
  * Atmosphere Rendering Technique"), adapted to arbitrary planets viewed from ground to orbit.

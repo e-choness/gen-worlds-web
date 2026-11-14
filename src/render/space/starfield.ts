@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Resolved stars around the observer: every star of the sectors within `SECTOR_RADIUS` is a real,
  * visitable system drawn as a point whose brightness follows luminosity / distance².

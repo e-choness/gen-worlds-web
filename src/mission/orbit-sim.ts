@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * A satellite's working life, one hour per step: power in sunlight and through eclipse, imaging on
  * the day side, downlink during ground-station passes, drag pulling the orbit down, events and

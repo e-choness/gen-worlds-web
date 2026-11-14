@@ -1,4 +1,5 @@
 #!/bin/sh
+# Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 # Builds the real-body surface maps shipped in public/maps from NASA source data.
 # Run in the GDAL container:  docker compose run --rm gdal sh tools/build-surface-maps.sh
 #

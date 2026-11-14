@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /** Launch vehicle catalog (source and units in `launch_vehicles.json`). */
 import { camelize, indexById } from '@/data/camelize';
 import raw from '@/data/launch_vehicles.json';

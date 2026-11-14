@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /** Builds the scanner read-out for a target. Pure DOM construction from universe descriptors. */
 import type { ScanTarget } from '@/player/scanner';
 import type { BiomeDesc } from '@/universe/biome';

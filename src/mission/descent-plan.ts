@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * The hand-flown part of the landing, derived from the design: where it starts, how hard the engine
  * pushes, and how much Δv the tanks hold for it. The braking burn from orbit is flown by the

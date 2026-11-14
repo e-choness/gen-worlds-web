@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /** Tsiolkovsky rocket equation. Masses in kg, Δv in m/s, specific impulse in seconds. */
 import { G0 } from '@/astro/constants';
 

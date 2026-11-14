@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Near-field surface detail around the craft. What stands in a cell follows the region it lies in
  * (see universe/biome.ts): boulders everywhere, trees (ez-tree) or giant fungi where there is a

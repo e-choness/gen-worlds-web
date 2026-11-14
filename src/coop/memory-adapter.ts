@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 import type { NetAdapter } from '@/coop/net-adapter';
 import { applyPatch, type RoomPatch, type RoomState } from '@/coop/room';
 

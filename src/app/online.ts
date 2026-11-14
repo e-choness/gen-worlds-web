@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * The online service as this build was configured. The Firebase web config comes from `VITE_*`
  * variables (public by design: access is controlled by the database rules); without them the game

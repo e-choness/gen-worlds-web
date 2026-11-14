@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Everything that emits particles: thruster exhaust, dust kicked up by the jets, drill sparks and
  * chips, rock-break bursts, touchdown puffs and the weather of the region the robot is in (snow,

@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /// <reference lib="webworker" />
 /**
  * Terrain worker: turns chunk requests into vertex buffers and transfers them back (zero copy).

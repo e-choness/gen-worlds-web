@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 import { num } from '@/mission/format';
 import { SURFACE_MODES, type SurfaceMode, type SurfaceTelemetry } from '@/mission/surface-sim';
 import { TEXT } from '@/ui/text';

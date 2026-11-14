@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Hour-by-hour visibility of the Sun and the Earth from a lunar landing site over the surface
  * mission: real geometry from the ephemeris, cut by the site's horizon mask. This is what turns the

@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Instruments for the hand-flown landing: height, descent rate, drift, propellant and range to the
  * target. Plain DOM over the 3D view; text refreshes at 10 Hz, enough to fly by.

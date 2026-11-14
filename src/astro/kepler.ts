@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Two-body motion: Kepler's equation, classical elements → state vector, and universal-variable
  * propagation (valid for ellipses, parabolas and hyperbolas). Units are SI unless the caller keeps

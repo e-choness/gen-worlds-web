@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /** The handful of numbers shown on a part card: the common ones, then what matters for its category. */
 import type { Part } from '@/data/parts';
 import { money, num } from '@/mission/format';

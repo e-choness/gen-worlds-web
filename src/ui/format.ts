@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 import { AU, LIGHT_YEAR, SPEED_OF_LIGHT } from '@/universe/constants';
 
 export function formatDistance(metres: number): string {

@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /** Number formatting for the explanation strings the mission layer produces (pure, no DOM). */
 
 /** Rounds to a sensible number of digits for its size and adds thousands separators. */

@@ -1,3 +1,4 @@
+# Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 # Builds the static site and publishes it to GitHub Pages on every push to main, so the live URL is
 # never more than one commit behind.
 name: Deploy

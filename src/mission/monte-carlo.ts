@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Runs the same design against many seeds: how often it succeeds, what score to expect and what
  * usually goes wrong. Heavy enough (hundreds of full missions) to belong in a worker.

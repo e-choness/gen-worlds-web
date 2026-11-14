@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Packs a body's biome grid into two small textures the terrain shader samples with the climate
  * coordinates (u = wetness, v = temperature index). Linear filtering blends neighbouring biomes.

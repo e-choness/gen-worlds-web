@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * A 3D map view: glowing points and orbit rings in perspective, with a camera that orbits a centre.
  * Drag turns the view, the wheel (or + and −) moves in and out, a click picks the nearest point and

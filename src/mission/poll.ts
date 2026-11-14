@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * The Go/No-Go poll: each role looks at the part of the design it answers for and votes. A No-Go
  * must say why. Launch needs every role at Go and a design with nothing failed.

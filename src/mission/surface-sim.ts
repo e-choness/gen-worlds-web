@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Surface operations, one hour per step: sunlight and Earth visibility from the site's sky, battery
  * in and out, drives, sorties into shadow to drill, data produced and sent home, events and faults.

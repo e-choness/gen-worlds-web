@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /** Spacecraft parts and instruments (source and units in `parts_catalog.json`). */
 import { camelize, indexById } from '@/data/camelize';
 import type { TierId } from '@/data/mission-constants';

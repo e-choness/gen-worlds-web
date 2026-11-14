@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Builds the vertex data of one terrain chunk. Pure and DOM-free: runs inside terrain workers.
  *

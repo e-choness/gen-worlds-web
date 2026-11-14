@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /** Cross-scenario constants and difficulty tiers (source and units in `mission_constants.json`). */
 import { camelize } from '@/data/camelize';
 import raw from '@/data/mission_constants.json';

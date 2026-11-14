@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Time scales. The game treats UTC, TT and TDB as the same clock: they differ by about 69 s, far
  * below the accuracy of the approximate ephemerides used here.

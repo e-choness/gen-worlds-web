@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * The hangar's 3D view: one vehicle on a turntable in its own small WebGPU renderer, separate from
  * the game engine so the design screen stays light: a few dozen meshes and three lights, drawn each

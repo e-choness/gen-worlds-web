@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * What a design change would do to the budgets, before it is made. The design screen runs this for
  * every part on offer so the player sees the trade-off on the card, not after the click.

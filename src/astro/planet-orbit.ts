@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Orbit-around-a-planet mode (the Earth-observation scenario, and arrival orbits elsewhere): what
  * an altitude and inclination mean for coverage, eclipses, ground contact and lifetime.

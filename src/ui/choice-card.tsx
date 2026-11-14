@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 import { money, num } from '@/mission/format';
 import type { BudgetChange } from '@/mission/preview';
 import { TEXT } from '@/ui/text';

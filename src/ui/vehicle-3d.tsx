@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { ResolvedDesign } from '@/mission/design';
 import type { VehicleView } from '@/render/hangar/vehicle-view';

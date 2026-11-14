@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Everything co-op needs from a network, behind one interface. The in-memory adapter serves a crew
  * on one shared screen and any device without a connection; the Firebase adapter serves a crew on

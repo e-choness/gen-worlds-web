@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * A mission code: a design, and optionally the seed and crew inputs of one flight, packed into a
  * URL-safe string. Because the simulation is deterministic, anyone holding the code can fly the

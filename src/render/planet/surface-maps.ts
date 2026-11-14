@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Loads and owns the measured colour and elevation maps of real bodies. Loaded once before a real
  * system is entered, so planet views can be created synchronously as bodies come into view.

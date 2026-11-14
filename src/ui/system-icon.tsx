@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 import type { PartCategory } from '@/data/parts';
 
 /** One line drawing per spacecraft system, on a 24-unit grid. Decorative: the name is always beside it. */

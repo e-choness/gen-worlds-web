@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * The sky of a rotating planet as seen from a point on its surface: where the Sun and the Earth
  * stand through the local day and the seasons. A first-order model (the Earth is treated as lying in

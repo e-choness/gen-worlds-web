@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * Builds the surface-survey scenario of a generated world from its physical facts. Everything that
  * does not depend on the world (parts, rockets, operations) comes from a template scenario; the

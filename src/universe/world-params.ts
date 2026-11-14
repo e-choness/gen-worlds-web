@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 /**
  * The bridge from the galaxy to the mission model: what a mission needs to know about a generated
  * body, and a way to find landable worlds without the 3D view.

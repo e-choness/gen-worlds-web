@@ -1,3 +1,4 @@
+// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { MISSION_CONSTANTS } from '@/data/mission-constants';
 import { num } from '@/mission/format';
