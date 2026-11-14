@@ -1,0 +1,174 @@
+{
+  "source": "Definitions written for this game in plain language, following NASA's own public explanations (NASA Glossary, NASA Systems Engineering Handbook SP-2016-6105 for margins and readiness levels, JPL Basics of Space Flight for trajectories and communications).",
+  "units": "Each term has an id, the term as shown, a one- or two-sentence definition, and where in the game it matters (where_used).",
+  "terms": [
+    {
+      "id": "delta_v",
+      "term": "Delta-v (Δv)",
+      "definition": "The total change in speed a spacecraft can make with its engines, in metres per second. Every manoeuvre costs some: braking into orbit, landing, correcting the course. It is the currency of spaceflight.",
+      "where_used": "Propellant budget"
+    },
+    {
+      "id": "rocket_equation",
+      "term": "Rocket equation",
+      "definition": "The rule that links delta-v to propellant: each extra metre per second needs more propellant, and that propellant needs propellant to push it. The cost grows exponentially, which is why a little extra mass on the vehicle becomes a lot on the launch pad.",
+      "where_used": "Propellant and launch budgets"
+    },
+    {
+      "id": "specific_impulse",
+      "term": "Specific impulse",
+      "definition": "How efficiently an engine uses propellant, in seconds. A higher number means more delta-v from every kilogram of propellant.",
+      "where_used": "Choosing propulsion"
+    },
+    {
+      "id": "c3",
+      "term": "Launch energy (C3)",
+      "definition": "How much energy the rocket must give the spacecraft beyond escaping Earth, in km²/s². The Moon needs slightly less than escape (a negative C3); Mars needs about 8 to 20. The higher it is, the less mass a rocket can send.",
+      "where_used": "Launch vehicle chart, porkchop plot"
+    },
+    {
+      "id": "porkchop_plot",
+      "term": "Porkchop plot",
+      "definition": "A chart of launch energy for every pair of launch and arrival dates. Its bright islands are the launch windows, and they look like pork chops.",
+      "where_used": "Trajectory screen (Mars)"
+    },
+    {
+      "id": "launch_window",
+      "term": "Launch window",
+      "definition": "The dates on which a mission can launch and still reach its target. For Mars it opens for a few weeks every 26 months, when the two planets line up.",
+      "where_used": "Trajectory screen"
+    },
+    {
+      "id": "lambert_transfer",
+      "term": "Transfer orbit",
+      "definition": "The coasting path between two worlds. Given a launch date and an arrival date there is one arc that connects them, and it fixes how fast you must leave and how fast you arrive.",
+      "where_used": "Trajectory screen"
+    },
+    {
+      "id": "orbit_insertion",
+      "term": "Orbit insertion",
+      "definition": "The braking burn that lets a destination's gravity capture the spacecraft. Miss it and the spacecraft flies past.",
+      "where_used": "Propellant budget (Moon)"
+    },
+    {
+      "id": "edl",
+      "term": "Entry, descent and landing",
+      "definition": "Getting from the top of an atmosphere to the ground: a heat shield takes the speed off, a parachute slows the fall, and engines land the last part. On Mars it takes about seven minutes and runs without help from Earth.",
+      "where_used": "Mars arrival"
+    },
+    {
+      "id": "margin",
+      "term": "Margin",
+      "definition": "The spare capacity between what a design needs and what it has. Designs always grow as they are built, so NASA keeps 20 to 30 % of mass and power spare at the start.",
+      "where_used": "Every budget line"
+    },
+    {
+      "id": "trl",
+      "term": "Technology readiness level",
+      "definition": "NASA's nine-step scale of how proven a piece of hardware is, from an idea on paper (1) to flown in space (9). Low levels promise more and risk arriving late.",
+      "where_used": "Parts catalog, schedule budget"
+    },
+    {
+      "id": "redundancy",
+      "term": "Redundancy",
+      "definition": "Carrying a second unit that takes over if the first fails. It costs mass and money and cuts the chance of losing that system about tenfold.",
+      "where_used": "Hangar: backup unit"
+    },
+    {
+      "id": "rtg",
+      "term": "Radioisotope generator",
+      "definition": "A power source that turns the heat of decaying plutonium into electricity, day and night, for decades. Low power, high cost, and its waste heat keeps the vehicle warm.",
+      "where_used": "Choosing a power source"
+    },
+    {
+      "id": "depth_of_discharge",
+      "term": "Usable battery",
+      "definition": "The share of a battery's capacity that can be used without wearing it out, typically about 80 %.",
+      "where_used": "Shadow and night budget"
+    },
+    {
+      "id": "hibernation",
+      "term": "Hibernation",
+      "definition": "Switching nearly everything off to wait out darkness, keeping only heaters and a clock alive on the battery.",
+      "where_used": "Surface operations"
+    },
+    {
+      "id": "permanently_shadowed_region",
+      "term": "Permanently shadowed region",
+      "definition": "A crater floor near a lunar pole that sunlight never reaches. At about minus 230 °C it can hold water ice for billions of years.",
+      "where_used": "Lunar landing sites"
+    },
+    {
+      "id": "horizon_mask",
+      "term": "Local horizon",
+      "definition": "The skyline as seen from a landing site. At the lunar poles the Sun and Earth skim it, so a ridge a few degrees high decides whether there is light and a radio link.",
+      "where_used": "Landing date calendar"
+    },
+    {
+      "id": "direct_to_earth",
+      "term": "Direct-to-Earth link",
+      "definition": "Talking straight to antennas on Earth with no relay. It only works while Earth is above the horizon, and it weakens with the square of the distance.",
+      "where_used": "Data budget"
+    },
+    {
+      "id": "relay",
+      "term": "Relay",
+      "definition": "A satellite that receives data from the surface at short range and passes it to Earth with its own large antenna. Nearly all data from Mars rovers comes home this way.",
+      "where_used": "Choosing communications"
+    },
+    {
+      "id": "dsn",
+      "term": "Deep Space Network",
+      "definition": "NASA's three sites of giant antennas in California, Spain and Australia. Every deep-space mission shares them, so each gets only some hours a day.",
+      "where_used": "Data budget, events"
+    },
+    {
+      "id": "light_time",
+      "term": "Light time",
+      "definition": "How long a radio signal takes to cross the distance: 1.3 seconds to the Moon, 4 to 22 minutes to Mars. Beyond the Moon nobody can steer a vehicle live.",
+      "where_used": "Computer autonomy"
+    },
+    {
+      "id": "safe_mode",
+      "term": "Safe mode",
+      "definition": "What a spacecraft does when something goes wrong: stop work, point at the Sun, call home and wait for instructions. Safe, and it costs days.",
+      "where_used": "Events in flight"
+    },
+    {
+      "id": "sol",
+      "term": "Sol",
+      "definition": "A day on Mars: 24 hours and 39 minutes.",
+      "where_used": "Mars surface operations"
+    },
+    {
+      "id": "conjunction",
+      "term": "Solar conjunction",
+      "definition": "The weeks when the Sun sits between Earth and Mars and drowns the radio link. Missions stop sending commands until it passes.",
+      "where_used": "Mars communications"
+    },
+    {
+      "id": "terrain_relative_navigation",
+      "term": "Terrain-relative navigation",
+      "definition": "Landing by matching camera pictures of the ground to a map carried on board, so the lander knows where it is and can steer to a safe spot.",
+      "where_used": "Choosing a landing system"
+    },
+    {
+      "id": "go_no_go",
+      "term": "Go/No-Go poll",
+      "definition": "The round before launch in which each team answers for its own system. One No-Go stops the count.",
+      "where_used": "Before launch"
+    },
+    {
+      "id": "monte_carlo",
+      "term": "Monte Carlo forecast",
+      "definition": "Flying the same design hundreds of times against different luck to see how often it works. It shows the risk a single flight hides.",
+      "where_used": "Go/No-Go poll"
+    },
+    {
+      "id": "seed",
+      "term": "Seed",
+      "definition": "The number that fixes a flight's luck: the same design with the same seed always gives the same mission, which is what makes scores comparable.",
+      "where_used": "Debrief, mission links"
+    }
+  ]
+}

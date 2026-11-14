@@ -3,13 +3,15 @@
  * screens (state down as props, navigation up as callbacks) and must not import the engine.
  */
 import { render } from 'preact';
-import { useEffect, useRef } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import type { GameStore } from '@/app/game-store';
 import { getTier, MISSION_CONSTANTS } from '@/data/mission-constants';
 import { getScenario, SCENARIOS } from '@/data/scenarios';
 import { createEmptyDesign, createReferenceDesign } from '@/mission/design';
 import type { MissionPhase } from '@/mission/phases';
 import { type CrewView, roleWithHolder } from '@/ui/crew-view';
+import { Explainer } from '@/ui/explainer';
+import { GlossaryDialog } from '@/ui/glossary-dialog';
 import type { LeaderboardProps } from '@/ui/leaderboard';
 import { PhaseStepper } from '@/ui/phase-stepper';
 import { isMissionPhase } from '@/ui/screen-id';
@@ -83,6 +85,7 @@ function Shell({ store }: ShellProps) {
   const evaluation = store.evaluation.value;
   const result = store.result.value;
   const main = useRef<HTMLElement>(null);
+  const [glossaryOpen, setGlossaryOpen] = useState(false);
   const crew = crewView(store);
   // Events are only routed to roles when there is more than one person to route them to.
   const flightCrew = store.crewed.value ? crew : null;
@@ -143,7 +146,11 @@ function Shell({ store }: ShellProps) {
         {screen !== 'title' && screen !== 'crew' && (
           <PhaseStepper current={phase} onSelect={(target: MissionPhase) => store.navigate(target)} />
         )}
+        <button type="button" class="button small glossary-button" onClick={() => setGlossaryOpen(true)}>
+          {TEXT.glossary.open}
+        </button>
       </header>
+      <GlossaryDialog open={glossaryOpen} onClose={() => setGlossaryOpen(false)} />
       {crew && screen !== 'crew' && screen !== 'title' && (
         <details class="team-drawer">
           <summary>
@@ -165,6 +172,7 @@ function Shell({ store }: ShellProps) {
         </details>
       )}
       <main ref={main}>
+        {phase && design && <Explainer phase={phase} open={design.tier === 'cadet'} />}
         {screen === 'title' && (
           <TitleScreen
             sandboxAvailable={webgpu === 'available'}

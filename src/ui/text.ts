@@ -222,6 +222,65 @@ export const TEXT = {
     linkHint:
       'Anyone who opens the link gets this design and this seed: the same storms, the same faults. Change the design and see who scores higher.',
   },
+  glossary: {
+    open: 'Glossary',
+    heading: 'Glossary',
+    close: 'Close',
+    search: 'Search the terms',
+    none: 'No term matches.',
+  },
+  help: {
+    label: 'How this step works:',
+    briefing: {
+      title: 'the briefing',
+      steps: [
+        'Read the science objectives: each one says what the mission must measure and how much of the score it is worth.',
+        'Note the budget cap and the critical resources. They are where this mission is usually won or lost.',
+        'The card at the bottom tells you how NASA approached the same problem. It is a hint, not the only answer.',
+      ],
+    },
+    design: {
+      title: 'the hangar',
+      steps: [
+        'Pick a system on the left, then a part for it in the middle. In a hurry? "Load the NASA-style baseline" gives you a working design to change.',
+        'Every part card shows what choosing it would do to the budgets before you commit.',
+        'The budget panel on the right updates live. Green is healthy, amber is a risk you may accept, red blocks the launch. Each line says why.',
+        'Instruments decide which objectives can score. A drill with no analyser, or a sensor with no wheels, earns nothing.',
+      ],
+    },
+    trajectory: {
+      title: 'the trajectory',
+      steps: [
+        'Choose a rocket that can lift the fuelled spacecraft: its curve must pass above your mass on the chart.',
+        'Choose the route and the dates. They set how much propellant you need and what the sky looks like when you arrive.',
+        'Choose where to land. Richer science usually means a riskier landing or a longer drive.',
+      ],
+    },
+    poll: {
+      title: 'the Go/No-Go poll',
+      steps: [
+        'Each role reviews its part of the mission. A warning is a risk you can accept; a failure must be fixed first.',
+        'Run the forecast: it flies your design 200 times and shows how often it works and what usually goes wrong.',
+        'When every role is Go, launch. One launch is one roll of the dice: the forecast tells you the odds.',
+      ],
+    },
+    flight: {
+      title: 'the flight',
+      steps: [
+        'The mission plays out day by day. Green ticks are things your design handled, red crosses are things it cost you.',
+        'The dashboard shows sunlight, Earth in view, battery and data hour by hour, straight from the simulation.',
+        'With a crew, each event stops for the role it belongs to: acknowledge it quickly for the coordination bonus.',
+      ],
+    },
+    debrief: {
+      title: 'the debrief',
+      steps: [
+        'Every finding names the design decision behind it and takes you to the screen where you can change it.',
+        'Change one thing and fly again: the run table shows what you changed and what it did to the score.',
+        'Copy the link to challenge someone with the same mission and the same luck.',
+      ],
+    },
+  },
   porkchop: {
     label: 'Launch energy for every pair of launch and arrival dates',
     launchAxis: 'Launch date',
