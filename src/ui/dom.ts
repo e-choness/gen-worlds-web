@@ -29,3 +29,8 @@ export function setText(el: HTMLElement, text: string): void {
 export function clear(el: HTMLElement): void {
   while (el.firstChild) el.removeChild(el.firstChild);
 }
+
+/** True when the player asked the system for less motion: animations then show their end state. */
+export function prefersReducedMotion(): boolean {
+  return typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+}

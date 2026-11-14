@@ -2,12 +2,16 @@
  * The 3D sandbox: the free-flight galaxy with its own HUD and menus. This module pulls in the whole
  * engine, so it is only ever reached through a dynamic import after WebGPU has been confirmed.
  */
+
+import { h, render } from 'preact';
 import { App, parseStartOptions } from '@/app/app';
-import { encodeWorld } from '@/data/world';
+import { SCENARIOS } from '@/data/scenarios';
+import { decodeWorld, encodeWorld } from '@/data/world';
 import { saveWorldShot } from '@/ui/art';
 import { DebugHud } from '@/ui/debug-hud';
 import { Hud } from '@/ui/hud';
 import { Menu } from '@/ui/menu';
+import { MapScreen } from '@/ui/screens/map-screen';
 import { TEXT } from '@/ui/text';
 import { isLandable, worldParamsOf } from '@/universe/world-params';
 
@@ -62,7 +66,51 @@ export async function startSandbox(
 
   // The browser releases the pointer on Esc without delivering the key: treat that as "pause".
   document.addEventListener('pointerlockchange', () => {
-    if (!app.input.locked && !menu.isOpen) menu.open('pause');
+    if (!app.input.locked && !menu.isOpen && !mapOpen) menu.open('pause');
+  });
+
+  // The galaxy map, the same one the mission screens use, laid over the view. From here it starts
+  // at the star the craft is at, and travelling happens in place.
+  const mapRoot = document.createElement('div');
+  mapRoot.className = 'map-overlay';
+  mapRoot.hidden = true;
+  uiRoot.append(mapRoot);
+  let mapOpen = false;
+  const closeMap = (): void => {
+    if (!mapOpen) return;
+    mapOpen = false;
+    render(null, mapRoot);
+    mapRoot.hidden = true;
+    app.setControlsEnabled(true);
+    app.input.lock();
+  };
+  const openMap = (): void => {
+    mapOpen = true;
+    mapRoot.hidden = false;
+    app.setControlsEnabled(false);
+    app.input.unlock();
+    render(
+      h(MapScreen, {
+        catalogMissions: Object.fromEntries(SCENARIOS.map((entry) => [entry.targetBody, entry.id])),
+        initial: { star: app.system.system.star, real: app.system.system.real === true },
+        flyLabel: TEXT.map.travel,
+        // The mission screens open on a fresh page: the 3D engine has no warm shutdown.
+        onPlan: (scenarioId: string) => {
+          location.href = `${location.pathname}?world=${encodeURIComponent(scenarioId)}`;
+        },
+        onFly: (worldId: string) => {
+          app.goToWorld(decodeWorld(worldId));
+          closeMap();
+        },
+        onBack: closeMap,
+      }),
+      mapRoot,
+    );
+  };
+  window.addEventListener('keydown', (event) => {
+    if (!mapOpen || (event.code !== 'Tab' && event.code !== 'Escape')) return;
+    event.preventDefault();
+    closeMap();
   });
 
   // The link between the galaxy and the missions: any solid world can be the next destination.
@@ -90,9 +138,7 @@ export async function startSandbox(
 
   app.onFrame((dt) => {
     const input = app.input;
-    if (!menu.isOpen || menu.screen === 'map') {
-      if (input.justPressed('Tab')) menu.toggle('map');
-    }
+    if (!menu.isOpen && !mapOpen && input.justPressed('Tab')) openMap();
     if (!menu.isOpen) {
       if (input.justPressed('KeyH') || input.justPressed('F1')) menu.open('controls');
       if (input.justPressed('KeyJ')) menu.open('logbook');
@@ -109,7 +155,7 @@ export async function startSandbox(
       landing: app.flight.isLanding,
       beacons: app.beacons,
       region: site ? site.terrainType : null,
-      hidden: menu.isOpen,
+      hidden: menu.isOpen || mapOpen,
       promptClick: !menu.isOpen && !input.locked && !skipStart,
     });
   });

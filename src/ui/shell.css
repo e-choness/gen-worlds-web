@@ -2450,3 +2450,34 @@ dialog.glossary dd {
 .map-facts dd.dim {
   font: 400 0.75rem var(--ui-font);
 }
+
+/* The 3D chart fills the stage; it takes the pointer for turning and the wheel for zoom. */
+.space-map-3d {
+  display: block;
+  width: 100%;
+  height: min(44rem, 72vh);
+  touch-action: none;
+  cursor: grab;
+}
+.space-map-3d:active {
+  cursor: grabbing;
+}
+
+/* The galaxy map laid over the 3D view (Tab in the sandbox). */
+.map-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  overflow-y: auto;
+  padding: 1.5rem clamp(1rem, 3vw, 2.5rem);
+  background: rgba(3, 6, 11, 0.94);
+  color: var(--ui-fg);
+  font-family: var(--ui-font);
+  pointer-events: auto;
+}
+.map-overlay[hidden] {
+  display: none;
+}
+.map-overlay .screen {
+  max-width: none;
+}

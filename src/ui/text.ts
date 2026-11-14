@@ -275,13 +275,14 @@ export const TEXT = {
     explore: 'Explore',
     starsNearby: 'stars in view',
     home: 'home',
-    galaxyChart: 'Chart of the stars near home, seen from above the galactic plane',
-    systemChart: 'chart of the planets on their orbits',
-    galaxyHint: 'Drag to move · scroll or + and − to zoom · click a star, double-click to open its system',
+    galaxyChart: '3D chart of the nearby stars; each stands on a stem above or below the galactic plane',
+    gridLabel: '25 light-years',
+    travel: 'Travel there',
+    systemChart: '3D chart of the planets and moons moving on their orbits',
+    galaxyHint:
+      'Drag to turn · scroll or + and − to zoom · click a star to centre on it, double-click to open its system',
     systemHint:
-      'Orbits are spread by the logarithm of their size, so the inner worlds stay apart. Click a world.',
-    zoomIn: 'Zoom in',
-    zoomOut: 'Zoom out',
+      'Drag to turn · scroll to zoom · click a world. Orbits are spread by the logarithm of their size, so the inner worlds stay apart.',
     backToGalaxy: 'Back to the galaxy',
     pickStar:
       'Pick a star on the map or in the list to see its system. Every solid world you find is a mission.',

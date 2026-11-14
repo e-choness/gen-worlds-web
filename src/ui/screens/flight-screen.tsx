@@ -6,6 +6,7 @@ import type { MissionResult } from '@/mission/simulate-mission';
 import type { TimelineEntry } from '@/mission/timeline';
 import { MissionDashboard } from '@/ui/charts/mission-dashboard';
 import { type CrewView, mayAct, roleWithHolder } from '@/ui/crew-view';
+import { prefersReducedMotion } from '@/ui/dom';
 import { TEXT } from '@/ui/text';
 
 export interface FlightScreenProps {
@@ -26,10 +27,6 @@ export interface FlightScreenProps {
 
 const STEP_MS = 650;
 const TONE_ICONS: Record<TimelineEntry['tone'], string> = { good: '✓', bad: '✕', neutral: '•' };
-
-function prefersReducedMotion(): boolean {
-  return matchMedia('(prefers-reduced-motion: reduce)').matches;
-}
 
 /**
  * The fast simulation as a mission log that plays back event by event. The result is already

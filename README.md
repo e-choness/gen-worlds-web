@@ -36,7 +36,7 @@ game also plays without it).
 | 3 | Jezero crater sample survey (Mars) | Launch windows, entry speed, dust, nights every sol, relay links, light time |
 
 **And any world in the galaxy.** The galaxy is procedural, and every solid planet and moon in it is
-a mission. Open the **galaxy map** from the mission screen (stars near home, each system's planets
+a mission. Open the **galaxy map** from the mission screen (a 3D chart of the stars near you that you turn and zoom, each system's planets
 and moons on their orbits, a searchable list, and what each world demands), or fly to a world in
 the sandbox and press P:
 its gravity sets the propellant, its distance from its star the power, its day the battery, and its

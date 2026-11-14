@@ -480,6 +480,17 @@ export class App {
     return true;
   }
 
+  /**
+   * Jumps to a generated world: enters its system if the craft is elsewhere and parks above it on
+   * the sunlit side. The galaxy map's way of travelling.
+   */
+  goToWorld(world: WorldParams): void {
+    if (this.system.system.real || this.system.system.star.id !== world.address.starId) {
+      this.enterSystem(systemOfWorld(world));
+    }
+    this.placeAtStart({ world });
+  }
+
   private placeAtStart(start: StartOptions): void {
     const bodies = this.system.bodies;
     let body: BodyState | undefined = start.body !== undefined ? bodies[start.body] : undefined;

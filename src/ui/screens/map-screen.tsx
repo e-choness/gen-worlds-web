@@ -1,18 +1,22 @@
 /**
- * The galaxy map: browse the stars near home, open a system, pick a world, and plan a mission to it.
- * Drawn in SVG from the same generator the 3D view uses, so it works without WebGPU and every world
- * on it is the world you would fly to. The map only reads the galaxy; choosing a mission goes
- * through `onPlan`.
+ * The galaxy map: a 3D chart of the stars near a centre that you turn, zoom and click through; open
+ * a star to see its planets and moons moving on their orbits, pick a world, and plan a mission to
+ * it. Built from the same generator the flight view uses, so every world on it is the world you
+ * would fly to, and drawn without WebGPU so the mission screens can show it anywhere. The map only
+ * reads the galaxy; choosing a mission or a destination goes through the callbacks.
  */
-import { useMemo, useRef, useState } from 'preact/hooks';
+import { useCallback, useMemo, useState } from 'preact/hooks';
+import { jdFromUnixMs } from '@/astro/time';
 import { encodeWorld } from '@/data/world';
 import { num } from '@/mission/format';
+import { type MapPoint, type MapRing, type MapScene, SpaceMap3d } from '@/ui/charts/space-map-3d';
+import { prefersReducedMotion } from '@/ui/dom';
 import { TEXT } from '@/ui/text';
 import { AU, SECTOR_SIZE_LY } from '@/universe/constants';
 import { Galaxy } from '@/universe/galaxy';
-import { createSolarSystem, solarBodyId } from '@/universe/solar-system';
+import { createSolarSystem, solarBodyId, solarBodyPosition } from '@/universe/solar-system';
 import { generateSystem } from '@/universe/system';
-import type { BodyDesc, StarDesc, SystemDesc } from '@/universe/types';
+import type { BodyDesc, StarDesc, SystemDesc, Vec3Tuple } from '@/universe/types';
 import { HOME_SECTOR, isLandable, worldParamsOf } from '@/universe/world-params';
 
 export interface MapScreenProps {
@@ -22,16 +26,23 @@ export interface MapScreenProps {
   /** Opens the 3D view at a generated world; null where it cannot run. */
   onFly: ((worldId: string) => void) | null;
   onBack: () => void;
+  /** Where the map opens: the star (and system) the player is at. Defaults to the home neighbourhood. */
+  initial?: { star: StarDesc; real: boolean };
+  /** Label of the travel button, where the caller travels without leaving the page. */
+  flyLabel?: string;
 }
 
 const EARTH_GRAVITY = 9.81;
-const VIEW = 720;
-const MIN_ZOOM = 3;
-const MAX_ZOOM = 40;
+/** Stars within this distance of the centre are on the chart, light-years. */
+const GALAXY_REACH_LY = 34;
+/** Size of a system on its chart, in chart units. */
+const SYSTEM_REACH = 100;
 /** Stars in the list beside the map. */
 const LIST_LIMIT = 40;
 /** Stars at least this bright (in Suns) are named on the chart before the others. */
-const LABEL_LUMINOSITY = 2;
+const LABEL_LUMINOSITY = 20;
+/** Angular speed of the innermost planet on the system chart, radians per second. */
+const INNER_ORBIT_SPEED = 0.3;
 const KIND_COLORS: Record<string, string> = {
   barren: '#9aa3ad',
   desert: '#d9a066',
@@ -59,55 +70,87 @@ function figure(value: number): string {
 
 /** Radius on the system chart: orbits are spread by the logarithm of their size so inner worlds stay apart. */
 function chartRadius(orbit: number, inner: number, outer: number): number {
-  if (outer <= inner) return VIEW * 0.25;
+  if (outer <= inner) return SYSTEM_REACH * 0.5;
   const share = Math.log(orbit / inner) / Math.log(outer / inner);
-  return VIEW * (0.1 + 0.36 * share);
+  return SYSTEM_REACH * (0.22 + 0.78 * share);
 }
 
-export function MapScreen({ catalogMissions, onPlan, onFly, onBack }: MapScreenProps) {
+/** A point on a circle of `radius` tilted by `tilt` about the line at angle `node`, at `angle` along it. */
+function onRing(radius: number, tilt: number, node: number, angle: number): Vec3Tuple {
+  const along = Math.cos(angle) * radius;
+  const across = Math.sin(angle) * radius;
+  return [
+    along * Math.cos(node) - across * Math.cos(tilt) * Math.sin(node),
+    across * Math.sin(tilt),
+    along * Math.sin(node) + across * Math.cos(tilt) * Math.cos(node),
+  ];
+}
+
+export function MapScreen({ catalogMissions, onPlan, onFly, onBack, initial, flyLabel }: MapScreenProps) {
   const t = TEXT.map;
   const galaxy = useMemo(() => new Galaxy(), []);
   const sol = useMemo(() => createSolarSystem(), []);
-  // Centre of the galaxy chart, light-years, and its scale in pixels per light-year.
-  const [centre, setCentre] = useState<[number, number]>(() => [
-    (HOME_SECTOR[0] + 0.5) * SECTOR_SIZE_LY,
-    (HOME_SECTOR[2] + 0.5) * SECTOR_SIZE_LY,
-  ]);
-  const [zoom, setZoom] = useState(18);
-  const [star, setStar] = useState<StarDesc | null>(null);
-  const [system, setSystem] = useState<SystemDesc | null>(null);
+  const startSystem = useMemo(
+    () => (initial ? (initial.real ? sol : generateSystem(initial.star)) : null),
+    [initial, sol],
+  );
+  // Centre of the galaxy chart, light-years.
+  const [centre, setCentre] = useState<Vec3Tuple>(() =>
+    initial && !initial.real
+      ? [initial.star.positionLy[0], initial.star.positionLy[1], initial.star.positionLy[2]]
+      : [
+          (HOME_SECTOR[0] + 0.5) * SECTOR_SIZE_LY,
+          (HOME_SECTOR[1] + 0.5) * SECTOR_SIZE_LY,
+          (HOME_SECTOR[2] + 0.5) * SECTOR_SIZE_LY,
+        ],
+  );
+  const [star, setStar] = useState<StarDesc | null>(initial?.star ?? null);
+  const [system, setSystem] = useState<SystemDesc | null>(startSystem);
   const [body, setBody] = useState<BodyDesc | null>(null);
   const [query, setQuery] = useState('');
-  const drag = useRef<{ x: number; y: number } | null>(null);
 
-  // Every star of the sectors the chart can show, three sectors deep.
+  // Every star within reach of the centre.
   const stars = useMemo(() => {
-    const reach = Math.ceil(VIEW / 2 / zoom / SECTOR_SIZE_LY) + 1;
-    const sx = Math.floor(centre[0] / SECTOR_SIZE_LY);
-    const sz = Math.floor(centre[1] / SECTOR_SIZE_LY);
+    const reach = Math.ceil(GALAXY_REACH_LY / SECTOR_SIZE_LY);
+    const sector = centre.map((value) => Math.floor(value / SECTOR_SIZE_LY));
     const found: StarDesc[] = [];
     for (let x = -reach; x <= reach; x++) {
       for (let z = -reach; z <= reach; z++) {
-        for (let y = -1; y <= 1; y++) found.push(...galaxy.sectorStars(sx + x, HOME_SECTOR[1] + y, sz + z));
+        for (let y = -1; y <= 1; y++) {
+          for (const entry of galaxy.sectorStars(sector[0] + x, sector[1] + y, sector[2] + z)) {
+            const p = entry.positionLy;
+            if (Math.hypot(p[0] - centre[0], p[1] - centre[1], p[2] - centre[2]) <= GALAXY_REACH_LY) {
+              found.push(entry);
+            }
+          }
+        }
       }
     }
     return found;
-  }, [galaxy, centre, zoom]);
+  }, [galaxy, centre]);
 
   const listed = useMemo(() => {
     const wanted = query.trim().toLowerCase();
     const distance = (entry: StarDesc): number =>
-      Math.hypot(entry.positionLy[0] - centre[0], entry.positionLy[2] - centre[1]);
+      Math.hypot(
+        entry.positionLy[0] - centre[0],
+        entry.positionLy[1] - centre[1],
+        entry.positionLy[2] - centre[2],
+      );
     return stars
       .filter((entry) => !wanted || entry.name.toLowerCase().includes(wanted))
-      .sort((a, b) => distance(a) - distance(b))
+      .sort((first, second) => distance(first) - distance(second))
       .slice(0, LIST_LIMIT);
   }, [stars, query, centre]);
 
+  const centreOn = (next: StarDesc): void => {
+    setCentre([next.positionLy[0], next.positionLy[1], next.positionLy[2]]);
+  };
   const openSystem = (next: StarDesc, real: boolean): void => {
     setStar(next);
     setSystem(real ? sol : generateSystem(next));
     setBody(null);
+    if (!real) centreOn(next);
   };
   const toGalaxy = (): void => {
     setSystem(null);
@@ -117,16 +160,124 @@ export function MapScreen({ catalogMissions, onPlan, onFly, onBack }: MapScreenP
     setStar(next);
     setBody(null);
     setSystem(null);
-    setCentre([next.positionLy[0], next.positionLy[2]]);
+    centreOn(next);
   };
 
   const bodies = system ? system.planets.flatMap((planet) => [planet, ...planet.moons]) : [];
-  const orbits = system ? system.planets.map((planet) => planet.orbitRadius) : [];
-  const inner = Math.min(...orbits);
-  const outer = Math.max(...orbits);
-  const planetPoint = (planet: BodyDesc): [number, number] => {
-    const radius = chartRadius(planet.orbitRadius, inner, outer);
-    return [VIEW / 2 + Math.cos(planet.orbitPhase) * radius, VIEW / 2 + Math.sin(planet.orbitPhase) * radius];
+
+  // ---- the two scenes
+  const galaxyScene = useCallback((): MapScene => {
+    const points: MapPoint[] = stars.map((entry) => ({
+      id: entry.id,
+      x: entry.positionLy[0] - centre[0],
+      y: entry.positionLy[1] - centre[1],
+      z: entry.positionLy[2] - centre[2],
+      color: rgb(entry.color),
+      radius: 0,
+      glow: 1.5 + Math.log10(1 + entry.luminositySolar * 20) * 1.9,
+      label: entry.name,
+      important: entry.luminositySolar > LABEL_LUMINOSITY,
+      stem: true,
+    }));
+    return { points, rings: [], gridStep: 5, gridLabel: TEXT.map.gridLabel };
+  }, [stars, centre]);
+
+  const systemScene = useCallback(
+    (time: number): MapScene => {
+      if (!system || !star) return { points: [], rings: [], gridStep: 0, gridLabel: '' };
+      const orbits = system.planets.map((planet) => planet.orbitRadius);
+      const inner = Math.min(...orbits);
+      const outer = Math.max(...orbits);
+      const innerRadius = chartRadius(inner, inner, outer);
+      const jd = jdFromUnixMs(Date.now());
+      const scratch: Vec3Tuple = [0, 0, 0];
+      const points: MapPoint[] = [
+        {
+          id: star.id,
+          x: 0,
+          y: 0,
+          z: 0,
+          color: rgb(star.color),
+          radius: 0,
+          glow: 15,
+          label: star.name,
+          important: true,
+          stem: false,
+        },
+      ];
+      const rings: MapRing[] = [];
+      for (const planet of system.planets) {
+        const radius = chartRadius(planet.orbitRadius, inner, outer);
+        const tilt = Math.min(0.5, Math.abs(planet.orbitInclination));
+        const node = (planet.seed % 6283) / 1000;
+        // The real planets start where the ephemeris has them today.
+        const realId = system.real ? solarBodyId(planet) : null;
+        const phase =
+          realId && solarBodyPosition(realId, jd, scratch)
+            ? Math.atan2(scratch[2], scratch[0]) - node
+            : planet.orbitPhase;
+        const angle = phase + time * INNER_ORBIT_SPEED * (innerRadius / radius) ** 1.5;
+        const at = onRing(radius, tilt, node, angle);
+        const giant = planet.kind === 'gasGiant' || planet.kind === 'iceGiant';
+        const open = body?.id === planet.id || body?.parentId === planet.id;
+        rings.push({ x: 0, y: 0, z: 0, radius, tilt, node, selected: open });
+        points.push({
+          id: planet.id,
+          x: at[0],
+          y: at[1],
+          z: at[2],
+          color: KIND_COLORS[planet.kind],
+          radius: giant ? 6.5 : 3.6,
+          glow: 0,
+          label: planet.name,
+          important: true,
+          stem: false,
+        });
+        if (!open) continue;
+        for (const [index, moon] of planet.moons.entries()) {
+          const reach = (giant ? 12 : 8.5) + index * 4;
+          const moonNode = (moon.seed % 6283) / 1000;
+          const moonAt = onRing(reach, 0.25, moonNode, moon.orbitPhase + time * (0.9 / (1 + index * 0.5)));
+          rings.push({
+            x: at[0],
+            y: at[1],
+            z: at[2],
+            radius: reach,
+            tilt: 0.25,
+            node: moonNode,
+            selected: body?.id === moon.id,
+          });
+          points.push({
+            id: moon.id,
+            x: at[0] + moonAt[0],
+            y: at[1] + moonAt[1],
+            z: at[2] + moonAt[2],
+            color: KIND_COLORS[moon.kind],
+            radius: 1.6,
+            glow: 0,
+            label: moon.name,
+            important: body?.id === moon.id,
+            stem: false,
+          });
+        }
+      }
+      return { points, rings, gridStep: 0, gridLabel: '' };
+    },
+    [system, star, body],
+  );
+
+  const pickOnChart = (id: string): void => {
+    if (!system) {
+      const next = stars.find((entry) => entry.id === id);
+      if (next) selectStar(next);
+      return;
+    }
+    setBody(bodies.find((entry) => entry.id === id) ?? null);
+  };
+  const openOnChart = (id: string): void => {
+    if (system) return;
+    const next = stars.find((entry) => entry.id === id);
+    if (next) openSystem(next, false);
   };
 
   // What the selected body offers: a catalog mission, a generated one, or nothing.
@@ -137,28 +288,6 @@ export function MapScreen({ catalogMissions, onPlan, onFly, onBack }: MapScreenP
   const parent = body && system ? system.planets.find((planet) => planet.id === body.parentId) : undefined;
   const sunlight =
     body && system ? system.star.luminositySolar / ((parent ?? body).orbitRadius / AU) ** 2 : 0;
-
-  const onWheel = (event: WheelEvent): void => {
-    event.preventDefault();
-    setZoom(Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoom * (event.deltaY < 0 ? 1.2 : 1 / 1.2))));
-  };
-  const onPointerDown = (event: PointerEvent): void => {
-    drag.current = { x: event.clientX, y: event.clientY };
-    (event.currentTarget as Element).setPointerCapture(event.pointerId);
-  };
-  const onPointerMove = (event: PointerEvent): void => {
-    if (!drag.current || system) return;
-    const box = (event.currentTarget as Element).getBoundingClientRect();
-    const perPixel = VIEW / box.width / zoom;
-    setCentre([
-      centre[0] - (event.clientX - drag.current.x) * perPixel,
-      centre[1] - (event.clientY - drag.current.y) * perPixel,
-    ]);
-    drag.current = { x: event.clientX, y: event.clientY };
-  };
-  const onPointerUp = (): void => {
-    drag.current = null;
-  };
 
   return (
     <section class="screen wide map-screen">
@@ -235,133 +364,25 @@ export function MapScreen({ catalogMissions, onPlan, onFly, onBack }: MapScreenP
         </nav>
 
         <div class="map-stage">
-          <svg
-            viewBox={`0 0 ${VIEW} ${VIEW}`}
-            role="img"
-            aria-label={system ? `${star?.name}: ${t.systemChart}` : t.galaxyChart}
-            onWheel={onWheel}
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={onPointerUp}
-            onPointerCancel={onPointerUp}
-          >
-            {!system &&
-              stars.map((entry) => {
-                const x = VIEW / 2 + (entry.positionLy[0] - centre[0]) * zoom;
-                const y = VIEW / 2 + (entry.positionLy[2] - centre[1]) * zoom;
-                if (x < -20 || y < -20 || x > VIEW + 20 || y > VIEW + 20) return null;
-                const size = Math.min(6, 1.1 + Math.log10(1 + entry.luminositySolar * 20) * 1.4);
-                const chosen = star?.id === entry.id;
-                return (
-                  // biome-ignore lint/a11y/useSemanticElements: an SVG star cannot be a button; the list beside the map offers the same stars to the keyboard.
-                  <g
-                    key={entry.id}
-                    class="map-star"
-                    role="button"
-                    tabIndex={-1}
-                    onClick={() => selectStar(entry)}
-                    onDblClick={() => openSystem(entry, false)}
-                  >
-                    <circle cx={x} cy={y} r={12} fill="transparent" />
-                    <circle cx={x} cy={y} r={size} fill={rgb(entry.color)} />
-                    {chosen && <circle cx={x} cy={y} r={size + 6} class="map-ring" />}
-                    {(chosen || zoom > 30 || (zoom > 12 && entry.luminositySolar > LABEL_LUMINOSITY)) && (
-                      <text x={x + size + 8} y={y + 4}>
-                        {entry.name}
-                      </text>
-                    )}
-                  </g>
-                );
-              })}
-            {system && star && (
-              <>
-                {system.planets.map((planet) => (
-                  <circle
-                    key={`orbit-${planet.id}`}
-                    cx={VIEW / 2}
-                    cy={VIEW / 2}
-                    r={chartRadius(planet.orbitRadius, inner, outer)}
-                    class={
-                      body?.id === planet.id || body?.parentId === planet.id
-                        ? 'map-orbit selected'
-                        : 'map-orbit'
-                    }
-                  />
-                ))}
-                <circle cx={VIEW / 2} cy={VIEW / 2} r={14} fill={rgb(star.color)} class="map-sun" />
-                <text x={VIEW / 2 + 22} y={VIEW / 2 + 5} class="map-sun-label">
-                  {star.name}
-                </text>
-                {system.planets.map((planet) => {
-                  const [x, y] = planetPoint(planet);
-                  const chosen = body?.id === planet.id;
-                  const giant = planet.kind === 'gasGiant' || planet.kind === 'iceGiant';
-                  return (
-                    // biome-ignore lint/a11y/useSemanticElements: an SVG planet cannot be a button; the list beside the map offers the same worlds to the keyboard.
-                    <g
-                      key={planet.id}
-                      class="map-planet"
-                      role="button"
-                      tabIndex={-1}
-                      onClick={() => setBody(planet)}
-                    >
-                      <circle cx={x} cy={y} r={16} fill="transparent" />
-                      <circle cx={x} cy={y} r={giant ? 9 : 6} fill={KIND_COLORS[planet.kind]} />
-                      {chosen && <circle cx={x} cy={y} r={(giant ? 9 : 6) + 5} class="map-ring" />}
-                      <text x={x + 14} y={y + 4} class={chosen ? 'selected' : ''}>
-                        {planet.name}
-                      </text>
-                      {(chosen || body?.parentId === planet.id) &&
-                        planet.moons.map((moon, index) => {
-                          const angle = moon.orbitPhase;
-                          const reach = 24 + index * 9;
-                          const mx = x + Math.cos(angle) * reach;
-                          const my = y + Math.sin(angle) * reach;
-                          return (
-                            <circle
-                              key={moon.id}
-                              cx={mx}
-                              cy={my}
-                              r={body?.id === moon.id ? 4.5 : 3}
-                              fill={KIND_COLORS[moon.kind]}
-                              class={body?.id === moon.id ? 'map-moon selected' : 'map-moon'}
-                            />
-                          );
-                        })}
-                    </g>
-                  );
-                })}
-              </>
-            )}
-          </svg>
+          <SpaceMap3d
+            build={system ? systemScene : galaxyScene}
+            version={system ? body?.id : stars}
+            resetKey={system ? `system:${star?.id}` : `galaxy:${centre.join(',')}`}
+            reach={system ? SYSTEM_REACH : GALAXY_REACH_LY}
+            selectedId={system ? (body?.id ?? null) : (star?.id ?? null)}
+            animated={system !== null && !prefersReducedMotion()}
+            label={system ? `${star?.name}: ${t.systemChart}` : t.galaxyChart}
+            onPick={pickOnChart}
+            onOpen={openOnChart}
+          />
           <p class="map-caption">{system ? t.systemHint : t.galaxyHint}</p>
-          <div class="map-tools">
-            {!system && (
-              <>
-                <button
-                  type="button"
-                  class="button small"
-                  aria-label={t.zoomIn}
-                  onClick={() => setZoom(Math.min(MAX_ZOOM, zoom * 1.4))}
-                >
-                  +
-                </button>
-                <button
-                  type="button"
-                  class="button small"
-                  aria-label={t.zoomOut}
-                  onClick={() => setZoom(Math.max(MIN_ZOOM, zoom / 1.4))}
-                >
-                  −
-                </button>
-              </>
-            )}
-            {system && (
+          {system && (
+            <div class="map-tools">
               <button type="button" class="button small" onClick={toGalaxy}>
                 {t.backToGalaxy}
               </button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         <aside class="map-info" aria-live="polite">
@@ -456,7 +477,7 @@ export function MapScreen({ catalogMissions, onPlan, onFly, onBack }: MapScreenP
                     {t.plan}
                   </button>
                   <button type="button" class="button" disabled={!onFly} onClick={() => onFly?.(worldId)}>
-                    {onFly ? t.fly : t.flyNeedsWebgpu}
+                    {onFly ? (flyLabel ?? t.fly) : t.flyNeedsWebgpu}
                   </button>
                 </>
               )}
