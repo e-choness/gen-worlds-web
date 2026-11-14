@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 import { useState } from 'preact/hooks';
 import { ROLE_IDS, type RoleId } from '@/data/mission-constants';
 import { type CrewView, roleName, roleWithHolder } from '@/ui/crew-view';

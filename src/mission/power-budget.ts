@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /**
  * Power and thermal: what the vehicle generates and draws while it works, and how long its battery
  * carries it through shadow and night. On the lunar pole these two lines decide the mission.

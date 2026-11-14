@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /**
  * Everything needed to draw one solid body: terrain quadtree, ocean, shading uniforms and the
  * atmosphere model. Created when the body becomes large enough on screen, disposed when it shrinks

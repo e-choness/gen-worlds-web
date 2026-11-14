@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /** Tiny hyperscript helper: `h('div.panel', { title: 'x' }, child, 'text')`. */
 export function h<K extends keyof HTMLElementTagNameMap>(
   spec: `${K}${string}` | K,

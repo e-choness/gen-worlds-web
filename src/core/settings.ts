@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /**
  * Player preferences: one persisted object, read by whoever needs a value and observed by the
  * subsystems that must react (renderer scale, audio gains). No dependencies, so any layer may use it.

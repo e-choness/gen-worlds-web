@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /** What changed between two designs, in words: used to compare a rerun with the run before it. */
 import { isoDateFromJd } from '@/astro/time';
 import { SLOT_IDS } from '@/data/parts';

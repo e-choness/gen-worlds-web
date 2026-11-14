@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 import type { ReadonlySignal } from '@preact/signals';
 /**
  * The 2D shell: header with the mission stepper plus the current screen. It wires the store to the

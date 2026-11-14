@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /**
  * Regions of a world. Every solid body gets a small set of biomes derived from what it is (class,
  * temperature, life, chemistry) and a lookup grid over two climate coordinates:

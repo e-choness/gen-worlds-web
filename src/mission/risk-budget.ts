@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /** Chance of losing the mission outright: launch, landing and failure of a part it cannot live without. */
 import { MISSION_CONSTANTS } from '@/data/mission-constants';
 import type { SlotId } from '@/data/parts';

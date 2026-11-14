@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /**
  * In-flight interface: location header, telemetry, flight-mode chip, reticle with target read-out,
  * on-screen body and beacon markers, the scanner panel, contextual action prompts and toasts.

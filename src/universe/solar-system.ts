@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /**
  * The real solar system as a `SystemDesc`: sizes, masses, spin and temperature from the NASA body
  * catalog, positions from the JPL ephemeris and the lunar series. Surface look is still generated

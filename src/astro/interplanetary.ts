@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /**
  * Interplanetary trajectory mode: Lambert transfers between planets and the porkchop grid.
  * Patched conics: the heliocentric leg is solved between planet centres, and the excess velocity at

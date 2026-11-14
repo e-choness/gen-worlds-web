@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /**
  * Builds the hangar's vehicle from a spec: a parametric kit of boxes, panels, wheels and antennas,
  * so every part the player installs shows up on the model. Units are metres; the vehicle stands on

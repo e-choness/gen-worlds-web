@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /**
  * Design rules that are not budgets: missing choices, parts that do not fit together, and
  * objectives the design cannot reach. Each issue says what is wrong and what would fix it.

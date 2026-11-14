@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /**
  * Entry point. Boots the 2D shell first, which is the whole game on browsers without WebGPU, and
  * loads the 3D engine by dynamic import only once an adapter has been confirmed and a 3D screen is

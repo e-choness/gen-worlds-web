@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /**
  * What the hangar's 3D vehicle is built from: plain numbers and switches derived from the design,
  * so the model builder knows nothing about parts catalogs and the mission layer nothing about meshes.

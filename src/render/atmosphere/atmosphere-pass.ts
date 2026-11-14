@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /**
  * Screen-space atmosphere composite. Runs after the opaque scene: for each pixel it reconstructs
  * the view ray and scene distance from the (reversed-Z) depth buffer and applies up to

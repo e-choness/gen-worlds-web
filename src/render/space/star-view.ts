@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /**
  * The system's star: a photosphere sphere with limb darkening and convection granulation, plus a
  * camera-facing corona/glare sprite. Emits HDR radiance; bloom does the rest.

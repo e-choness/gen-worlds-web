@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /**
  * Closed-form orbit relations: speeds, periods, Hohmann transfers and the burns that leave or enter
  * a planet's gravity well. SI units; radii are from the body's centre.

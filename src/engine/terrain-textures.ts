@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /**
  * Shared ground textures (CC0, Poly Haven — see CREDITS.md, fetched by
  * tools/fetch-textures.mjs). One set for the whole app: planets differ by palette, and the terrain

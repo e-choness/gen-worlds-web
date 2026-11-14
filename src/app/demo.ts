@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /**
  * `?demo`: a scripted tour of the real bodies the missions fly to, for the submission video and as
  * an attract mode. The camera sweeps slowly over each view; R records the 3D view to a WebM file

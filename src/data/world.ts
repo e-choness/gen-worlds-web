@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /**
  * A generated world as the mission model needs it. The galaxy's planets are procedural, so a mission
  * to one of them cannot come from a scenario file: instead the world's physical facts travel inside

@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 // Automated capture: loads the app in headless Chromium (WebGPU), waits for terrain to settle and
 // writes a PNG. Runs inside the `capture` compose service only.
 //   node tools/capture.mjs "<query string>" <output.png> [width] [height] [settleSeconds]

@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /**
  * The galaxy map: a 3D chart of the stars near a centre that you turn, zoom and click through; open
  * a star to see its planets and moons moving on their orbits, pick a world, and plan a mission to

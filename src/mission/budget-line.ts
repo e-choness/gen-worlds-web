@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /** The shape every budget returns: a number, a verdict and the reason in plain language. */
 import type { MarginThresholds } from '@/data/mission-constants';
 import type { ResourceId } from '@/data/scenarios';

@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 import type { PartCategory } from '@/data/parts';
 import type { Scenario } from '@/data/scenarios';
 import type { MissionDesign } from '@/mission/design';

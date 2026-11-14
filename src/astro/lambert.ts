@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /**
  * Lambert's problem: the orbit that connects two positions in a given time of flight.
  * Single-revolution form of Izzo's algorithm (D. Izzo, "Revisiting Lambert's problem", Celestial

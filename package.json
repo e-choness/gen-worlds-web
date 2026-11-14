@@ -2,7 +2,7 @@
   "name": "gen-worlds",
   "private": true,
   "version": "0.1.0",
-  "license": "SEE LICENSE IN LICENSE.md",
+  "license": "(Apache-2.0 OR MIT)",
   "type": "module",
   "scripts": {
     "dev": "vite",

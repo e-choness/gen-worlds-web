@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /**
  * The sky of a generated world. There is no ephemeris for it, so the season is held at a fixed share
  * of the axial tilt for the length of a mission, and "home" is the expedition ship: a point in the

@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 export { AU, SPEED_OF_LIGHT } from '@/astro/constants';
 export const LIGHT_YEAR = 9.4607304725808e15;
 export const SOLAR_RADIUS = 6.957e8;

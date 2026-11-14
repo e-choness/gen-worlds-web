@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /**
  * Data files use snake_case keys (the data-file convention); TypeScript uses camelCase. Loaders
  * convert once here. Only keys change: string values such as ids stay exactly as written.

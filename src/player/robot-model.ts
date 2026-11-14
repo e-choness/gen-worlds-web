@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /**
  * The player's craft: a compact excavation / survey robot, built procedurally (no asset files).
  * Hull with ceramic panels, sensor head, twin vectoring thrusters, a survey dish and a folding

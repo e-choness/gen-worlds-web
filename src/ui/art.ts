@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /**
  * Where a scenario's pictures come from. Catalog scenarios ship theirs; a generated world's picture
  * is the view the player had when they chose to plan a mission there, kept for the browser session.

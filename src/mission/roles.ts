@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /**
  * Which role answers for which part of the design. The Go/No-Go poll routes issues with it, co-op
  * uses it to decide who may change what, and the flight routes events to the role that must react.

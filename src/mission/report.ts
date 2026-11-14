@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /**
  * The causal debrief: for each thing that went wrong or right, the design decision behind it.
  * Findings are ordered for reading: what ended or limited the mission first, then each objective

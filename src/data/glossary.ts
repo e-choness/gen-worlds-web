@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /** Plain-language definitions of the terms the game uses (source in `glossary_terms.json`). */
 import { camelize } from '@/data/camelize';
 import raw from '@/data/glossary_terms.json';

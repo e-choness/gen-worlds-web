@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. PolyForm Noncommercial 1.0.0: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
 /**
  * A co-op room: the state a crew shares. It is plain data so any adapter can carry it, and it is
  * changed only through field patches (`design.slots.power`, `votes.science`…) so two players
