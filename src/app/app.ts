@@ -14,6 +14,7 @@ import { DisposableStore } from '@/core/disposable';
 import { Emitter } from '@/core/events';
 import { Rng } from '@/core/random';
 import { Settings } from '@/core/settings';
+import { decodeWorld, isWorldId, type WorldParams } from '@/data/world';
 import { Engine } from '@/engine/engine';
 import { createDetailTexture } from '@/engine/noise-texture';
 import { SceneLights } from '@/engine/scene-lights';
@@ -37,6 +38,7 @@ import { createSolarSystem, solarBodyId } from '@/universe/solar-system';
 import { generateSystem } from '@/universe/system';
 import { TerrainField } from '@/universe/terrain-field';
 import type { StarDesc, SystemDesc } from '@/universe/types';
+import { systemOfWorld } from '@/universe/world-params';
 
 export interface AppOptions {
   canvas: HTMLCanvasElement;
@@ -51,6 +53,8 @@ export interface StartOptions {
   altitude?: number;
   /** Angle in degrees between the start point and the sub-solar point (0 = noon, 90 = terminator). */
   sunAngle?: number;
+  /** Start at this generated world, in its own system. */
+  world?: WorldParams;
   /** Body latitude and east longitude to start above, degrees; both or neither. Overrides `sunAngle`. */
   latitudeDeg?: number;
   longitudeDeg?: number;
@@ -134,6 +138,7 @@ export class App {
   private readonly robot: RobotModel;
   /** Stands in for the survey craft when set: the vehicle the crew designed, during its landing. */
   private craftModel: THREE.Object3D | null = null;
+  private pendingShot: ((dataUrl: string) => void) | null = null;
   private readonly lights: SceneLights;
   private readonly effects: Effects;
   private readonly previousCamera = new THREE.Vector3();
@@ -202,9 +207,12 @@ export class App {
     const engine = await Engine.create(options.canvas);
     const app = new App(engine, options);
     if (options.start?.dateJd !== undefined) app.simJd = options.start.dateJd;
-    const system = options.start?.solarSystem
-      ? createSolarSystem()
-      : app.findHomeSystem(options.start?.kind, options.start?.rings);
+    const world = options.start?.world;
+    const system = world
+      ? systemOfWorld(world)
+      : options.start?.solarSystem
+        ? createSolarSystem()
+        : app.findHomeSystem(options.start?.kind, options.start?.rings);
     app.surfaceMaps = app.store.add(await SurfaceMaps.load(system, app.simJd, options.start?.at));
     app.enterSystem(system);
     app.placeAtStart(options.start ?? {});
@@ -223,7 +231,11 @@ export class App {
     onReadout: (dt: number, readout: DescentReadout) => void,
     holdSeconds: number,
   ): Promise<DescentOutcome> {
-    const body = this.system.bodies.find((candidate) => solarBodyId(candidate.desc) === plan.bodyId);
+    // A generated world is found by the body id in its address; a real one by its catalog id.
+    const worldBodyId = isWorldId(plan.bodyId) ? decodeWorld(plan.bodyId).address.bodyId : null;
+    const body = this.system.bodies.find((candidate) =>
+      worldBodyId ? candidate.desc.id === worldBodyId : solarBodyId(candidate.desc) === plan.bodyId,
+    );
     if (!body) return Promise.reject(new Error(`The landing body "${plan.bodyId}" is not in this system.`));
     // Site direction in system space: body longitude is measured from the map's prime meridian.
     const meridian = this.surfaceMaps?.get(body.desc)?.heightmap.meridian ?? 0;
@@ -245,6 +257,8 @@ export class App {
       .addScaledVector(north, Math.cos(bearing) * Math.cos(elevation))
       .addScaledVector(east, Math.sin(bearing) * Math.cos(elevation))
       .normalize();
+    // Generated systems do not move with the date, so nothing else would apply the override.
+    body.sunDir.copy(body.sunOverride);
     this.lamp = true;
     // Approach along a fixed horizontal direction, starting `startRangeM` short of the target.
     const reference = Math.abs(target.x) < 0.9 ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 0, 1);
@@ -470,6 +484,7 @@ export class App {
     const bodies = this.system.bodies;
     let body: BodyState | undefined = start.body !== undefined ? bodies[start.body] : undefined;
     if (start.at) body ??= bodies.find((b) => solarBodyId(b.desc) === start.at);
+    if (start.world) body ??= bodies.find((b) => b.desc.id === start.world?.address.bodyId);
     body ??=
       bodies.find((b) => b.desc.kind === (start.kind ?? 'terra') && (!start.rings || b.desc.rings)) ??
       bodies[0];
@@ -516,6 +531,18 @@ export class App {
     for (const listener of this.frameListeners) listener(dt);
     this.input.endFrame();
     this.engine.render();
+    // A WebGPU canvas can only be read in the task that drew it.
+    if (this.pendingShot) {
+      this.pendingShot(this.engine.renderer.domElement.toDataURL('image/jpeg', 0.82));
+      this.pendingShot = null;
+    }
+  }
+
+  /** A JPEG data URL of the next frame drawn, without the HUD (which is not part of the canvas). */
+  captureFrame(): Promise<string> {
+    return new Promise((resolve) => {
+      this.pendingShot = resolve;
+    });
   }
 
   private handleKeys(): void {

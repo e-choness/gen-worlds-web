@@ -4,12 +4,14 @@ import type { ReadonlySignal } from '@preact/signals';
  * screens (state down as props, navigation up as callbacks) and must not import the engine.
  */
 import { render } from 'preact';
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { GameStore } from '@/app/game-store';
 import { getTier, MISSION_CONSTANTS } from '@/data/mission-constants';
 import { getScenario, SCENARIOS } from '@/data/scenarios';
+import { encodeWorld } from '@/data/world';
 import { createEmptyDesign, createReferenceDesign } from '@/mission/design';
 import type { MissionPhase } from '@/mission/phases';
+import { artUrl } from '@/ui/art';
 import { type CrewView, roleWithHolder } from '@/ui/crew-view';
 import { Explainer } from '@/ui/explainer';
 import { GlossaryDialog } from '@/ui/glossary-dialog';
@@ -28,6 +30,7 @@ import { TitleScreen } from '@/ui/screens/title-screen';
 import { TrajectoryScreen } from '@/ui/screens/trajectory-screen';
 import { TeamPanel } from '@/ui/team-panel';
 import { TEXT } from '@/ui/text';
+import { pickWorld } from '@/universe/world-params';
 
 const NO_RESPONSES: Readonly<Record<string, number>> = {};
 
@@ -95,6 +98,9 @@ function Shell({ store, sound }: ShellProps) {
   const result = store.result.value;
   const main = useRef<HTMLElement>(null);
   const [glossaryOpen, setGlossaryOpen] = useState(false);
+  // The galaxy's offer on the mission screen: a different world every day, and another on request.
+  const [worldSeed, setWorldSeed] = useState(() => Math.floor(Date.now() / 86_400_000));
+  const world = useMemo(() => getScenario(encodeWorld(pickWorld(worldSeed))), [worldSeed]);
   const crew = crewView(store);
   // Events are only routed to roles when there is more than one person to route them to.
   const flightCrew = store.crewed.value ? crew : null;
@@ -231,6 +237,9 @@ function Shell({ store, sound }: ShellProps) {
         {screen === 'scenarios' && (
           <ScenarioScreen
             scenarios={SCENARIOS}
+            world={world}
+            onAnotherWorld={() => setWorldSeed(worldSeed + 1)}
+            onExplore={webgpu === 'available' ? () => store.navigate('sandbox') : null}
             tiers={MISSION_CONSTANTS.tiers}
             tier={store.tier.value}
             onTier={(tier) => store.setTier(tier)}
@@ -311,7 +320,10 @@ function Shell({ store, sound }: ShellProps) {
             onAcknowledge={(key, seconds) => store.acknowledge(key, seconds)}
             onDebrief={() => store.navigate('debrief')}
             onCue={sound?.onCue}
-            stageArt={getScenario(result.flownDesign.scenarioId).stageArt}
+            stageArt={artUrl(
+              getScenario(result.flownDesign.scenarioId).stageArt,
+              result.flownDesign.scenarioId,
+            )}
           />
         )}
         {phase === 'debrief' && result && scenario && (

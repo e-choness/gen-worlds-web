@@ -11,10 +11,10 @@ import {
   subEarthPoint,
   subSolarPoint,
 } from '@/astro/lunar-geometry';
-import { elevationFromHourAngle, planetSeason } from '@/astro/planet-sky';
+import { elevationFromHourAngle } from '@/astro/planet-sky';
 import { getBody } from '@/data/bodies';
-import type { PlanetId } from '@/data/planet-elements';
 import type { LandingSite, SkyModel } from '@/data/scenarios';
+import { seasonFor } from '@/mission/local-sky';
 
 export interface SiteVisibility {
   /** Julian date of the first sample (touchdown). */
@@ -78,19 +78,19 @@ function fillDiurnalSky(
   minEarthClearanceDeg: number,
   sky: SkyModel,
   bodyId: string,
+  linkDistanceAu: number,
 ): number {
   const body = getBody(bodyId);
   const latitude = site.latitudeDeg * DEG;
   const tilt = body.axialTiltDeg * DEG;
-  const equinox = sky.equinoxLongitudeDeg * DEG;
   const dayHours = body.solarDayS / 3600;
   const startHourAngle = ((sky.landingLocalHour - 12) / 24) * 2 * Math.PI;
   let farthest = 0;
-  let season = planetSeason(bodyId as PlanetId, landingJd, tilt, equinox);
+  let season = seasonFor(sky, bodyId, landingJd, tilt, linkDistanceAu);
   for (let hour = 0; hour < sunVisible.length; hour++) {
     // The season moves slowly: once a day is plenty.
     if (hour % 24 === 0) {
-      season = planetSeason(bodyId as PlanetId, landingJd + hour / 24, tilt, equinox);
+      season = seasonFor(sky, bodyId, landingJd + hour / 24, tilt, linkDistanceAu);
       farthest = Math.max(farthest, season.earthDistanceAu);
     }
     const sunHourAngle = startHourAngle + (hour / dayHours) * 2 * Math.PI;
@@ -124,6 +124,8 @@ export function computeSiteVisibility(
   minEarthClearanceDeg: number,
   sky: SkyModel | null = null,
   bodyId = 'moon',
+  /** Distance of the link home where the sky model has no ephemeris for it, au. */
+  linkDistanceAu = 0,
 ): SiteVisibility {
   const key = `${bodyId}|${site.id}|${landingJd}|${durationDays}|${minSunClearanceDeg}|${minEarthClearanceDeg}`;
   if (cacheValue && cacheKey === key) return cacheValue;
@@ -132,7 +134,7 @@ export function computeSiteVisibility(
   const sunVisible = new Uint8Array(hours);
   const earthVisible = new Uint8Array(hours);
   let earthDistanceAu: number | null = null;
-  if (sky?.model === 'diurnal') {
+  if (sky && sky.model !== 'lunar') {
     earthDistanceAu = fillDiurnalSky(
       sunVisible,
       earthVisible,
@@ -142,6 +144,7 @@ export function computeSiteVisibility(
       minEarthClearanceDeg,
       sky,
       bodyId,
+      linkDistanceAu,
     );
   } else {
     for (let hour = 0; hour < hours; hour++) {

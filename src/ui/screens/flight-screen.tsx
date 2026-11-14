@@ -18,7 +18,7 @@ export interface FlightScreenProps {
   responses: Readonly<Record<string, number>>;
   onAcknowledge: (key: string, seconds: number) => void;
   onDebrief: () => void;
-  /** Picture of where the mission works, relative to the site root. */
+  /** URL of the picture of where the mission works. */
   stageArt: string;
   /** Reports what the log just revealed, for whoever turns it into sound. */
   onCue?: (cue: TimelineEntry['tone'] | 'alert') => void;
@@ -142,7 +142,7 @@ export function FlightScreen({
             ))}
           </ol>
           <div class="flight-stage">
-            <img src={import.meta.env.BASE_URL + stageArt} alt={t.stageAlt} />
+            <img src={stageArt} alt={t.stageAlt} />
             <div class="stage-event" data-tone={last?.tone ?? 'neutral'}>
               {last ? (
                 <>

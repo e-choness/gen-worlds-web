@@ -6,12 +6,12 @@
  * What the player does comes back as a `LandingInput`, and the simulation decides the rest.
  */
 import { bearingToSubPoint, elevationAtSite, subSolarPoint } from '@/astro/lunar-geometry';
-import { bearingFromHourAngle, elevationFromHourAngle, planetSeason } from '@/astro/planet-sky';
+import { bearingFromHourAngle, elevationFromHourAngle } from '@/astro/planet-sky';
 import { getBody } from '@/data/bodies';
-import type { PlanetId } from '@/data/planet-elements';
 import type { Scenario } from '@/data/scenarios';
 import type { DesignEvaluation } from '@/mission/evaluate-design';
 import type { LandingInput } from '@/mission/input-log';
+import { seasonFor } from '@/mission/local-sky';
 
 export interface DescentPlan {
   /** Catalog id of the body landed on. */
@@ -61,11 +61,12 @@ function sunAtSite(
     };
   }
   // A rotating planet: the landing is timed for a local hour, and the season sets the Sun's height.
-  const season = planetSeason(
-    scenario.targetBody as PlanetId,
+  const season = seasonFor(
+    scenario.sky,
+    scenario.targetBody,
     landingJd,
     getBody(scenario.targetBody).axialTiltDeg * DEG,
-    scenario.sky.equinoxLongitudeDeg * DEG,
+    scenario.environment.earthDistanceAu,
   );
   const hourAngle = (scenario.sky.landingLocalHour - 12) * 15 * DEG;
   return {

@@ -1,6 +1,7 @@
 /** Physical data of the real bodies (source and units in `bodies_solar_system.json`). */
 import raw from '@/data/bodies_solar_system.json';
 import { camelize, indexById } from '@/data/camelize';
+import { decodeWorld, isWorldId, worldBody } from '@/data/world';
 
 export interface AtmosphereLayerData {
   baseAltitudeM: number;
@@ -41,6 +42,8 @@ export const BODIES: readonly BodyData[] = camelize<BodyData[]>(raw.bodies);
 const BY_ID = indexById(BODIES, 'body');
 
 export function getBody(id: string): BodyData {
+  // A generated world carries its own facts in its id.
+  if (isWorldId(id)) return worldBody(id, decodeWorld(id));
   const body = BY_ID.get(id);
   if (!body) throw new Error(`Unknown body "${id}".`);
   return body;

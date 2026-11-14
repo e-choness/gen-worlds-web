@@ -2212,3 +2212,34 @@ dialog.glossary dd {
   color: var(--ui-dim);
   font-size: 0.85rem;
 }
+
+/* Mission picker: the galaxy's offer, a generated world with what it demands. */
+.world-card {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0;
+  padding: 0;
+  height: auto;
+}
+.world-art {
+  flex: 1 1 18rem;
+  min-width: 0;
+  max-width: 26rem;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: #05080d;
+}
+.world-body {
+  display: flex;
+  flex: 2 1 24rem;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+  padding: 1.1rem 1.25rem;
+}
+.world-body .actions {
+  margin-top: 0.5rem;
+}
+.world-art {
+  align-self: flex-start;
+}

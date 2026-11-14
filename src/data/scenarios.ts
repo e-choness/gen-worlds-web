@@ -5,6 +5,8 @@ import type { PlanetId } from '@/data/planet-elements';
 import earthObservation from '@/data/scenario_earth_observation.json';
 import lunarIceProspector from '@/data/scenario_lunar_ice_prospector.json';
 import marsJezeroSurvey from '@/data/scenario_mars_jezero_survey.json';
+import { decodeWorld, isWorldId } from '@/data/world';
+import { buildWorldScenario } from '@/data/world-scenario';
 
 export type TrajectoryMode = 'earth_orbit' | 'lunar' | 'interplanetary';
 
@@ -182,8 +184,12 @@ export interface OrbitMission {
 
 /** How the Sun and Earth move in the destination's sky. */
 export interface SkyModel {
-  /** `lunar`: real lunar geometry with horizon masks. `diurnal`: a rotating planet with seasons. */
-  model: 'lunar' | 'diurnal';
+  /**
+   * `lunar`: real lunar geometry with horizon masks. `diurnal`: a rotating planet of the solar system,
+   * with seasons and the Earth from the ephemeris. `local`: a rotating generated world, whose link
+   * home is a ship in its own sky.
+   */
+  model: 'lunar' | 'diurnal' | 'local';
   /** Heliocentric ecliptic longitude of the planet at its northern spring equinox, degrees. */
   equinoxLongitudeDeg: number;
   /** Local solar time of touchdown, hours. */
@@ -287,6 +293,9 @@ export interface Scenario {
   nasaReference: { mission: string; summary: string; url: string };
 }
 
+/** The catalog scenario a generated world's mission borrows its parts, rockets and operations from. */
+const WORLD_TEMPLATE_ID = 'mars_jezero_survey';
+
 export const SCENARIOS: readonly Scenario[] = [
   camelize<Scenario>(earthObservation),
   camelize<Scenario>(lunarIceProspector),
@@ -295,7 +304,19 @@ export const SCENARIOS: readonly Scenario[] = [
 
 const BY_ID = indexById(SCENARIOS, 'scenario');
 
+/** Scenarios of generated worlds, rebuilt from their ids on first use. */
+const WORLDS = new Map<string, Scenario>();
+
+/** @throws for an id that is neither a catalog scenario nor a well-formed generated world. */
 export function getScenario(id: string): Scenario {
+  if (isWorldId(id)) {
+    let world = WORLDS.get(id);
+    if (!world) {
+      world = buildWorldScenario(id, decodeWorld(id), getScenario(WORLD_TEMPLATE_ID));
+      WORLDS.set(id, world);
+    }
+    return world;
+  }
   const scenario = BY_ID.get(id);
   if (!scenario) throw new Error(`Unknown scenario "${id}".`);
   return scenario;

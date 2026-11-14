@@ -1,0 +1,30 @@
+/**
+ * Where a scenario's pictures come from. Catalog scenarios ship theirs; a generated world's picture
+ * is the view the player had when they chose to plan a mission there, kept for the browser session.
+ */
+import { hashString } from '@/core/random';
+import { isWorldId } from '@/data/world';
+
+const shotKey = (scenarioId: string): string => `gen-worlds.shot.${hashString(scenarioId)}`;
+
+/** Keeps `dataUrl` as the picture of the generated world `scenarioId`. Fails quietly when storage is full. */
+export function saveWorldShot(scenarioId: string, dataUrl: string): void {
+  try {
+    sessionStorage.setItem(shotKey(scenarioId), dataUrl);
+  } catch {
+    // No storage or no room: the scenario's stock picture stands in.
+  }
+}
+
+/** The URL to show for a scenario picture given as a path relative to the site root. */
+export function artUrl(path: string, scenarioId: string): string {
+  if (isWorldId(scenarioId)) {
+    try {
+      const shot = sessionStorage.getItem(shotKey(scenarioId));
+      if (shot) return shot;
+    } catch {
+      // Storage blocked: fall through to the stock picture.
+    }
+  }
+  return import.meta.env.BASE_URL + path;
+}

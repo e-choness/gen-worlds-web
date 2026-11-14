@@ -11,6 +11,7 @@ import { type FlightTelemetry, LANDING_ALTITUDE } from '@/player/flight-controll
 import type { Scanner } from '@/player/scanner';
 import type { SystemView } from '@/render/space/system-view';
 import { AU } from '@/universe/constants';
+import { isLandable } from '@/universe/world-params';
 import { clear, h, setText } from './dom';
 import { formatDistance, formatSpeed, formatTemperature } from './format';
 import { buildReport, cssColor, kindLabel, targetTitle } from './scan-report';
@@ -220,6 +221,7 @@ export class Hud {
         list.push(['L', frame.landing ? 'Abort landing' : 'Land']);
       if (!target) list.push(['Tab', 'System map']);
     }
+    if (t.body && isLandable(t.body.desc)) list.push(['P', 'Plan a mission here']);
     list.push(['Esc', 'Menu']);
     const key = list.map((p) => p.join(':')).join('|');
     if (key === this.promptKey) return;

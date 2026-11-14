@@ -37,6 +37,12 @@ export const TEXT = {
     tier: 'Difficulty',
     mission: 'Mission',
     critical: 'Critical:',
+    galaxy: 'Or any world in the galaxy',
+    galaxyEyebrow: 'Generated world · today’s offer',
+    anotherWorld: 'Another world',
+    explore: 'Fly the galaxy and choose',
+    exploreNeedsWebgpu: 'Choosing in 3D needs WebGPU',
+    exploreHint: 'In the galaxy, fly to any solid planet or moon and press P to plan a mission there.',
   },
   briefing: {
     objectives: 'Science objectives',
@@ -261,6 +267,11 @@ export const TEXT = {
     copied: 'Link copied',
     linkHint:
       'Anyone who opens the link gets this design and this seed: the same storms, the same faults. Change the design and see who scores higher.',
+  },
+  sandbox: {
+    planning: 'Planning a mission to',
+    planNotLandable: 'A rover cannot land here. Fly to a solid planet or moon.',
+    planRealBody: 'The Earth, Moon and Mars missions are on the mission list.',
   },
   demo: {
     recording: 'Recording',

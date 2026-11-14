@@ -5,6 +5,7 @@
  */
 import * as THREE from 'three/webgpu';
 import { App } from '@/app/app';
+import { decodeWorld, isWorldId } from '@/data/world';
 import type { DescentOutcome, DescentPlan } from '@/mission/descent-plan';
 import { MIN_CLEARANCE } from '@/player/flight-controller';
 import { buildVehicle, createVehicleMaterials, disposeVehicle } from '@/render/hangar/vehicle-model';
@@ -24,8 +25,9 @@ export async function runDescent(
   const app = await App.create({
     canvas,
     start: {
-      solarSystem: true,
-      at: plan.bodyId,
+      ...(isWorldId(plan.bodyId)
+        ? { world: decodeWorld(plan.bodyId) }
+        : { solarSystem: true, at: plan.bodyId }),
       dateJd: plan.landingJd,
       altitude: plan.startAltitudeM + 4000,
     },

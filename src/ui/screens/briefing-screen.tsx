@@ -1,5 +1,6 @@
 import type { Tier } from '@/data/mission-constants';
 import type { Scenario } from '@/data/scenarios';
+import { artUrl } from '@/ui/art';
 import { RESOURCE_NAMES, TEXT } from '@/ui/text';
 
 export interface BriefingScreenProps {
@@ -16,7 +17,7 @@ export function BriefingScreen({ scenario, tier, onNext, onBack }: BriefingScree
   return (
     <section class="screen briefing">
       {/* Decorative: the heading names the destination. */}
-      <img class="briefing-art" src={import.meta.env.BASE_URL + scenario.art} alt="" />
+      <img class="briefing-art" src={artUrl(scenario.art, scenario.id)} alt="" />
       <div class="eyebrow">
         {TEXT.scenarios.mission} {scenario.number} · {tier.name}
       </div>

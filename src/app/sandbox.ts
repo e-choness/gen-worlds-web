@@ -3,9 +3,13 @@
  * engine, so it is only ever reached through a dynamic import after WebGPU has been confirmed.
  */
 import { App, parseStartOptions } from '@/app/app';
+import { encodeWorld } from '@/data/world';
+import { saveWorldShot } from '@/ui/art';
 import { DebugHud } from '@/ui/debug-hud';
 import { Hud } from '@/ui/hud';
 import { Menu } from '@/ui/menu';
+import { TEXT } from '@/ui/text';
+import { isLandable, worldParamsOf } from '@/universe/world-params';
 
 declare global {
   interface Window {
@@ -61,6 +65,29 @@ export async function startSandbox(
     if (!app.input.locked && !menu.isOpen) menu.open('pause');
   });
 
+  // The link between the galaxy and the missions: any solid world can be the next destination.
+  let planning = false;
+  const planMissionHere = (): void => {
+    const body = app.flight.telemetry.body;
+    if (planning || !body) return;
+    if (app.system.system.real) {
+      hud.toast(TEXT.sandbox.planRealBody);
+      return;
+    }
+    if (!isLandable(body.desc)) {
+      hud.toast(TEXT.sandbox.planNotLandable);
+      return;
+    }
+    planning = true;
+    const id = encodeWorld(worldParamsOf(app.system.system, body.desc));
+    hud.toast(`${TEXT.sandbox.planning} ${body.desc.name}`);
+    void app.captureFrame().then((shot) => {
+      saveWorldShot(id, shot);
+      // The 3D engine has no warm shutdown: the mission screens open on a fresh page.
+      location.href = `${location.pathname}?world=${encodeURIComponent(id)}`;
+    });
+  };
+
   app.onFrame((dt) => {
     const input = app.input;
     if (!menu.isOpen || menu.screen === 'map') {
@@ -69,6 +96,7 @@ export async function startSandbox(
     if (!menu.isOpen) {
       if (input.justPressed('KeyH') || input.justPressed('F1')) menu.open('controls');
       if (input.justPressed('KeyJ')) menu.open('logbook');
+      if (input.justPressed('KeyP')) planMissionHere();
     }
     const site = app.scanner.target?.kind === 'site' ? app.scanner.target.site : null;
     hud.update(dt, {

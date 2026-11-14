@@ -1,0 +1,134 @@
+{
+  "source": "Rules that turn a generated world into a surface-survey mission. The mission's parts, launch vehicles, operations and objectives are those of the Mars sample survey (scenario_mars_jezero_survey.json); what changes with the world is derived here. Descent and capture costs follow from the circular speed at the surface, sqrt(g R): landing from low orbit on an airless body costs a little more than that speed (the Moon: 1,680 m/s circular, about 1,900 m/s flown by Apollo and planned for CLPS landers), and capture into low orbit from a transfer about 45 % of it (the Moon: 750 to 850 m/s). Where there is air an aeroshell brakes instead, as at Mars. Heater demand scales with how far the surface is below room temperature, anchored at Mars (210 K). Transfer energies are representative values for a trip between neighbouring planets, as for Earth to Mars (C3 9 to 14 km^2/s^2).",
+  "units": "min_entry_pressure_bar: thinnest air an aeroshell can use, bar. vacuum_descent_factor and insertion_fraction multiply the circular speed at the surface. air_descent_delta_v_m_s and the terminal values are at reference_gravity_m_s2 and scale with the square root of gravity. comfort_temperature_k and reference_cold_k set the heater scale: demand is the template's at reference_cold_k and falls to min_heater_factor of it at comfort_temperature_k. season_factor: share of the axial tilt taken as the Sun's declination during the mission. carrier_distance_au: distance to the expedition ship that relays to home. Dates are ISO (UTC). Text fields may contain {name} for the world's name.",
+  "min_entry_pressure_bar": 0.004,
+  "vacuum_descent_factor": 1.13,
+  "insertion_fraction": 0.45,
+  "air_descent_delta_v_m_s": 380,
+  "air_terminal_delta_v_m_s": 200,
+  "vacuum_terminal_delta_v_m_s": 260,
+  "reference_gravity_m_s2": 3.71,
+  "vacuum_reference_gravity_m_s2": 1.62,
+  "comfort_temperature_k": 293,
+  "reference_cold_k": 210,
+  "min_heater_factor": 0.1,
+  "max_heater_factor": 3,
+  "season_factor": 0.5,
+  "carrier_distance_au": 0.005,
+  "carrier_elongation_deg": 90,
+  "landing_local_hour": 10,
+  "budget_cap_musd": 430,
+  "surface_duration_days": 90,
+  "landing_window": { "start_date": "2031-01-01", "end_date": "2031-12-31" },
+  "landing_date": "2031-06-01",
+  "transfers": [
+    {
+      "id": "fast",
+      "name": "Fast transfer",
+      "duration_days": 130,
+      "c3_km2_s2": 14,
+      "correction_delta_v_m_s": 30,
+      "summary": "The quick way across: more launch energy, fewer months for hardware to fail in deep space."
+    },
+    {
+      "id": "economy",
+      "name": "Economy transfer",
+      "duration_days": 240,
+      "c3_km2_s2": 9,
+      "correction_delta_v_m_s": 45,
+      "summary": "The patient way: the rocket carries more, and the spacecraft spends twice as long exposed on the way."
+    }
+  ],
+  "sites": [
+    {
+      "id": "plains",
+      "name": "Equatorial plains",
+      "latitude_deg": 6,
+      "longitude_deg": 20,
+      "ice_quality": 0.55,
+      "shadow_distance_km": 0.4,
+      "landing_hazard_factor": 1,
+      "slope_deg": 5,
+      "summary": "Flat, open ground near the equator: the safest touchdown and the most sunlight, with ordinary rocks a short drive away."
+    },
+    {
+      "id": "highlands",
+      "name": "Mid-latitude highlands",
+      "latitude_deg": 38,
+      "longitude_deg": -65,
+      "ice_quality": 0.85,
+      "shadow_distance_km": 1.5,
+      "landing_hazard_factor": 1.5,
+      "slope_deg": 14,
+      "summary": "Old, broken terrain with exposed layers: better samples, a rougher landing zone and a lower Sun."
+    },
+    {
+      "id": "polar_margin",
+      "name": "Polar margin",
+      "latitude_deg": 68,
+      "longitude_deg": 140,
+      "ice_quality": 1,
+      "shadow_distance_km": 4,
+      "landing_hazard_factor": 1.3,
+      "slope_deg": 18,
+      "summary": "The oldest ground and the richest record, far from the equator: the Sun barely clears the horizon and the drive is long."
+    }
+  ],
+  "objectives": [
+    {
+      "id": "core_samples",
+      "name": "Core the bedrock",
+      "summary": "Drill cores from the layered rock and check them for the minerals that record this world's history."
+    },
+    {
+      "id": "traverse",
+      "name": "Survey the route with cameras",
+      "summary": "Drive and image as you go: the context that tells scientists where each core came from."
+    },
+    {
+      "id": "return_data",
+      "name": "Return the data to the expedition",
+      "summary": "Science only counts once it has reached the ship in orbit."
+    },
+    {
+      "id": "context",
+      "name": "Characterise the site",
+      "summary": "Each extra kind of measurement (chemistry, buried layers, weather) tells the next mission what to expect."
+    }
+  ],
+  "terms": {
+    "destination": "{name}",
+    "vehicle": "rover",
+    "local_weight": "weight on {name}",
+    "target_ground": "the layered bedrock",
+    "target_short": "the bedrock",
+    "find_title": "Layered rock cored",
+    "find_detail": "of layered bedrock was sealed in its tube",
+    "sample_count": "of layered bedrock cored",
+    "found_in": "cored layered bedrock in",
+    "no_find": "cored no layered bedrock",
+    "empty_sample": "were of loose rubble with no record in it",
+    "find_advice": "A site with a richer rock record makes more of the cores count.",
+    "quality_label": "Rock record",
+    "drive_label": "Drive to the rocks",
+    "at_target": "on the spot",
+    "ops_day": "local day"
+  },
+  "text": {
+    "name": "{name} surface survey",
+    "tagline": "First wheels on a world nobody has landed on.",
+    "briefing_lead": "{name} has never been visited. Land a rover, drive to the layered bedrock and core it, and send the data up to the expedition ship in orbit. The parts are the ones you know; the world is not.",
+    "gravity": "Gravity is {value} of the Earth's, which sets how much propellant the landing costs.",
+    "sunlight": "Sunlight is {value} of what reaches the Earth, which sets what a solar panel is worth.",
+    "day": "A day lasts {value}, and the night is as long as the battery has to be.",
+    "air": "There is air ({value} bar): a heat shield and parachute do most of the braking, and dust settles on the panels.",
+    "no_air": "There is no air: every metre per second of the landing is paid for in propellant.",
+    "temperature": "The surface averages {value} °C.",
+    "descent_air": "Heat shield, parachute, then a powered descent for the last kilometres.",
+    "descent_vacuum": "From low orbit to a soft touchdown on engines alone.",
+    "reference_summary": "The Mars rover baseline, unchanged. It was designed for Mars: check every budget against this world before you trust it.",
+    "nasa_mission": "How NASA would start",
+    "nasa_summary": "Before any hardware is drawn, mission designers write down what the destination demands: its gravity sets the propellant, its distance from its star sets the power, its day sets the battery, and its air decides between a heat shield and engines. The same rover that thrives on Mars can be impossible to land on a heavier world and freeze on a darker one. That list is what this briefing gives you.",
+    "nasa_url": "https://science.nasa.gov/planetary-science/"
+  }
+}

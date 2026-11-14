@@ -11,6 +11,7 @@ import { mountShell } from '@/app/shell';
 import { hasWebgpu } from '@/app/webgpu-support';
 import { UiAudio } from '@/audio/ui-audio';
 import { Settings } from '@/core/settings';
+import { getScenario } from '@/data/scenarios';
 import { screenFromHash } from '@/ui/screen-id';
 import { vehicleSpecFromDesign } from '@/ui/vehicle-spec-from-design';
 
@@ -46,6 +47,19 @@ function main(): void {
   const settings = new Settings();
   const audio = new UiAudio(settings);
   const muted = signal(settings.values.muted);
+  // A world chosen in the galaxy arrives as ?world=<id>: open its briefing.
+  const worldId = params.get('world');
+  if (worldId) {
+    try {
+      getScenario(worldId);
+      store.selectScenario(worldId);
+      history.replaceState(null, '', `${location.pathname}#/briefing`);
+      store.navigate('briefing');
+    } catch (error) {
+      // A damaged link: say so on the title screen rather than failing to start.
+      store.engineError.value = error instanceof Error ? error.message : String(error);
+    }
+  }
   mountShell(shellRoot, store, {
     muted,
     onToggle: () => {

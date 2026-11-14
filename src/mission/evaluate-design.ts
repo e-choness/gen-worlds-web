@@ -66,6 +66,7 @@ export function evaluateDesign(design: MissionDesign): DesignEvaluation {
           scenario.operations.minEarthClearanceDeg,
           scenario.sky,
           scenario.targetBody,
+          scenario.environment.earthDistanceAu,
         )
       : null;
   const power = computePowerModel(resolved, mass);

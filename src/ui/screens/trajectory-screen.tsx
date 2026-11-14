@@ -12,6 +12,7 @@ import { computeOrbitModel } from '@/mission/orbit-model';
 import { type BudgetChange, previewChanges } from '@/mission/preview';
 import { computeSiteCalendar } from '@/mission/site-calendar';
 import { landingWindowJd } from '@/mission/validation';
+import { artUrl } from '@/ui/art';
 import { BudgetPanel } from '@/ui/budget-panel';
 import { CapacityChart } from '@/ui/charts/capacity-chart';
 import { PorkchopChart } from '@/ui/charts/porkchop-chart';
@@ -108,7 +109,7 @@ export function TrajectoryScreen({ evaluation, crew, onChange, onNext, onBack }:
     <section class="screen wide trajectory">
       <div class="trajectory-main">
         <figure class="trajectory-stage">
-          <img src={import.meta.env.BASE_URL + scenario.stageArt} alt={TEXT.flight.stageAlt} />
+          <img src={artUrl(scenario.stageArt, scenario.id)} alt={TEXT.flight.stageAlt} />
           <figcaption>
             <strong>{site?.name ?? resolved.orbit?.name ?? scenario.terms.destination}</strong>
             <span>{scenario.tagline}</span>

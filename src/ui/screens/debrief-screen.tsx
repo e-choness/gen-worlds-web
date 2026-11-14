@@ -6,6 +6,7 @@ import { num, percent } from '@/mission/format';
 import type { MissionOutcome } from '@/mission/scoring';
 import type { MissionResult } from '@/mission/simulate-mission';
 import { SLOT_NAMES } from '@/mission/slot-names';
+import { artUrl } from '@/ui/art';
 import { Leaderboard, type LeaderboardProps } from '@/ui/leaderboard';
 import { StatusBadge } from '@/ui/status-badge';
 import { SystemIcon } from '@/ui/system-icon';
@@ -67,7 +68,7 @@ export function DebriefScreen({
     <section class="screen debrief">
       <div class="debrief-head" data-outcome={score.outcome}>
         {/* Decorative: where the mission flew. */}
-        <img class="debrief-art" src={import.meta.env.BASE_URL + scenario.stageArt} alt="" />
+        <img class="debrief-art" src={artUrl(scenario.stageArt, scenario.id)} alt="" />
         <div class="score-ring" role="img" aria-label={`${num(score.total, 0)} ${t.points}`}>
           <svg aria-hidden="true" viewBox="0 0 168 168" fill="none">
             <circle class="ring-track" cx="84" cy="84" r="74" stroke-width="12" />

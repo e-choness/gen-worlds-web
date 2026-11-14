@@ -35,6 +35,12 @@ game also plays without it).
 | 2 | Lunar south pole ice prospector | Polar lighting, the lunar night, working in permanent shadow, direct-to-Earth links |
 | 3 | Jezero crater sample survey (Mars) | Launch windows, entry speed, dust, nights every sol, relay links, light time |
 
+**And any world in the galaxy.** The galaxy is procedural, and every solid planet and moon in it is
+a mission. Fly to one in the sandbox and press P, or take the world offered on the mission screen:
+its gravity sets the propellant, its distance from its star the power, its day the battery, and its
+air decides between a heat shield and engines. The same rover that works on Mars may not survive
+there. The landing is flown over that world's own terrain.
+
 Three difficulty levels (Cadet, Engineer, Flight Director) change the catalog, the budget and how
 often things go wrong. Every step has a short explainer, and a glossary of the terms is one click
 away.
