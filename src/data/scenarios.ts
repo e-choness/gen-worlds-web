@@ -121,7 +121,22 @@ export interface Scenario {
   /** ISO dates (UTC) between which the landing may be scheduled. */
   landingWindow: { startDate: string; endDate: string };
   transfers: TransferOption[];
-  descent: { deltaVMS: number; minThrustToWeight: number; summary: string };
+  descent: {
+    /** Orbit to touchdown, m/s. */
+    deltaVMS: number;
+    minThrustToWeight: number;
+    summary: string;
+    /** Part of `deltaVMS` spent below the altitude where a human pilot can take over. */
+    terminalDeltaVMS: number;
+    /** State at hand-over to the pilot. */
+    startAltitudeM: number;
+    startDescentRateMS: number;
+    startGroundSpeedMS: number;
+    startRangeM: number;
+    /** Vertical speed and sideways drift a landing survives, m/s. */
+    maxTouchdownSpeedMS: number;
+    maxTouchdownDriftMS: number;
+  };
   environment: ScenarioEnvironment;
   operations: ScenarioOperations;
   sites: LandingSite[];

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { jdFromDate } from '@/astro/time';
+import { landingInputFromDescent, planDescent } from '@/mission/descent-plan';
 import { createEmptyDesign, type MissionDesign } from '@/mission/design';
 import { evaluateDesign } from '@/mission/evaluate-design';
 import { rollEvents } from '@/mission/event-roll';
@@ -163,12 +164,53 @@ describe('mission simulation', () => {
   it('crashes a hand-flown landing that burns more than the tanks hold', () => {
     const result = simulateMission(baseline(), 5, {
       ...SCRIPTED_INPUT_LOG,
-      landing: { descentDeltaVFactor: 1.5, accuracyM: 20 },
+      landing: { descentDeltaVFactor: 1.5, accuracyM: 20, crashSpeedMS: null },
     });
 
     expect(result.lostIn).toBe('landing');
     expect(result.score.total).toBe(0);
     expect(result.timeline.at(-1)!.title).toBe('Out of propellant');
+  });
+
+  it('turns a hand-flown descent into a landing input the simulation accepts or rejects', () => {
+    const evaluation = evaluateDesign(baseline());
+    const plan = planDescent(evaluation)!;
+
+    const good = landingInputFromDescent(plan, evaluation, {
+      result: 'landed',
+      deltaVUsed: plan.nominalDeltaV,
+      accuracyM: 40,
+      touchdownSpeedMS: 1.2,
+    });
+    const hard = landingInputFromDescent(plan, evaluation, {
+      result: 'crashed',
+      deltaVUsed: plan.nominalDeltaV,
+      accuracyM: 40,
+      touchdownSpeedMS: 14,
+    });
+
+    // Spending less than the allowance saves propellant; emptying the tanks is exactly descent + reserve.
+    const empty = landingInputFromDescent(plan, evaluation, {
+      result: 'landed',
+      deltaVUsed: plan.availableDeltaV,
+      accuracyM: 40,
+      touchdownSpeedMS: 1.2,
+    });
+    const mass = evaluation.mass!;
+    expect(good.descentDeltaVFactor).toBeLessThan(1);
+    expect(empty.descentDeltaVFactor * mass.descentDeltaV).toBeCloseTo(
+      mass.descentDeltaV + mass.reserveDeltaV,
+      6,
+    );
+    expect(plan.availableDeltaV).toBeGreaterThan(plan.nominalDeltaV + 150);
+    expect(plan.thrustAcceleration).toBeGreaterThan(plan.gravity * 2);
+    const log = { landing: hard, operationsEfficiency: null, eventResponses: [] };
+    let crashed = null;
+    for (let seed = 0; seed < 30 && !crashed; seed++) {
+      const result = simulateMission(baseline(), seed, log);
+      if (result.lostIn === 'landing') crashed = result;
+    }
+    expect(crashed!.timeline.at(-1)!.title).toBe('Hard landing');
   });
 
   it('rewards a skilled crew over the scripted one on the same seed', () => {
@@ -177,7 +219,7 @@ describe('mission simulation', () => {
       const scripted = simulateMission(baseline(), seed);
       if (!scripted.surface) continue;
       const skilled = simulateMission(baseline(), seed, {
-        landing: { descentDeltaVFactor: 0.97, accuracyM: 30 },
+        landing: { descentDeltaVFactor: 0.97, accuracyM: 30, crashSpeedMS: null },
         operationsEfficiency: 1.1,
         eventResponses: [],
       });

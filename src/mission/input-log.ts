@@ -10,6 +10,8 @@ export interface LandingInput {
   descentDeltaVFactor: number;
   /** Distance from the target at touchdown, m. */
   accuracyM: number;
+  /** Ground-contact speed of a hand-flown landing that did not survive, m/s; null for a good one. */
+  crashSpeedMS: number | null;
 }
 
 export interface EventResponse {

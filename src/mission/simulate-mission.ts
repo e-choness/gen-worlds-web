@@ -288,6 +288,7 @@ export function simulateMission(
   const pilot = inputLog.landing ?? {
     descentDeltaVFactor: sim.scriptedPilot.descentDeltaVFactor,
     accuracyM: landing.landingAccuracyM * (0.3 + 0.7 * stream('accuracy').next()),
+    crashSpeedMS: null,
   };
   const descentUsed = mass.descentDeltaV * pilot.descentDeltaVFactor;
   const descentAvailable = mass.descentDeltaV + mass.reserveDeltaV;
@@ -302,6 +303,20 @@ export function simulateMission(
       title: 'Out of propellant',
       detail: `The descent used ${num(descentUsed)} m/s and the tanks held ${num(descentAvailable)} m/s including the reserve. The vehicle fell the rest of the way.`,
       slot: 'propulsion',
+    });
+    return finish('landing', headline, null);
+  }
+  if (pilot.crashSpeedMS !== null) {
+    advance('lost');
+    const headline = `The lander hit the ground at ${num(pilot.crashSpeedMS)} m/s.`;
+    timeline.push({
+      day: landingDay,
+      phase: 'landing',
+      tone: 'bad',
+      mitigated: false,
+      title: 'Hard landing',
+      detail: `${headline} The legs survive about ${num(scenario.descent.maxTouchdownSpeedMS)} m/s. Slow the descent earlier, or let the guidance computer fly it.`,
+      slot: 'landing',
     });
     return finish('landing', headline, null);
   }
