@@ -293,6 +293,10 @@ export function simulateMission(
     if (failHour < cruiseHours && critical) {
       advance('lost');
       const headline = `The ${item.part.name.toLowerCase()} failed ${num(failHour / 24, 0)} days into the cruise.`;
+      // Cruise events were logged ahead of time: the ones after the loss never happened.
+      for (let i = timeline.length - 1; i >= 0; i--) {
+        if (timeline[i].phase === 'cruise' && timeline[i].day > failHour / 24) timeline.splice(i, 1);
+      }
       timeline.push({
         day: failHour / 24,
         phase: 'cruise',
