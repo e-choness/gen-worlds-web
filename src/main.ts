@@ -2,12 +2,13 @@
 /**
  * Entry point. Boots the 2D shell first, which is the whole game on browsers without WebGPU, and
  * loads the 3D engine by dynamic import only once an adapter has been confirmed and a 3D screen is
- * actually opened.
+ * actually opened. While the player is on the 2D screens, what lies ahead is preloaded in the background.
  */
 import { effect, signal } from '@preact/signals';
 import { GameStore } from '@/app/game-store';
 import { MonteCarloClient } from '@/app/monte-carlo-client';
 import { onlineAdapterFactory, scoreBoardFactory } from '@/app/online';
+import { type Preloader, startPreload } from '@/app/preload';
 import { mountShell } from '@/app/shell';
 import { hasWebgpu } from '@/app/webgpu-support';
 import { UiAudio } from '@/audio/ui-audio';
@@ -84,8 +85,11 @@ function main(): void {
     lastScreen = screen;
   });
 
+  // Direct 3D URLs start the engine at once: there is nothing ahead of it to preload.
+  let preloader: Preloader | null = null;
   void hasWebgpu().then((supported) => {
     store.webgpu.value = supported ? 'available' : 'unavailable';
+    if (!direct) preloader = startPreload(supported);
   });
 
   let sandbox: 'idle' | 'starting' | 'running' = 'idle';
@@ -93,6 +97,8 @@ function main(): void {
   effect(() => {
     const screen = store.screen.value;
     const webgpu = store.webgpu.value;
+    // The 3D view loads what it needs itself, and needs the bandwidth.
+    if (screen === 'descent' || screen === 'sandbox') preloader?.stop();
 
     if (screen === 'descent') {
       const arrival = store.arrival.peek();

@@ -7,14 +7,14 @@
  */
 import * as THREE from 'three/webgpu';
 import type { Disposable } from '@/core/disposable';
+import { TERRAIN_LAYERS, type TerrainLayer } from '@/data/terrain-layers';
 
 export interface TextureSet {
   albedo: THREE.Texture;
   normal: THREE.Texture;
 }
 
-const LAYERS = ['ground', 'grass', 'sand', 'rock', 'snow'] as const;
-export type TerrainLayer = (typeof LAYERS)[number];
+export type { TerrainLayer };
 
 export class TerrainTextures implements Disposable {
   readonly sets: Record<TerrainLayer, TextureSet>;
@@ -31,14 +31,14 @@ export class TerrainTextures implements Disposable {
       return texture;
     };
     const sets = {} as Record<TerrainLayer, TextureSet>;
-    for (const layer of LAYERS) {
+    for (const layer of TERRAIN_LAYERS) {
       sets[layer] = { albedo: load(`${layer}_albedo`, true), normal: load(`${layer}_normal`, false) };
     }
     this.sets = sets;
   }
 
   dispose(): void {
-    for (const layer of LAYERS) {
+    for (const layer of TERRAIN_LAYERS) {
       this.sets[layer].albedo.dispose();
       this.sets[layer].normal.dispose();
     }

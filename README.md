@@ -78,6 +78,9 @@ two landing sites. Press R to record the view to a WebM file, Esc to leave. It n
 - **3D.** three.js with the WebGPU renderer: the real solar system at ephemeris positions; the Moon
   (NASA LOLA elevation, LROC colour), Mars (MOLA elevation, Viking colour) and the Earth (Blue
   Marble colour, ETOPO relief) from measured maps; a procedural galaxy to explore in the sandbox.
+- **Preloading.** While you are on the title and briefing screens, the pictures, the 3D code and
+  the maps and textures of the screens ahead download in the background, one at a time. The large
+  3D files are skipped without WebGPU and on connections that ask to save data.
 
 ## Run it locally
 
