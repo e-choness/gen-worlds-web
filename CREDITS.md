@@ -11,8 +11,11 @@ something enters the repo.
 | `src/data/ephemeris_planets.json` | NASA JPL Solar System Dynamics, [Approximate Positions of the Planets](https://ssd.jpl.nasa.gov/planets/approx_pos.html), Table 1 (E. M. Standish) | Public domain (NASA/JPL) | Planet positions, launch windows, porkchop plots |
 | `src/data/bodies_solar_system.json` | NASA NSSDCA [Planetary Fact Sheets](https://nssdc.gsfc.nasa.gov/planetary/factsheet/) (Earth, Moon, Mars); JPL SSD astrodynamic parameters; U.S. Standard Atmosphere 1976 | Public domain (NASA) | Gravity, radii, day lengths, drag |
 | `src/data/launch_vehicles.json` | NASA Launch Services Program [Launch Vehicle Performance](https://elvperf.ksc.nasa.gov) and vendor payload user guides (Rocket Lab, Firefly, SpaceX, ULA), rounded | Public information | Launch capacity against launch energy and orbit, prices |
-| `src/data/parts_catalog.json` | NASA [VIPER](https://science.nasa.gov/mission/viper/) fact sheet and instrument pages, NASA MMRTG fact sheet, NASA [Small Spacecraft Technology State-of-the-Art](https://www.nasa.gov/smallsat-institute/sst-soa/) report; generic parts are representative values | Public domain (NASA) | Part masses, power, data rates, readiness levels |
+| `src/data/parts_catalog.json` | NASA [VIPER](https://science.nasa.gov/mission/viper/) fact sheet and instrument pages, NASA MMRTG fact sheet, NASA [Small Spacecraft Technology State-of-the-Art](https://www.nasa.gov/smallsat-institute/sst-soa/) report; NASA Mars 2020 instrument pages (coring drill, SHERLOC, PIXL, SuperCam, MEDA, Electra-Lite relay radio); generic parts are representative values | Public domain (NASA) | Part masses, power, data rates, readiness levels |
 | `src/data/scenario_lunar_ice_prospector.json` | NASA VIPER and Commercial Lunar Payload Services mission pages; NASA Artemis III candidate landing regions; horizon masks and ice quality simplified | Public domain (NASA) | Lunar scenario, landing sites, objectives |
+| `src/data/scenario_mars_jezero_survey.json` | NASA [Mars 2020 Perseverance](https://science.nasa.gov/mission/mars-2020-perseverance/) mission pages and launch press kit; NASA Mars Science Laboratory mass breakdown; dust accumulation from Mars Exploration Rover experience; site values simplified | Public domain (NASA) | Mars scenario: entry system, relay links, sites, objectives |
+| `src/data/scenario_earth_observation.json` | NASA [Landsat](https://landsat.gsfc.nasa.gov/) and Earth Science Technology Office small-satellite missions; ESA Sentinel-2 and Planet Dove public instrument figures for scale; FCC five-year orbital debris rule (2022) | Public information | Earth-observation scenario: orbits, imaging requirement, disposal rule |
+| `src/data/glossary_terms.json` | Written for this game after NASA's public glossaries, the NASA Systems Engineering Handbook (SP-2016-6105) and JPL's Basics of Space Flight | Own work | In-game glossary |
 | `src/data/mission_constants.json` | NASA NSSDCA Sun fact sheet (solar constant); NASA GSFC-STD-1000 Gold Rules (margins); NASA Mars Reconnaissance Orbiter telecommunications figures (link reference) | Public domain (NASA) | Power, margins and downlink models |
 | `public/maps/moon_albedo_4k.jpg`, `public/maps/moon_height_2880x1440.i16` | NASA Scientific Visualization Studio, [CGI Moon Kit](https://svs.gsfc.nasa.gov/4720/): LROC wide-angle colour mosaic and LOLA gridded elevation | Public domain (NASA) | The Moon's real colour and terrain |
 | `src/data/events_catalog.json` | Event types from real mission experience; probabilities are game balance values | Own work | Random events |
@@ -41,6 +44,7 @@ something enters the repo.
 | [@dgreenheck/ez-tree](https://github.com/dgreenheck/ez-tree) | MIT | Procedural trees |
 | [@dgreenheck/three-pinata](https://github.com/dgreenheck/three-pinata) | MIT | Rock fracture when drilling |
 | [Preact](https://preactjs.com), [@preact/signals](https://github.com/preactjs/signals) | MIT | 2D screens and the game-state store |
+| [Firebase JavaScript SDK](https://firebase.google.com/docs/web/setup) (Auth, Firestore) | Apache-2.0 | Online co-op rooms and the global leaderboard (Space Apps Global Offer via Google Cloud) |
 | [Vite](https://vite.dev), [TypeScript](https://www.typescriptlang.org), [Vitest](https://vitest.dev), [Biome](https://biomejs.dev), [Playwright](https://playwright.dev) | MIT / Apache-2.0 | Build, checks and captures |
 
 ## Techniques
@@ -50,6 +54,9 @@ something enters the repo.
 | Lambert solver | D. Izzo, "Revisiting Lambert's problem", Celestial Mechanics and Dynamical Astronomy 121 (2015) | Published algorithm, own implementation | Interplanetary transfers |
 | Universal-variable Kepler propagation | D. Vallado, "Fundamentals of Astrodynamics and Applications" | Published algorithm, own implementation | Cruise trajectories |
 | Lunar position and libration series | J. Meeus, "Astronomical Algorithms", 2nd ed., chapters 47 and 53 | Published algorithm, own implementation | Moon position, polar lighting and Earth visibility |
+| Porkchop plot | Launch energy over a grid of launch and arrival dates from Lambert arcs between JPL ephemeris positions, as in NASA mission design practice | Published method, own implementation | Choosing Mars launch and arrival dates |
+| Sun-synchronous orbit, eclipse, ground contact and drag decay | Closed-form relations from J. Wertz, "Space Mission Analysis and Design" and D. Vallado; piecewise-exponential atmosphere (U.S. Standard Atmosphere 1976) | Published relations, own implementation | Earth-orbit trajectory mode |
+| Planet sky model | Solar longitude and declination from the JPL elements; Mars equinox at heliocentric longitude 85.06° (Allison & McEwen 2000) | Published relations, own implementation | Day, night, seasons and Earth visibility on Mars |
 | Galaxy density model | [dgreenheck/webgpu-galaxy](https://github.com/dgreenheck/webgpu-galaxy) | MIT | Galaxy backdrop and star distribution |
 
 ## AI use
