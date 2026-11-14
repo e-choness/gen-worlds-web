@@ -1672,8 +1672,10 @@ button.link {
   margin-left: auto;
 }
 .explainer {
-  max-width: 72rem;
-  margin: 0.75rem auto 1rem;
+  /* Same column as the screen below it. */
+  max-width: 68rem;
+  margin: 0 0 1rem;
+  box-sizing: border-box;
   padding: 0.5rem 1rem;
   border: 1px solid var(--ui-line);
   border-left: 3px solid var(--ui-accent);
@@ -2519,4 +2521,9 @@ dialog.glossary dd {
   border: 1px solid var(--ui-line);
   object-fit: cover;
   background: #05080d;
+}
+
+/* Wide screens (the hangar, the map) take the whole row; the explainer above them follows. */
+main:has(.screen.wide) .explainer {
+  max-width: none;
 }
