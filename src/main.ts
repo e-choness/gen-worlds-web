@@ -6,6 +6,7 @@
 import { effect } from '@preact/signals';
 import { GameStore } from '@/app/game-store';
 import { MonteCarloClient } from '@/app/monte-carlo-client';
+import { onlineAdapterFactory } from '@/app/online';
 import { mountShell } from '@/app/shell';
 import { hasWebgpu } from '@/app/webgpu-support';
 import { screenFromHash } from '@/ui/screen-id';
@@ -26,7 +27,11 @@ function main(): void {
   // Capture and debug URLs (?nostart, ?menu=…, ?sandbox) open the 3D sandbox directly.
   const params = new URLSearchParams(location.search);
   const direct = params.has('nostart') || params.has('menu') || params.has('sandbox');
-  const store = new GameStore(direct ? 'sandbox' : screenFromHash(location.hash), new MonteCarloClient());
+  const store = new GameStore(
+    direct ? 'sandbox' : screenFromHash(location.hash),
+    new MonteCarloClient(),
+    onlineAdapterFactory(),
+  );
   mountShell(shellRoot, store);
 
   void hasWebgpu().then((supported) => {

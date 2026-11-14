@@ -16,6 +16,7 @@
     "@dgreenheck/ez-tree": "^1.1.0",
     "@dgreenheck/three-pinata": "^2.0.1",
     "@preact/signals": "^2.11.4",
+    "firebase": "^13.3.0",
     "preact": "^11.2.0",
     "three": "^0.187.0"
   },
