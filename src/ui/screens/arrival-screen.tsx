@@ -1,3 +1,4 @@
+import type { Scenario } from '@/data/scenarios';
 import type { DescentPlan } from '@/mission/descent-plan';
 import { num } from '@/mission/format';
 import type { TimelineEntry } from '@/mission/timeline';
@@ -7,6 +8,8 @@ export interface ArrivalScreenProps {
   /** What has happened up to arrival (development, launch, cruise). */
   timeline: readonly TimelineEntry[];
   plan: DescentPlan;
+  /** The mission being flown: its words for the descent, the local weight and the target. */
+  scenario: Scenario;
   /** False when the device cannot run the 3D flight: only the automatic landing is offered. */
   canFlyByHand: boolean;
   /** Set when another player decides the landing: their role and name, shown in place of the buttons. */
@@ -15,10 +18,11 @@ export interface ArrivalScreenProps {
   onAutomatic: () => void;
 }
 
-/** The spacecraft has reached the Moon: fly the landing yourself, or let the guidance computer do it. */
+/** The spacecraft has reached its destination: fly the landing yourself, or let the guidance computer do it. */
 export function ArrivalScreen({
   timeline,
   plan,
+  scenario,
   canFlyByHand,
   waitingFor,
   onFlyByHand,
@@ -48,7 +52,9 @@ export function ArrivalScreen({
         ))}
       </ol>
       <div class="flight-headline">
-        <p>{t.summary}</p>
+        <p>
+          {scenario.descent.summary} {t.summary} {scenario.terms.targetShort}.
+        </p>
         <dl class="facts">
           <dt>{t.handover}</dt>
           <dd>
@@ -64,7 +70,7 @@ export function ArrivalScreen({
           </dd>
           <dt>{t.engine}</dt>
           <dd>
-            {num(plan.thrustAcceleration / plan.gravity, 1)} × {t.lunarWeight}
+            {num(plan.thrustAcceleration / plan.gravity, 1)} × {scenario.terms.localWeight}
           </dd>
           <dt>{t.limits}</dt>
           <dd>

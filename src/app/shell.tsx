@@ -289,6 +289,7 @@ function Shell({ store, sound }: ShellProps) {
               (entry) => entry.phase !== 'landing' && entry.phase !== 'surface',
             )}
             plan={store.arrival.value.plan}
+            scenario={getScenario(store.arrival.value.approach.flownDesign.scenarioId)}
             canFlyByHand={webgpu === 'available'}
             waitingFor={store.holds('engineer') ? null : roleWithHolder(crew, 'engineer')}
             onFlyByHand={() => store.navigate('descent')}
