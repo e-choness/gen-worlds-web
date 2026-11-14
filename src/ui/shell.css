@@ -430,3 +430,327 @@ button.card:hover {
 .shell a {
   color: var(--ui-accent);
 }
+
+/* ---- utilities */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.screen.wide {
+  max-width: none;
+}
+.button.small {
+  min-width: 0;
+  min-height: 2.25rem;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+}
+.check {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  margin-top: 1rem;
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+.check input {
+  width: 1.15rem;
+  height: 1.15rem;
+  margin: 0.1rem 0 0;
+  accent-color: var(--ui-accent);
+}
+
+/* ---- status badge: icon + word, colour only reinforces */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.status-badge[data-status="ok"] {
+  color: var(--status-ok);
+}
+.status-badge[data-status="warning"] {
+  color: var(--status-warning);
+}
+.status-badge[data-status="fail"] {
+  color: var(--status-fail);
+}
+.status-badge[data-status="incomplete"] {
+  color: var(--status-incomplete);
+}
+
+/* ---- hangar (design screen) */
+.hangar {
+  display: grid;
+  grid-template-columns: 15rem minmax(0, 1fr) minmax(20rem, 26rem);
+  gap: 1.75rem;
+  align-items: start;
+}
+@media (max-width: 70rem) {
+  .hangar {
+    grid-template-columns: 13rem minmax(0, 1fr);
+  }
+  .hangar .budget-panel {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 46rem) {
+  .hangar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.hangar .slot-list h2,
+.hangar .budget-panel h2:first-child {
+  margin-top: 0;
+}
+.slot-list ul {
+  display: grid;
+  gap: 2px;
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+.slot {
+  display: grid;
+  grid-template-columns: 1.1rem 1fr;
+  gap: 0 0.5rem;
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid transparent;
+  border-left: 2px solid var(--ui-line);
+  border-radius: 2px;
+  background: none;
+  color: var(--ui-fg);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.slot:hover {
+  background: rgba(111, 211, 255, 0.08);
+}
+.slot.selected {
+  border-left-color: var(--ui-accent);
+  background: rgba(111, 211, 255, 0.14);
+}
+.slot .status-badge {
+  grid-row: 1 / 3;
+  align-self: center;
+  font-size: 0.8rem;
+}
+.slot-name {
+  font-size: 0.92rem;
+}
+.slot-choice {
+  overflow: hidden;
+  color: var(--ui-dim);
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.part-list {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.part-card {
+  gap: 0.45rem;
+  padding: 0.85rem 1rem;
+}
+.part-card.selected {
+  border-color: var(--ui-accent);
+  background: rgba(111, 211, 255, 0.12);
+}
+.part-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.part-card .card-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+.part-state {
+  color: var(--ui-accent);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.part-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 1.1rem;
+  font: 0.8rem var(--ui-mono);
+  font-variant-numeric: tabular-nums;
+}
+.part-stats .dim {
+  font-family: var(--ui-font);
+}
+.part-effect {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  font-size: 0.8rem;
+}
+.effect-chip {
+  padding: 0.1rem 0.5rem;
+  border: 1px solid var(--ui-line);
+  border-radius: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.effect-chip[data-direction="-1"] {
+  border-color: var(--status-fail);
+  color: var(--status-fail);
+}
+.effect-chip[data-direction="1"] {
+  border-color: var(--status-ok);
+  color: var(--status-ok);
+}
+
+/* ---- vehicle diagram */
+.vehicle-diagram {
+  margin-bottom: 1rem;
+  border: 1px solid var(--ui-line);
+  border-radius: 2px;
+  background: linear-gradient(180deg, rgba(4, 8, 14, 0.2), rgba(16, 26, 40, 0.5));
+}
+.vehicle-diagram.empty {
+  display: grid;
+  place-items: center;
+  min-height: 9rem;
+  color: var(--ui-dim);
+  font-size: 0.9rem;
+}
+.vehicle-diagram svg {
+  display: block;
+  width: 100%;
+  max-height: 15rem;
+  fill: none;
+  stroke: var(--ui-fg);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.vehicle-diagram .ground {
+  stroke: var(--ui-dim);
+  stroke-dasharray: 2 5;
+}
+.vehicle-diagram .frame {
+  fill: rgba(223, 233, 245, 0.1);
+}
+.vehicle-diagram .propulsion {
+  stroke: var(--ui-warn);
+}
+.vehicle-diagram .solar {
+  fill: rgba(111, 211, 255, 0.18);
+  stroke: var(--ui-accent);
+}
+.vehicle-diagram .rtg {
+  stroke: var(--status-fail);
+}
+.vehicle-diagram .wheels circle {
+  fill: rgba(2, 4, 10, 0.9);
+}
+.vehicle-diagram .drill {
+  stroke-width: 2.5;
+  stroke-dasharray: 3 3;
+}
+
+/* ---- budget panel */
+.budget-list,
+.issue-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.budget-line {
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--status-incomplete);
+}
+.budget-line[data-status="ok"] {
+  border-left-color: var(--status-ok);
+}
+.budget-line[data-status="warning"] {
+  border-left-color: var(--status-warning);
+}
+.budget-line[data-status="fail"] {
+  border-left-color: var(--status-fail);
+}
+.budget-head {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 0.75rem;
+  align-items: baseline;
+}
+.budget-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+}
+.budget-name .chip {
+  font-weight: 400;
+}
+.budget-amount {
+  font: 0.82rem var(--ui-mono);
+  font-variant-numeric: tabular-nums;
+}
+.budget-bar {
+  height: 4px;
+  margin: 0.35rem 0;
+  background: rgba(140, 190, 230, 0.16);
+}
+.budget-bar div {
+  height: 100%;
+  background: var(--ui-dim);
+  transition: width 0.2s ease;
+}
+.budget-line[data-status="ok"] .budget-bar div {
+  background: var(--status-ok);
+}
+.budget-line[data-status="warning"] .budget-bar div {
+  background: var(--status-warning);
+}
+.budget-line[data-status="fail"] .budget-bar div {
+  background: var(--status-fail);
+}
+@media (prefers-reduced-motion: reduce) {
+  .budget-bar div {
+    transition: none;
+  }
+}
+.budget-why {
+  margin: 0.25rem 0 0;
+  color: var(--ui-dim);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.budget-line[data-status="fail"] .budget-why,
+.budget-line[data-status="warning"] .budget-why {
+  color: var(--ui-fg);
+}
+.issue-list li {
+  display: grid;
+  grid-template-columns: 1.1rem 1fr;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}

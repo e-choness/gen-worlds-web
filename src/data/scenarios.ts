@@ -128,6 +128,18 @@ export interface Scenario {
   objectives: Objective[];
   /** Ids from the events catalog that can occur here. */
   events: string[];
+  /** A complete, sensible design players can load as a starting point. */
+  referenceDesign: {
+    name: string;
+    summary: string;
+    slots: { slot: SlotId; part: string }[];
+    instruments: string[];
+    launchVehicle: string;
+    transfer: string;
+    site: string;
+    /** ISO date (UTC) of the landing. */
+    landingDate: string;
+  };
   nasaReference: { mission: string; summary: string; url: string };
 }
 

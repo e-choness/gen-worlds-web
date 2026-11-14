@@ -181,6 +181,12 @@ describe('data catalogs', () => {
         expect(site.iceQuality, site.id).toBeGreaterThan(0);
         expect(site.iceQuality, site.id).toBeLessThanOrEqual(1);
       }
+      for (const entry of scenario.referenceDesign.slots) {
+        expect(scenario.catalog, entry.part).toContain(entry.part);
+        expect(findPart(entry.part)?.category, entry.part).toBe(entry.slot);
+      }
+      for (const id of scenario.referenceDesign.instruments) expect(scenario.catalog, id).toContain(id);
+      expect(scenario.launchVehicles).toContain(scenario.referenceDesign.launchVehicle);
       const mountings = scenario.environment.mountingFactors.map((entry) => entry.mounting).sort();
       expect(mountings, scenario.id).toEqual(['body', 'tracking_mast', 'vertical']);
     }

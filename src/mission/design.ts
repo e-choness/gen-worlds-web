@@ -3,6 +3,7 @@
  * (ids and numbers only), so it can be saved, shared as a mission code and synced between players.
  * `resolveDesign` looks the ids up in the catalogs for the budget and simulation code.
  */
+import { jdFromUnixMs } from '@/astro/time';
 import { getLaunchVehicle, type LaunchVehicle } from '@/data/launch-vehicles';
 import { getTier, MISSION_CONSTANTS, type Tier, type TierId, tierAllows } from '@/data/mission-constants';
 import {
@@ -52,6 +53,26 @@ export function createEmptyDesign(scenarioId: string, tier: TierId): MissionDesi
     instruments: [],
     redundant: [],
     trajectory: { launchVehicleId: null, transferId: null, siteId: null, landingJd: null },
+  };
+}
+
+/** The scenario's reference design at the given tier: a complete starting point to change. */
+export function createReferenceDesign(scenario: Scenario, tier: TierId): MissionDesign {
+  const reference = scenario.referenceDesign;
+  const slots: Partial<Record<SlotId, string>> = {};
+  for (const entry of reference.slots) slots[entry.slot] = entry.part;
+  return {
+    scenarioId: scenario.id,
+    tier,
+    slots,
+    instruments: [...reference.instruments],
+    redundant: [],
+    trajectory: {
+      launchVehicleId: reference.launchVehicle,
+      transferId: reference.transfer,
+      siteId: reference.site,
+      landingJd: jdFromUnixMs(Date.parse(reference.landingDate)),
+    },
   };
 }
 

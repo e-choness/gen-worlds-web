@@ -1,6 +1,7 @@
 // Automated capture: loads the app in headless Chromium (WebGPU), waits for terrain to settle and
 // writes a PNG. Runs inside the `capture` compose service only.
 //   node tools/capture.mjs "<query string>" <output.png> [width] [height] [settleSeconds]
+import { readFileSync } from 'node:fs';
 import { chromium } from 'playwright-core';
 
 const [query = '', output = 'shots/capture.png', width = '1280', height = '720', settle = '4'] =
@@ -67,6 +68,17 @@ await page
   )
   .catch(() => console.log('terrain did not settle in 60 s'));
 // Optional scripted set-up (camera aim etc.): CAPTURE_EVAL is evaluated with `app` in scope.
+// CAPTURE_STEPS names a file with one snippet per line, run 300 ms apart: enough to click through
+// the 2D screens (each line sees the page as the previous one left it).
+if (process.env.CAPTURE_STEPS) {
+  const steps = readFileSync(process.env.CAPTURE_STEPS, 'utf8')
+    .split('\n')
+    .filter((line) => line.trim());
+  for (const step of steps) {
+    await page.evaluate(`(() => { ${step}; })()`);
+    await page.waitForTimeout(300);
+  }
+}
 if (process.env.CAPTURE_EVAL) {
   await page.evaluate(`(() => { const app = window.__app; ${process.env.CAPTURE_EVAL}; })()`);
 }

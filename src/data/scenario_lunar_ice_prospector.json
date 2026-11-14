@@ -1,6 +1,6 @@
 {
   "source": "Modelled on NASA's VIPER mission and the Commercial Lunar Payload Services programme (NASA VIPER fact sheet and mission pages: 100-day mission at Mons Mouton, one-metre drill, direct-to-Earth communications; NASA Artemis III candidate landing region descriptions for the Shackleton connecting ridge and Haworth). Transfer and descent velocity changes are typical published values for a 100 km polar lunar orbit (Apollo and LRO-era mission design). Site coordinates are real; horizon masks, ice quality and hazard factors are simplified for gameplay.",
-  "units": "delta_v in m/s; c3 in km^2/s^2; angles in degrees (longitude east positive); horizon_mask_deg has 12 values, one per 30-degree sector of azimuth starting at north and going east, giving the elevation of the local horizon in that direction (negative where the site stands above its surroundings: from the top of a 6 km mountain the horizon dips almost 5 degrees).",
+  "units": "delta_v in m/s; c3 in km^2/s^2; angles in degrees (longitude east positive); horizon_mask_deg has 12 values, one per 30-degree sector of azimuth starting at north and going east, giving the elevation of the local horizon in that direction (negative where the site stands above its surroundings: from the top of a 6 km mountain the horizon dips almost 5 degrees). reference_design is a complete starting design players can load: slot/part pairs, instruments and trajectory choices, with landing_date as an ISO date.",
   "id": "lunar_ice_prospector",
   "number": 2,
   "name": "Lunar south pole ice prospector",
@@ -223,6 +223,63 @@
     "colder_than_predicted",
     "dust_on_arrays"
   ],
+  "reference_design": {
+    "name": "VIPER-like baseline",
+    "summary": "A solar rover with panels on three sides, a one-metre drill and three spectrometers, landing at Mons Mouton in polar summer.",
+    "slots": [
+      {
+        "slot": "bus",
+        "part": "bus_standard"
+      },
+      {
+        "slot": "power",
+        "part": "solar_vertical"
+      },
+      {
+        "slot": "battery",
+        "part": "battery_medium"
+      },
+      {
+        "slot": "propulsion",
+        "part": "prop_biprop"
+      },
+      {
+        "slot": "adcs",
+        "part": "adcs_star_tracker"
+      },
+      {
+        "slot": "computer",
+        "part": "obc_rad_hard"
+      },
+      {
+        "slot": "comms",
+        "part": "comms_medium_gain"
+      },
+      {
+        "slot": "thermal",
+        "part": "thermal_louvers"
+      },
+      {
+        "slot": "mobility",
+        "part": "mobility_agile"
+      },
+      {
+        "slot": "landing",
+        "part": "landing_trn"
+      }
+    ],
+    "instruments": [
+      "inst_neutron_spectrometer",
+      "inst_nir_spectrometer",
+      "inst_mass_spectrometer",
+      "inst_drill_1m",
+      "inst_stereo_camera"
+    ],
+    "launch_vehicle": "falcon9",
+    "transfer": "direct",
+    "site": "mons_mouton",
+    "landing_date": "2027-09-01"
+  },
   "nasa_reference": {
     "mission": "VIPER (Volatiles Investigating Polar Exploration Rover)",
     "summary": "NASA designed VIPER for exactly this job: a 430 kg solar-powered rover with three spectrometers and a one-metre drill, built to work 100 days at Mons Mouton, keeping in direct contact with Earth and parking on high ground to wait out the dark. Its team chose solar panels on three sides because the polar Sun never rises more than a few degrees, and planned every drive around a map of moving shadows.",

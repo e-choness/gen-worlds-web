@@ -7,10 +7,12 @@ import { useEffect, useRef } from 'preact/hooks';
 import type { GameStore } from '@/app/game-store';
 import { getTier, MISSION_CONSTANTS } from '@/data/mission-constants';
 import { getScenario, SCENARIOS } from '@/data/scenarios';
+import { createEmptyDesign, createReferenceDesign } from '@/mission/design';
 import { type MissionPhase, nextPhase, previousPhase } from '@/mission/phases';
 import { PhaseStepper } from '@/ui/phase-stepper';
 import { isMissionPhase } from '@/ui/screen-id';
 import { BriefingScreen } from '@/ui/screens/briefing-screen';
+import { DesignScreen } from '@/ui/screens/design-screen';
 import { ScenarioScreen } from '@/ui/screens/scenario-screen';
 import { StubScreen } from '@/ui/screens/stub-screen';
 import { TitleScreen } from '@/ui/screens/title-screen';
@@ -24,6 +26,7 @@ function Shell({ store }: ShellProps) {
   const screen = store.screen.value;
   const webgpu = store.webgpu.value;
   const design = store.design.value;
+  const evaluation = store.evaluation.value;
   const main = useRef<HTMLElement>(null);
 
   // Keyboard and gamepad users land on the screen's main action after every screen change.
@@ -101,7 +104,19 @@ function Shell({ store }: ShellProps) {
             onBack={() => store.navigate('scenarios')}
           />
         )}
-        {phase && phase !== 'briefing' && (
+        {phase === 'design' && scenario && design && evaluation && (
+          <DesignScreen
+            evaluation={evaluation}
+            onSetSlot={(slot, partId) => store.setSlot(slot, partId)}
+            onToggleInstrument={(partId) => store.toggleInstrument(partId)}
+            onToggleRedundant={(slot) => store.toggleRedundant(slot)}
+            onLoadReference={() => store.loadDesign(createReferenceDesign(scenario, design.tier))}
+            onClear={() => store.loadDesign(createEmptyDesign(scenario.id, design.tier))}
+            onNext={() => store.navigate('trajectory')}
+            onBack={() => store.navigate('briefing')}
+          />
+        )}
+        {phase && phase !== 'briefing' && phase !== 'design' && (
           <StubScreen
             heading={PHASE_TEXT[phase].heading}
             summary={PHASE_TEXT[phase].summary}

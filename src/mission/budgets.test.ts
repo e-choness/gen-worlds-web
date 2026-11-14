@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { jdFromDate } from '@/astro/time';
 import { createEmptyDesign, type MissionDesign } from '@/mission/design';
 import { budgetById, evaluateDesign } from '@/mission/evaluate-design';
+import { previewChanges } from '@/mission/preview';
 
 /** A VIPER-like rover at VIPER's site: the design every test starts from and then changes. */
 function baseline(): MissionDesign {
@@ -193,6 +194,17 @@ describe('design evaluation', () => {
     });
 
     expect(evaluation.issues.map((issue) => issue.code)).toContain('slope_too_steep');
+  });
+
+  it('previews a part change as budget shifts, with status changes first', () => {
+    const current = evaluateDesign(baseline());
+    const candidate = evaluateDesign(withSlots({ power: 'solar_body' }));
+
+    const changes = previewChanges(current, candidate);
+
+    expect(changes[0]).toMatchObject({ id: 'power', from: 'ok', to: 'fail', direction: -1 });
+    expect(changes.find((change) => change.id === 'mass')!.delta).toBeCloseTo(-15, 6);
+    expect(previewChanges(current, current)).toEqual([]);
   });
 
   it('gives the polar ridge more sunlight and less Earth contact than Mons Mouton', () => {
