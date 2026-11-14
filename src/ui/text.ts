@@ -338,6 +338,7 @@ export const TEXT = {
     },
   },
   sandbox: {
+    mainMenu: 'Main menu',
     planning: 'Planning a mission to',
     planNotLandable: 'A rover cannot land here. Fly to a solid planet or moon.',
     planRealBody: 'The Earth, Moon and Mars missions are on the mission list.',
@@ -345,7 +346,10 @@ export const TEXT = {
   demo: {
     recording: 'Recording',
     saved: 'Recording saved to your downloads.',
-    hint: 'R records the view to a video file · Esc leaves',
+    hint: 'R records the view to a video file · Esc returns to the main menu',
+    mainMenu: 'Main menu',
+    record: 'Record video',
+    stop: 'Stop recording',
     shots: {
       earth: { title: 'Earth', source: 'NASA Blue Marble colour · NOAA ETOPO relief' },
       moon: { title: 'The Moon', source: 'NASA LRO: LOLA elevation · LROC colour' },

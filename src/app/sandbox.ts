@@ -54,6 +54,10 @@ export async function startSandbox(
         app.input.lock();
       },
       navigateTo: (body) => app.navigateTo(body),
+      // The engine has no warm shutdown: the main menu is a fresh page.
+      exit: () => {
+        location.href = location.pathname;
+      },
     },
   );
   window.__menu = menu;

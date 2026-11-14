@@ -559,3 +559,30 @@ kbd {
   opacity: 0.6;
   font-size: 12px;
 }
+
+/* The tour's two buttons, top left, clear of the caption. */
+.demo-bar {
+  position: absolute;
+  top: 24px;
+  left: 40px;
+  display: flex;
+  gap: 10px;
+  pointer-events: auto;
+}
+.demo-bar button {
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 4px;
+  background: rgba(5, 8, 13, 0.6);
+  color: var(--ui-fg);
+  font: 13px var(--ui-font);
+  cursor: pointer;
+}
+.demo-bar button:hover,
+.demo-bar button:focus-visible {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: #fff;
+}
+.demo-bar button[hidden] {
+  display: none;
+}

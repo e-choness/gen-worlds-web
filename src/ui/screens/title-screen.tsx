@@ -1,3 +1,4 @@
+import { EarthGlobe } from '@/ui/charts/earth-globe';
 import { TEXT } from '@/ui/text';
 
 export interface TitleScreenProps {
@@ -21,8 +22,8 @@ export function TitleScreen({
   const t = TEXT.title;
   return (
     <section class="screen title-screen">
-      {/* Decorative: the Earth as the engine renders it from NASA Blue Marble. */}
-      <img class="title-hero" src={`${import.meta.env.BASE_URL}art/title_earth.jpg`} alt="" />
+      {/* Decorative: the Earth from NASA Blue Marble; it turns and can be dragged round. */}
+      <EarthGlobe class="title-hero" />
       <div class="eyebrow">{TEXT.title.eyebrow}</div>
       <h1>{TEXT.brand}</h1>
       <p class="lede">{TEXT.title.lede}</p>

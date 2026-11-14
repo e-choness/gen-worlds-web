@@ -14,6 +14,7 @@ import type { BodyState, SystemView } from '@/render/space/system-view';
 import { clear, h } from './dom';
 import { formatDistance } from './format';
 import { cssColor, kindLabel } from './scan-report';
+import { TEXT } from './text';
 
 export type MenuScreen = 'title' | 'pause' | 'settings' | 'controls' | 'map' | 'logbook';
 
@@ -30,6 +31,8 @@ export interface MenuActions {
   navigateTo(body: BodyState): void;
   /** A screen opened while none was open. */
   opened(): void;
+  /** Leave the sandbox for the game's main menu. */
+  exit(): void;
 }
 
 export const CONTROLS: Array<{ group: string; keys: Array<[string, string]> }> = [
@@ -195,6 +198,7 @@ export class Menu implements Disposable {
         this.button(this.started ? 'Continue' : 'Begin expedition', () => this.close(), '.primary'),
         this.button('Settings', () => this.open('settings')),
         this.button('Controls', () => this.open('controls')),
+        this.button(TEXT.sandbox.mainMenu, () => this.actions.exit(), '.quiet'),
       ),
       h('div.footnote', null, 'WebGPU · every star, world and landscape is generated, nothing is stored'),
     ];
@@ -212,14 +216,7 @@ export class Menu implements Disposable {
         this.button('Logbook', () => this.open('logbook')),
         this.button('Settings', () => this.open('settings')),
         this.button('Controls', () => this.open('controls')),
-        this.button(
-          'Return to title',
-          () => {
-            this.stack = [];
-            this.open('title');
-          },
-          '.quiet',
-        ),
+        this.button(TEXT.sandbox.mainMenu, () => this.actions.exit(), '.quiet'),
       ),
     ];
   }

@@ -1779,16 +1779,40 @@ dialog.glossary dd {
 .title-screen > *:not(.title-hero) {
   position: relative;
   z-index: 1;
+  /* The text lies over the globe's box: let a drag through to it everywhere but on the buttons. */
+  pointer-events: none;
+}
+.title-screen button {
+  pointer-events: auto;
 }
 .title-hero {
   position: absolute;
   top: 50%;
   right: -4vw;
   width: min(52vw, 82vh);
+  aspect-ratio: 1;
   transform: translateY(-50%);
-  pointer-events: none;
-  mask-image: radial-gradient(closest-side, #000 82%, transparent 100%);
-  -webkit-mask-image: radial-gradient(closest-side, #000 82%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.title-hero[data-ready] {
+  opacity: 1;
+}
+.title-hero canvas {
+  display: block;
+  width: 100%;
+  /* Only the disc takes the pointer, not the corners of its box. */
+  border-radius: 50%;
+  cursor: grab;
+  touch-action: none;
+}
+.title-hero canvas:active {
+  cursor: grabbing;
+}
+@media (prefers-reduced-motion: reduce) {
+  .title-hero {
+    transition: none;
+  }
 }
 @media (max-width: 820px) {
   .title-hero {

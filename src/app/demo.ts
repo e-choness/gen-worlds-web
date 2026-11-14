@@ -133,24 +133,48 @@ export async function startDemo(canvas: HTMLCanvasElement, uiRoot: HTMLElement):
   status.className = 'demo-status';
   status.textContent = TEXT.demo.hint;
   overlay.append(title, source, status);
-  uiRoot.append(overlay);
+  // Buttons for the same two keys, so the way out does not depend on reading the hint.
+  const bar = document.createElement('div');
+  bar.className = 'demo-bar';
+  const leave = (): void => {
+    // Back to the game's title screen; the engine has no warm shutdown, so this is a page load.
+    location.href = location.pathname;
+  };
+  const leaveButton = document.createElement('button');
+  leaveButton.type = 'button';
+  leaveButton.textContent = `← ${TEXT.demo.mainMenu}`;
+  leaveButton.addEventListener('click', leave);
+  const recordButton = document.createElement('button');
+  recordButton.type = 'button';
+  recordButton.textContent = TEXT.demo.record;
+  recordButton.hidden = typeof MediaRecorder === 'undefined';
+  bar.append(leaveButton, recordButton);
+  uiRoot.append(overlay, bar);
 
   let recorder: MediaRecorder | null = null;
   const toggleRecording = (): void => {
     if (recorder) {
       recorder.stop();
       recorder = null;
+      recordButton.textContent = TEXT.demo.record;
       return;
     }
     recorder = startRecording(canvas, () => {
       status.textContent = TEXT.demo.saved;
     });
-    if (recorder) status.textContent = TEXT.demo.recording;
+    if (recorder) {
+      status.textContent = TEXT.demo.recording;
+      recordButton.textContent = TEXT.demo.stop;
+    }
   };
+  recordButton.addEventListener('click', () => {
+    toggleRecording();
+    // Keep R and Esc on the page, not on the button.
+    recordButton.blur();
+  });
   window.addEventListener('keydown', (event) => {
     if (event.code === 'KeyR') toggleRecording();
-    // Back to the game's title screen; the engine has no warm shutdown, so this is a page load.
-    if (event.code === 'Escape') location.href = location.pathname;
+    if (event.code === 'Escape') leave();
   });
 
   let index = -1;
