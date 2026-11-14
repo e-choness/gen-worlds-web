@@ -4,6 +4,7 @@ import { num, percent } from '@/mission/format';
 import type { MonteCarloSummary } from '@/mission/monte-carlo';
 import { type PollVotes, pollOutcome, type RoleVote, roleReadiness } from '@/mission/poll';
 import { ScoreHistogram } from '@/ui/charts/score-histogram';
+import { type CrewView, mayAct, roleWithHolder } from '@/ui/crew-view';
 import { StatusBadge } from '@/ui/status-badge';
 import { TEXT } from '@/ui/text';
 
@@ -18,6 +19,8 @@ export interface PollScreenProps {
   evaluation: DesignEvaluation;
   votes: PollVotes;
   forecast: ForecastView;
+  /** Null when playing alone. */
+  crew: CrewView | null;
   onVote: (role: RoleId, vote: Partial<RoleVote>) => void;
   onAllGo: () => void;
   onForecast: () => void;
@@ -94,7 +97,7 @@ function Forecast({
 
 /** Each role reviews what it answers for and votes; the forecast shows what the dice may do. */
 export function PollScreen(props: PollScreenProps) {
-  const { evaluation, votes } = props;
+  const { evaluation, votes, crew } = props;
   const outcome = pollOutcome(votes, evaluation);
   const t = TEXT.poll;
   return (
@@ -108,7 +111,7 @@ export function PollScreen(props: PollScreenProps) {
             return (
               <li key={role.id} class="card role-card" data-role={role.id}>
                 <div class="part-head">
-                  <span class="card-title">{role.name}</span>
+                  <span class="card-title">{roleWithHolder(crew, role.id)}</span>
                   <StatusBadge status={status} />
                 </div>
                 <span class="card-text">{role.summary}</span>
@@ -143,6 +146,7 @@ export function PollScreen(props: PollScreenProps) {
                     class={vote.vote === 'go' ? 'button small vote go selected' : 'button small vote go'}
                     aria-pressed={vote.vote === 'go'}
                     data-autofocus={index === 0 ? true : undefined}
+                    disabled={!mayAct(crew, role.id)}
                     onClick={() => props.onVote(role.id, { vote: 'go' })}
                   >
                     {t.go}
@@ -153,6 +157,7 @@ export function PollScreen(props: PollScreenProps) {
                       vote.vote === 'no_go' ? 'button small vote no-go selected' : 'button small vote no-go'
                     }
                     aria-pressed={vote.vote === 'no_go'}
+                    disabled={!mayAct(crew, role.id)}
                     onClick={() => props.onVote(role.id, { vote: 'no_go' })}
                   >
                     {t.noGo}
@@ -165,6 +170,7 @@ export function PollScreen(props: PollScreenProps) {
                       type="text"
                       value={vote.reason}
                       placeholder={t.reasonPlaceholder}
+                      disabled={!mayAct(crew, role.id)}
                       onInput={(event) => props.onVote(role.id, { reason: event.currentTarget.value })}
                     />
                   </label>
@@ -189,16 +195,21 @@ export function PollScreen(props: PollScreenProps) {
               disabled={!evaluation.launchable}
               onClick={props.onAllGo}
             >
-              {t.allGo}
+              {crew ? t.myGo : t.allGo}
             </button>
             <button
               type="button"
               class="button primary launch"
-              disabled={!outcome.canLaunch}
+              disabled={!outcome.canLaunch || !mayAct(crew, 'director')}
               onClick={props.onLaunch}
             >
               {t.launch}
             </button>
+            {!mayAct(crew, 'director') && (
+              <p class="hint">
+                {t.directorLaunches} {roleWithHolder(crew, 'director')}
+              </p>
+            )}
             <button type="button" class="button small" onClick={props.onBack}>
               {TEXT.nav.back}
             </button>

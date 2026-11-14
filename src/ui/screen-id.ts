@@ -1,10 +1,17 @@
 import { MISSION_PHASES, type MissionPhase } from '@/mission/phases';
 
 /** Every full-screen destination. The URL hash mirrors it (`#/design`) so Back and deep links work. */
-export type ScreenId = 'title' | 'scenarios' | MissionPhase | 'sandbox' | 'descent';
+export type ScreenId = 'title' | 'crew' | 'scenarios' | MissionPhase | 'sandbox' | 'descent';
 
 /** `sandbox` and `descent` hand the screen to the 3D engine. */
-const SCREEN_IDS: readonly ScreenId[] = ['title', 'scenarios', ...MISSION_PHASES, 'sandbox', 'descent'];
+const SCREEN_IDS: readonly ScreenId[] = [
+  'title',
+  'crew',
+  'scenarios',
+  ...MISSION_PHASES,
+  'sandbox',
+  'descent',
+];
 
 export function isMissionPhase(screen: ScreenId): screen is MissionPhase {
   return (MISSION_PHASES as readonly string[]).includes(screen);

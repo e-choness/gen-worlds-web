@@ -5,6 +5,7 @@
 import { MISSION_CONSTANTS, ROLE_IDS, type Role, type RoleId } from '@/data/mission-constants';
 import { type BudgetLine, type BudgetStatus, worstStatus } from '@/mission/budget-line';
 import type { DesignEvaluation } from '@/mission/evaluate-design';
+import { roleForSlot } from '@/mission/roles';
 import type { DesignIssue } from '@/mission/validation';
 
 export interface RoleVote {
@@ -29,29 +30,11 @@ export interface RoleReadiness {
   issues: DesignIssue[];
 }
 
-/** Slots whose rule issues belong to each role; trajectory issues go to Comms and Operations. */
-const ISSUE_OWNERS: Record<string, RoleId> = {
-  bus: 'engineer',
-  power: 'engineer',
-  battery: 'engineer',
-  propulsion: 'engineer',
-  thermal: 'engineer',
-  adcs: 'engineer',
-  computer: 'engineer',
-  landing: 'engineer',
-  mobility: 'science',
-  instrument: 'science',
-  comms: 'comms',
-  trajectory: 'comms',
-};
-
 /** What each role sees in the poll: its budget lines and rule issues, with the worst status. */
 export function roleReadiness(evaluation: DesignEvaluation): RoleReadiness[] {
   return MISSION_CONSTANTS.roles.map((role) => {
     const lines = evaluation.budgets.filter((line) => role.resources.includes(line.id));
-    const issues = evaluation.issues.filter(
-      (issue) => (ISSUE_OWNERS[issue.slot ?? ''] ?? 'director') === role.id,
-    );
+    const issues = evaluation.issues.filter((issue) => roleForSlot(issue.slot) === role.id);
     const issueStatuses: BudgetStatus[] = issues.map((issue) =>
       issue.severity === 'error' ? 'fail' : 'warning',
     );

@@ -3,9 +3,11 @@ import { type Part, type PartCategory, SLOT_IDS, type SlotId } from '@/data/part
 import { availableParts, type MissionDesign } from '@/mission/design';
 import { type DesignEvaluation, evaluateDesign } from '@/mission/evaluate-design';
 import { type BudgetChange, previewChanges } from '@/mission/preview';
+import { roleForSlot } from '@/mission/roles';
 import { SLOT_NAMES } from '@/mission/slot-names';
 import { BudgetPanel } from '@/ui/budget-panel';
 import { changeText } from '@/ui/choice-card';
+import { type CrewView, mayAct, ownedBy } from '@/ui/crew-view';
 import { partStats } from '@/ui/part-stats';
 import { StatusBadge } from '@/ui/status-badge';
 import { TEXT } from '@/ui/text';
@@ -13,6 +15,8 @@ import { VehicleDiagram } from '@/ui/vehicle-diagram';
 
 export interface DesignScreenProps {
   evaluation: DesignEvaluation;
+  /** Null when playing alone. */
+  crew: CrewView | null;
   onSetSlot: (slot: SlotId, partId: string | null) => void;
   onToggleInstrument: (partId: string) => void;
   onToggleRedundant: (slot: SlotId) => void;
@@ -84,6 +88,9 @@ export function DesignScreen(props: DesignScreenProps) {
   };
   const isInstrument = category === 'instrument';
   const currentSlot = isInstrument ? null : category;
+  const owner = roleForSlot(category);
+  const editable = mayAct(props.crew, owner);
+  const director = mayAct(props.crew, 'director');
 
   return (
     <section class="screen wide hangar">
@@ -112,10 +119,10 @@ export function DesignScreen(props: DesignScreenProps) {
           ))}
         </ul>
         <div class="actions column">
-          <button type="button" class="button small" onClick={props.onLoadReference}>
+          <button type="button" class="button small" disabled={!director} onClick={props.onLoadReference}>
             {t.loadReference}
           </button>
-          <button type="button" class="button small" onClick={props.onClear}>
+          <button type="button" class="button small" disabled={!director} onClick={props.onClear}>
             {t.clear}
           </button>
         </div>
@@ -124,6 +131,7 @@ export function DesignScreen(props: DesignScreenProps) {
       <div class="part-column">
         <VehicleDiagram resolved={resolved} propellantKg={evaluation.mass?.propellantKg ?? null} />
         <h2>{SLOT_NAMES[category]}</h2>
+        {!editable && <p class="banner owned">{ownedBy(props.crew, owner)}</p>}
         <ul class="part-list">
           {options.map((option) => {
             const { part, selected, changes } = option;
@@ -138,6 +146,7 @@ export function DesignScreen(props: DesignScreenProps) {
                   type="button"
                   class={selected ? 'card part-card selected' : 'card part-card'}
                   aria-pressed={selected}
+                  disabled={!editable}
                   onClick={choose}
                 >
                   <span class="part-head">
@@ -177,6 +186,7 @@ export function DesignScreen(props: DesignScreenProps) {
             <input
               type="checkbox"
               checked={design.redundant.includes(currentSlot)}
+              disabled={!editable}
               onChange={() => props.onToggleRedundant(currentSlot)}
             />
             <span>

@@ -17,6 +17,8 @@ export interface ChoiceCardProps {
   /** What choosing this option would do to the budgets (ignored when already selected). */
   changes: readonly BudgetChange[];
   autofocus?: boolean;
+  /** True when another player owns this choice. */
+  disabled?: boolean;
   onChoose: () => void;
 }
 
@@ -40,6 +42,7 @@ export function ChoiceCard(props: ChoiceCardProps) {
       type="button"
       class={selected ? 'card part-card selected' : 'card part-card'}
       aria-pressed={selected}
+      disabled={props.disabled}
       data-autofocus={props.autofocus ? true : undefined}
       onClick={props.onChoose}
     >

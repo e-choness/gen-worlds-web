@@ -9,6 +9,8 @@ export interface ArrivalScreenProps {
   plan: DescentPlan;
   /** False when the device cannot run the 3D flight: only the automatic landing is offered. */
   canFlyByHand: boolean;
+  /** Set when another player decides the landing: their role and name, shown in place of the buttons. */
+  waitingFor: string | null;
   onFlyByHand: () => void;
   onAutomatic: () => void;
 }
@@ -18,6 +20,7 @@ export function ArrivalScreen({
   timeline,
   plan,
   canFlyByHand,
+  waitingFor,
   onFlyByHand,
   onAutomatic,
 }: ArrivalScreenProps) {
@@ -69,8 +72,13 @@ export function ArrivalScreen({
           </dd>
         </dl>
       </div>
-      {!canFlyByHand && <p class="banner">{TEXT.webgpu.unavailable}</p>}
-      <div class="actions">
+      {waitingFor && (
+        <p class="banner" role="status">
+          {waitingFor} {TEXT.crew.waitingForLanding}
+        </p>
+      )}
+      {!waitingFor && !canFlyByHand && <p class="banner">{TEXT.webgpu.unavailable}</p>}
+      <div class="actions" hidden={waitingFor !== null}>
         <button
           type="button"
           class="button primary"

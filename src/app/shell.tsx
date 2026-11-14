@@ -9,10 +9,12 @@ import { getTier, MISSION_CONSTANTS } from '@/data/mission-constants';
 import { getScenario, SCENARIOS } from '@/data/scenarios';
 import { createEmptyDesign, createReferenceDesign } from '@/mission/design';
 import type { MissionPhase } from '@/mission/phases';
+import { type CrewView, roleWithHolder } from '@/ui/crew-view';
 import { PhaseStepper } from '@/ui/phase-stepper';
 import { isMissionPhase } from '@/ui/screen-id';
 import { ArrivalScreen } from '@/ui/screens/arrival-screen';
 import { BriefingScreen } from '@/ui/screens/briefing-screen';
+import { CrewScreen } from '@/ui/screens/crew-screen';
 import { DebriefScreen } from '@/ui/screens/debrief-screen';
 import { DesignScreen } from '@/ui/screens/design-screen';
 import { FlightScreen } from '@/ui/screens/flight-screen';
@@ -20,10 +22,33 @@ import { PollScreen } from '@/ui/screens/poll-screen';
 import { ScenarioScreen } from '@/ui/screens/scenario-screen';
 import { TitleScreen } from '@/ui/screens/title-screen';
 import { TrajectoryScreen } from '@/ui/screens/trajectory-screen';
+import { TeamPanel } from '@/ui/team-panel';
 import { TEXT } from '@/ui/text';
+
+const NO_RESPONSES: Readonly<Record<string, number>> = {};
 
 interface ShellProps {
   store: GameStore;
+}
+
+/** The room as the screens see it, or null when playing alone. */
+function crewView(store: GameStore): CrewView | null {
+  const room = store.room.value;
+  const kind = store.roomKind.value;
+  if (!room || !kind) return null;
+  const here = store.localPlayerIds.value;
+  return {
+    kind,
+    code: room.code,
+    players: Object.entries(room.players)
+      .map(([id, player]) => ({ id, name: player.name, here: here.includes(id) }))
+      .sort((a, b) => a.id.localeCompare(b.id)),
+    holders: room.roles,
+    mine: store.myRoles.value,
+    requests: Object.entries(room.requests ?? {})
+      .map(([id, request]) => ({ id, ...request }))
+      .sort((a, b) => b.at - a.at),
+  };
 }
 
 function Shell({ store }: ShellProps) {
@@ -33,6 +58,10 @@ function Shell({ store }: ShellProps) {
   const evaluation = store.evaluation.value;
   const result = store.result.value;
   const main = useRef<HTMLElement>(null);
+  const crew = crewView(store);
+  // Events are only routed to roles when there is more than one person to route them to.
+  const flightCrew = store.crewed.value ? crew : null;
+  const openRequests = crew?.requests.filter((request) => request.status === 'open').length ?? 0;
 
   // Keyboard and gamepad users land on the screen's main action after every screen change.
   useEffect(() => {
@@ -82,16 +111,56 @@ function Shell({ store }: ShellProps) {
           {TEXT.brand}
           <span>{TEXT.tagline}</span>
         </button>
-        {screen !== 'title' && (
+        {screen !== 'title' && screen !== 'crew' && (
           <PhaseStepper current={phase} onSelect={(target: MissionPhase) => store.navigate(target)} />
         )}
       </header>
+      {crew && screen !== 'crew' && screen !== 'title' && (
+        <details class="team-drawer">
+          <summary>
+            {TEXT.crew.panel}
+            {crew.kind === 'online' && <span class="room-code-chip">{crew.code}</span>}
+            <span class="dim">{crew.players.map((player) => player.name).join(' · ')}</span>
+            {openRequests > 0 && (
+              <span class="count">
+                {openRequests} {TEXT.crew.openRequests}
+              </span>
+            )}
+          </summary>
+          <TeamPanel
+            crew={crew}
+            onAssign={(role, playerId) => store.assignRole(role, playerId)}
+            onRequest={(from, to, text) => store.sendRequest(from, to, text)}
+            onAnswer={(id, status) => store.answerRequest(id, status)}
+          />
+        </details>
+      )}
       <main ref={main}>
         {screen === 'title' && (
           <TitleScreen
             sandboxAvailable={webgpu === 'available'}
             onNewMission={() => store.navigate('scenarios')}
+            onCrew={() => store.navigate('crew')}
             onSandbox={() => store.navigate('sandbox')}
+          />
+        )}
+        {screen === 'crew' && (
+          <CrewScreen
+            crew={crew}
+            onlineAvailable={store.onlineAvailable}
+            busy={store.roomBusy.value}
+            error={store.roomError.value}
+            defaultName={store.playerName.value}
+            missionName={crew && scenario ? scenario.name : null}
+            onStartLocal={(names) => store.startLocalRoom(names)}
+            onCreateOnline={(name) => void store.createOnlineRoom(name)}
+            onJoinOnline={(code, name) => void store.joinOnlineRoom(code, name)}
+            onAssign={(role, playerId) => store.assignRole(role, playerId)}
+            onRequest={(from, to, text) => store.sendRequest(from, to, text)}
+            onAnswer={(id, status) => store.answerRequest(id, status)}
+            onLeave={() => store.leaveRoom()}
+            onContinue={() => store.navigate(crew && scenario ? 'design' : 'scenarios')}
+            onBack={() => store.navigate('title')}
           />
         )}
         {screen === 'scenarios' && (
@@ -118,6 +187,7 @@ function Shell({ store }: ShellProps) {
         {phase === 'design' && scenario && design && evaluation && (
           <DesignScreen
             evaluation={evaluation}
+            crew={crew}
             onSetSlot={(slot, partId) => store.setSlot(slot, partId)}
             onToggleInstrument={(partId) => store.toggleInstrument(partId)}
             onToggleRedundant={(slot) => store.toggleRedundant(slot)}
@@ -130,6 +200,7 @@ function Shell({ store }: ShellProps) {
         {phase === 'trajectory' && evaluation && (
           <TrajectoryScreen
             evaluation={evaluation}
+            crew={crew}
             onChange={(change) => store.setTrajectory(change)}
             onNext={() => store.navigate('poll')}
             onBack={() => store.navigate('design')}
@@ -140,6 +211,7 @@ function Shell({ store }: ShellProps) {
             evaluation={evaluation}
             votes={store.votes.value}
             forecast={store.forecast.value}
+            crew={crew}
             onVote={(role, vote) => store.setVote(role, vote)}
             onAllGo={() => store.voteAllGo()}
             onForecast={() => store.requestForecast()}
@@ -154,6 +226,7 @@ function Shell({ store }: ShellProps) {
             )}
             plan={store.arrival.value.plan}
             canFlyByHand={webgpu === 'available'}
+            waitingFor={store.holds('engineer') ? null : roleWithHolder(crew, 'engineer')}
             onFlyByHand={() => store.navigate('descent')}
             onAutomatic={() => store.landAutomatically()}
           />
@@ -164,6 +237,9 @@ function Shell({ store }: ShellProps) {
             key={result.seed}
             result={result}
             notice={store.handFlown.value ? null : TEXT.flight.fastSimNote}
+            crew={flightCrew}
+            responses={store.room.value?.flight?.responses ?? NO_RESPONSES}
+            onAcknowledge={(key, seconds) => store.acknowledge(key, seconds)}
             onDebrief={() => store.navigate('debrief')}
           />
         )}

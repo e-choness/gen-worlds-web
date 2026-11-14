@@ -15,10 +15,13 @@ import { CapacityChart } from '@/ui/charts/capacity-chart';
 import { PorkchopChart } from '@/ui/charts/porkchop-chart';
 import { SkyCalendar } from '@/ui/charts/sky-calendar';
 import { ChoiceCard, type ChoiceStat } from '@/ui/choice-card';
+import { type CrewView, mayAct, ownedBy } from '@/ui/crew-view';
 import { TEXT } from '@/ui/text';
 
 export interface TrajectoryScreenProps {
   evaluation: DesignEvaluation;
+  /** Null when playing alone. */
+  crew: CrewView | null;
   onChange: (change: Partial<TrajectoryChoice>) => void;
   onNext: () => void;
   onBack: () => void;
@@ -28,7 +31,9 @@ const PORKCHOP_COLUMNS = 96;
 const PORKCHOP_ROWS = 80;
 
 /** How to get there and when: rocket, route, landing site and landing date, each with its effect. */
-export function TrajectoryScreen({ evaluation, onChange, onNext, onBack }: TrajectoryScreenProps) {
+export function TrajectoryScreen({ evaluation, crew, onChange, onNext, onBack }: TrajectoryScreenProps) {
+  const routeMine = mayAct(crew, 'comms');
+  const siteMine = mayAct(crew, 'science');
   const { resolved, mass } = evaluation;
   const { scenario, design, transfer, site, vehicle } = resolved;
   const t = TEXT.trajectory;
@@ -98,6 +103,7 @@ export function TrajectoryScreen({ evaluation, onChange, onNext, onBack }: Traje
     <section class="screen wide trajectory">
       <div class="trajectory-main">
         <h2>{t.vehicle}</h2>
+        {!routeMine && <p class="banner owned">{ownedBy(crew, 'comms')}</p>}
         <div class="split">
           <ul class="part-list">
             {vehicles.map((option, index) => {
@@ -121,6 +127,7 @@ export function TrajectoryScreen({ evaluation, onChange, onNext, onBack }: Traje
                     selected={vehicle?.id === option.id}
                     changes={previews.vehicles.get(option.id) ?? []}
                     autofocus={index === 0}
+                    disabled={!routeMine}
                     onChoose={() => onChange({ launchVehicleId: option.id })}
                   />
                 </li>
@@ -145,13 +152,16 @@ export function TrajectoryScreen({ evaluation, onChange, onNext, onBack }: Traje
               maxArrivalKmS={maxArrivalKmS}
               departureJd={departureJd}
               arrivalJd={landingJd}
-              onPick={(departure, arrival) => onChange({ departureJd: departure, landingJd: arrival })}
+              onPick={(departure, arrival) => {
+                if (routeMine) onChange({ departureJd: departure, landingJd: arrival });
+              }}
             />
             <div class="date-sliders">
               <label>
                 {t.launchDate}
                 <input
                   type="range"
+                  disabled={!routeMine}
                   min={porkchop.departureJdStart}
                   max={porkchop.departureJdEnd}
                   step={1}
@@ -163,6 +173,7 @@ export function TrajectoryScreen({ evaluation, onChange, onNext, onBack }: Traje
                 {t.arrivalDate}
                 <input
                   type="range"
+                  disabled={!routeMine}
                   min={window.start}
                   max={window.end}
                   step={1}
@@ -209,6 +220,7 @@ export function TrajectoryScreen({ evaluation, onChange, onNext, onBack }: Traje
                 ]}
                 selected={transfer?.id === option.id}
                 changes={previews.transfers.get(option.id) ?? []}
+                disabled={!routeMine}
                 onChoose={() => onChange({ transferId: option.id })}
               />
             </li>
@@ -216,6 +228,7 @@ export function TrajectoryScreen({ evaluation, onChange, onNext, onBack }: Traje
         </ul>
 
         <h2>{t.site}</h2>
+        {!siteMine && <p class="banner owned">{ownedBy(crew, 'science')}</p>}
         <ul class="part-list three">
           {scenario.sites.map((option) => (
             <li key={option.id}>
@@ -237,6 +250,7 @@ export function TrajectoryScreen({ evaluation, onChange, onNext, onBack }: Traje
                 ]}
                 selected={site?.id === option.id}
                 changes={previews.sites.get(option.id) ?? []}
+                disabled={!siteMine}
                 onChoose={() => onChange({ siteId: option.id })}
               />
             </li>
@@ -254,6 +268,7 @@ export function TrajectoryScreen({ evaluation, onChange, onNext, onBack }: Traje
             >
               <input
                 type="range"
+                disabled={!routeMine}
                 aria-label={t.date}
                 min={0}
                 max={windowDays}

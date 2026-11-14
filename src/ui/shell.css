@@ -1405,3 +1405,187 @@ button.card:hover {
   text-transform: uppercase;
   cursor: pointer;
 }
+
+/* ---- crew */
+.crew-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.crew-option {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  cursor: default;
+}
+.crew-option h2 {
+  margin: 0;
+}
+.crew-option label,
+.request-form label,
+.team-roles label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  color: var(--ui-dim);
+  font-size: 0.8rem;
+}
+.crew input[type="text"],
+.team-panel input[type="text"],
+.team-panel select {
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--ui-line);
+  border-radius: 2px;
+  background: rgba(8, 14, 22, 0.7);
+  color: var(--ui-fg);
+  font: inherit;
+}
+.code-input,
+.room-code strong,
+.room-code-chip {
+  font-family: var(--ui-mono);
+  letter-spacing: 0.2em;
+}
+.room-code strong {
+  font-size: 1.6rem;
+  color: var(--ui-accent);
+}
+.room-code-chip {
+  margin: 0 0.6rem;
+  color: var(--ui-accent);
+}
+.crew-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin: 0.5rem 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+.team-drawer {
+  border-bottom: 1px solid var(--ui-line);
+  background: rgba(8, 14, 22, 0.6);
+}
+.team-drawer summary {
+  padding: 0.45rem 1.5rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.team-drawer summary .dim {
+  margin-left: 0.6rem;
+}
+.team-drawer .team-panel {
+  padding: 0.5rem 1.5rem 1rem;
+}
+.team-panel {
+  display: grid;
+  grid-template-columns: minmax(14rem, 1fr) minmax(18rem, 2fr);
+  gap: 1.5rem;
+}
+@media (max-width: 760px) {
+  .team-panel {
+    grid-template-columns: 1fr;
+  }
+}
+.team-panel h3 {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.team-roles,
+.team-requests {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.team-roles li {
+  padding-left: 0.6rem;
+  border-left: 3px solid var(--role-colour, var(--ui-line));
+}
+.team-roles .role-chip {
+  color: var(--ui-fg);
+}
+[data-role="director"] {
+  --role-colour: #56b4e9;
+}
+[data-role="engineer"] {
+  --role-colour: #e69f00;
+}
+[data-role="science"] {
+  --role-colour: #3ddbb0;
+}
+[data-role="comms"] {
+  --role-colour: #cc79a7;
+}
+.team-requests li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--ui-line);
+  font-size: 0.85rem;
+}
+.team-requests li[data-status="accepted"] .request-status {
+  color: var(--status-ok);
+}
+.team-requests li[data-status="declined"] .request-status {
+  color: var(--status-fail);
+}
+.request-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+.request-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+}
+.request-form .grow {
+  flex: 1 1 14rem;
+}
+.count {
+  margin-left: 0.6rem;
+  padding: 0.05rem 0.45rem;
+  border: 1px solid var(--status-warning);
+  border-radius: 999px;
+  color: var(--status-warning);
+  font-size: 0.75rem;
+}
+.banner.owned {
+  border-color: var(--ui-line);
+  color: var(--ui-dim);
+}
+.card:disabled,
+.button:disabled {
+  cursor: not-allowed;
+}
+.card.part-card:disabled {
+  opacity: 0.6;
+}
+.ack-prompt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--role-colour, var(--ui-accent));
+  border-left-width: 4px;
+  background: rgba(8, 14, 22, 0.7);
+}
+.ack-prompt p {
+  margin: 0;
+}
+.log-ack {
+  color: var(--ui-dim);
+  font-size: 0.85em;
+}
