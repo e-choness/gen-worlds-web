@@ -880,3 +880,368 @@ button.card:hover {
   margin: 0.4rem 0 0;
   font-size: 1rem;
 }
+
+/* ---- Go/No-Go poll */
+.poll {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(19rem, 24rem);
+  gap: 1.75rem;
+  align-items: start;
+}
+@media (max-width: 70rem) {
+  .poll {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.role-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.role-card {
+  border-top: 3px solid var(--role-colour, var(--ui-line));
+}
+/* Role colours (Okabe–Ito); the role name is always shown with them. */
+.role-card[data-role="director"] {
+  --role-colour: #56b4e9;
+}
+.role-card[data-role="engineer"] {
+  --role-colour: #e69f00;
+}
+.role-card[data-role="science"] {
+  --role-colour: #3ddbb0;
+}
+.role-card[data-role="comms"] {
+  --role-colour: #cc79a7;
+}
+.role-lines {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0.25rem 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+.role-lines li {
+  display: grid;
+  grid-template-columns: 1.1rem 1fr;
+  gap: 0.4rem;
+}
+.vote-row {
+  display: flex;
+  min-width: 0;
+  margin: auto 0 0;
+  border: 0;
+  padding-inline: 0;
+  padding-bottom: 0;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+.vote {
+  flex: 1;
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+.vote.go.selected {
+  border-color: var(--status-ok);
+  background: rgba(61, 219, 176, 0.18);
+  color: var(--status-ok);
+}
+.vote.no-go.selected {
+  border-color: var(--status-fail);
+  background: rgba(255, 122, 89, 0.18);
+  color: var(--status-fail);
+}
+.reason {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.82rem;
+}
+.reason input {
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--ui-line);
+  border-radius: 2px;
+  background: rgba(2, 4, 10, 0.6);
+  color: var(--ui-fg);
+  font: inherit;
+}
+.poll-side h2:first-child,
+.forecast h2 {
+  margin-top: 0;
+}
+.forecast,
+.launch-box {
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--ui-line);
+  border-radius: 2px;
+  background: rgba(8, 14, 22, 0.62);
+}
+.launch-box {
+  margin-top: 1rem;
+}
+.forecast .hint {
+  margin: 0 0 0.9rem;
+}
+.forecast-shares {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin: 0 0 0.75rem;
+}
+.forecast-shares div {
+  padding: 0.5rem 0.6rem;
+  border-left: 3px solid var(--ui-line);
+}
+.forecast-shares div[data-status="ok"] {
+  border-left-color: var(--status-ok);
+}
+.forecast-shares div[data-status="warning"] {
+  border-left-color: var(--status-warning);
+}
+.forecast-shares div[data-status="fail"] {
+  border-left-color: var(--status-fail);
+}
+.forecast-shares dt {
+  color: var(--ui-dim);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.forecast-shares dd {
+  margin: 0.15rem 0 0;
+  font: 1.5rem var(--ui-mono);
+  font-variant-numeric: tabular-nums;
+}
+.histogram {
+  padding: 0.5rem;
+}
+.histogram rect {
+  fill: var(--ui-accent);
+  opacity: 0.8;
+}
+.histogram line {
+  stroke: var(--ui-line);
+}
+.forecast-scores {
+  margin: 0.6rem 0 0;
+}
+.problem-list {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.88rem;
+}
+.problem-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.poll-why {
+  margin: 0 0 1rem;
+  line-height: 1.5;
+}
+.poll-why.go {
+  color: var(--status-ok);
+  font-weight: 600;
+}
+.button.launch {
+  min-height: 3.25rem;
+  font-size: 1.1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ---- mission log (flight and debrief) */
+.mission-log {
+  display: grid;
+  gap: 0.7rem;
+  max-width: 64rem;
+  margin: 1.25rem 0;
+  padding: 0;
+  list-style: none;
+}
+.mission-log li {
+  display: grid;
+  grid-template-columns: 5.5rem 1.2rem 1fr;
+  gap: 0.6rem;
+  line-height: 1.5;
+  animation: screen-in 0.3s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mission-log li {
+    animation: none;
+  }
+}
+.log-day {
+  color: var(--ui-dim);
+  font: 0.82rem var(--ui-mono);
+  font-variant-numeric: tabular-nums;
+  padding-top: 0.15rem;
+}
+.mission-log li[data-tone="good"] .log-icon {
+  color: var(--status-ok);
+}
+.mission-log li[data-tone="bad"] .log-icon {
+  color: var(--status-fail);
+}
+.flight-headline {
+  max-width: 64rem;
+  padding: 1rem 1.15rem;
+  border-left: 3px solid var(--ui-accent);
+  background: rgba(111, 211, 255, 0.08);
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+
+/* ---- debrief */
+.debrief-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--ui-line);
+}
+.debrief-head h1 {
+  max-width: 44rem;
+  margin: 0.4rem 0 0;
+  font-size: clamp(1.3rem, 2.2vw, 1.75rem);
+  line-height: 1.3;
+}
+.outcome {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.debrief-head[data-outcome="success"] .outcome {
+  color: var(--status-ok);
+}
+.debrief-head[data-outcome="partial"] .outcome {
+  color: var(--status-warning);
+}
+.debrief-head[data-outcome="failure"] .outcome {
+  color: var(--status-fail);
+}
+.score {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+.score-value {
+  font: 300 3.5rem var(--ui-font);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.finding-list,
+.objective-results {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.finding-list li {
+  display: grid;
+  grid-template-columns: 1.2rem 1fr;
+  gap: 0.5rem;
+}
+.finding-list p {
+  margin: 0.2rem 0 0.3rem;
+  color: var(--ui-dim);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+.finding-list li[data-tone="bad"] p {
+  color: var(--ui-fg);
+}
+.link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ui-accent);
+  font: inherit;
+  font-size: 0.85rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.credit {
+  color: var(--status-ok);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.objective-results .budget-bar div {
+  background: var(--ui-accent);
+}
+.score-table,
+.run-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+.score-table th {
+  padding: 0.3rem 0;
+  color: var(--ui-dim);
+  font-weight: 400;
+  text-align: left;
+}
+.score-table td {
+  padding: 0.3rem 0;
+  font-family: var(--ui-mono);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.score-table .total th,
+.score-table .total td {
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--ui-line);
+  color: var(--ui-fg);
+  font-weight: 600;
+}
+.run-table th,
+.run-table td {
+  padding: 0.45rem 0.75rem 0.45rem 0;
+  border-bottom: 1px solid var(--ui-line);
+  text-align: left;
+  vertical-align: top;
+}
+.run-table th {
+  color: var(--ui-dim);
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.run-table tr.current td {
+  font-weight: 600;
+}
+.delta.up {
+  color: var(--status-ok);
+}
+.delta.down {
+  color: var(--status-fail);
+}
+.timeline-details {
+  margin-top: 1.5rem;
+}
+.timeline-details summary {
+  color: var(--ui-accent);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+}

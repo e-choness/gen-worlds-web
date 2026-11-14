@@ -8,16 +8,18 @@ import type { GameStore } from '@/app/game-store';
 import { getTier, MISSION_CONSTANTS } from '@/data/mission-constants';
 import { getScenario, SCENARIOS } from '@/data/scenarios';
 import { createEmptyDesign, createReferenceDesign } from '@/mission/design';
-import { type MissionPhase, nextPhase, previousPhase } from '@/mission/phases';
+import type { MissionPhase } from '@/mission/phases';
 import { PhaseStepper } from '@/ui/phase-stepper';
 import { isMissionPhase } from '@/ui/screen-id';
 import { BriefingScreen } from '@/ui/screens/briefing-screen';
+import { DebriefScreen } from '@/ui/screens/debrief-screen';
 import { DesignScreen } from '@/ui/screens/design-screen';
+import { FlightScreen } from '@/ui/screens/flight-screen';
+import { PollScreen } from '@/ui/screens/poll-screen';
 import { ScenarioScreen } from '@/ui/screens/scenario-screen';
-import { StubScreen } from '@/ui/screens/stub-screen';
 import { TitleScreen } from '@/ui/screens/title-screen';
 import { TrajectoryScreen } from '@/ui/screens/trajectory-screen';
-import { PHASE_TEXT, TEXT } from '@/ui/text';
+import { TEXT } from '@/ui/text';
 
 interface ShellProps {
   store: GameStore;
@@ -28,6 +30,7 @@ function Shell({ store }: ShellProps) {
   const webgpu = store.webgpu.value;
   const design = store.design.value;
   const evaluation = store.evaluation.value;
+  const result = store.result.value;
   const main = useRef<HTMLElement>(null);
 
   // Keyboard and gamepad users land on the screen's main action after every screen change.
@@ -125,21 +128,36 @@ function Shell({ store }: ShellProps) {
             onBack={() => store.navigate('design')}
           />
         )}
-        {phase && phase !== 'briefing' && phase !== 'design' && phase !== 'trajectory' && (
-          <StubScreen
-            heading={PHASE_TEXT[phase].heading}
-            summary={PHASE_TEXT[phase].summary}
-            nextLabel={PHASE_TEXT[phase].next}
-            // The debrief loops back to the design: iterate and rerun.
-            onNext={() => store.navigate(nextPhase(phase) ?? 'design')}
-            onBack={() => store.navigate(previousPhase(phase) ?? 'scenarios')}
-          >
-            {phase === 'flight' && webgpu === 'unavailable' && (
-              <p class="banner" role="status">
-                {TEXT.webgpu.unavailable}
-              </p>
-            )}
-          </StubScreen>
+        {phase === 'poll' && evaluation && (
+          <PollScreen
+            evaluation={evaluation}
+            votes={store.votes.value}
+            forecast={store.forecast.value}
+            onVote={(role, vote) => store.setVote(role, vote)}
+            onAllGo={() => store.voteAllGo()}
+            onForecast={() => store.requestForecast()}
+            onLaunch={() => store.launch()}
+            onBack={() => store.navigate('trajectory')}
+          />
+        )}
+        {phase === 'flight' && result && (
+          <FlightScreen
+            // A new flight restarts the playback.
+            key={result.seed}
+            result={result}
+            notice={TEXT.flight.fastSimNote}
+            onDebrief={() => store.navigate('debrief')}
+          />
+        )}
+        {phase === 'debrief' && result && scenario && (
+          <DebriefScreen
+            result={result}
+            scenario={scenario}
+            history={store.history.value}
+            onRevise={(target) => store.navigate(target)}
+            onFlyAgain={() => store.launch()}
+            onNewMission={() => store.navigate('scenarios')}
+          />
         )}
       </main>
     </div>

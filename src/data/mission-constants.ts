@@ -4,6 +4,29 @@ import raw from '@/data/mission_constants.json';
 
 export type TierId = 'cadet' | 'engineer' | 'director';
 
+export const ROLE_IDS = ['director', 'engineer', 'science', 'comms'] as const;
+export type RoleId = (typeof ROLE_IDS)[number];
+
+/** Budget line ids; the scenario module re-exports the same union as `ResourceId`. */
+export type RoleResource =
+  | 'mass'
+  | 'delta_v'
+  | 'launch'
+  | 'power'
+  | 'thermal'
+  | 'data'
+  | 'cost'
+  | 'schedule'
+  | 'risk';
+
+export interface Role {
+  id: RoleId;
+  name: string;
+  /** Budget lines this role answers for in the Go/No-Go poll. */
+  resources: RoleResource[];
+  summary: string;
+}
+
 /** Tiers in ascending order: a part with `minTier` X is offered at X and above. */
 export const TIER_ORDER: readonly TierId[] = ['cadet', 'engineer', 'director'];
 
@@ -89,6 +112,7 @@ export interface MissionConstants {
   /** Chance that one part at this readiness level arrives late. */
   scheduleRiskByTrl: { trl: number; slipProbability: number }[];
   tiers: Tier[];
+  roles: Role[];
 }
 
 export const MISSION_CONSTANTS: MissionConstants = camelize<MissionConstants>(raw);
