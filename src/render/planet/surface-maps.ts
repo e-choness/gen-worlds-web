@@ -62,6 +62,8 @@ export class SurfaceMaps implements Disposable {
           throw new Error(`${entry.height} has an unexpected size.`);
         }
         albedo.colorSpace = THREE.SRGBColorSpace;
+        // Row 0 of the image is the north pole, and the shader looks it up with v = 0 at the north.
+        albedo.flipY = false;
         albedo.wrapS = THREE.RepeatWrapping;
         // No mip chain: the longitude seam of an equirectangular lookup would pick the smallest mip.
         albedo.generateMipmaps = false;

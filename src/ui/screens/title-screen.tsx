@@ -18,6 +18,8 @@ export function TitleScreen({
 }: TitleScreenProps) {
   return (
     <section class="screen title-screen">
+      {/* Decorative: the Earth as the engine renders it from NASA Blue Marble. */}
+      <img class="title-hero" src={`${import.meta.env.BASE_URL}art/title_earth.jpg`} alt="" />
       <div class="eyebrow">{TEXT.title.eyebrow}</div>
       <h1>{TEXT.brand}</h1>
       <p class="lede">{TEXT.title.lede}</p>

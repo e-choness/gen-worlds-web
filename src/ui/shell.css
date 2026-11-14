@@ -1770,3 +1770,27 @@ dialog.glossary dd {
   object-fit: cover;
   background: #05080d;
 }
+
+/* Title hero: sits behind the text on the right and fades into the page, hidden on narrow screens. */
+.title-screen {
+  position: relative;
+}
+.title-screen > *:not(.title-hero) {
+  position: relative;
+  z-index: 1;
+}
+.title-hero {
+  position: absolute;
+  top: 50%;
+  right: -4vw;
+  width: min(52vw, 82vh);
+  transform: translateY(-50%);
+  pointer-events: none;
+  mask-image: radial-gradient(closest-side, #000 82%, transparent 100%);
+  -webkit-mask-image: radial-gradient(closest-side, #000 82%, transparent 100%);
+}
+@media (max-width: 820px) {
+  .title-hero {
+    display: none;
+  }
+}
