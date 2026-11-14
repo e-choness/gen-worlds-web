@@ -44,6 +44,37 @@ export interface MissionConstants {
   scheduleSlipWarning: number;
   /** Probability of losing the mission above which the risk line warns. */
   missionLossRiskWarning: number;
+  simulation: {
+    /** Charge (share of usable capacity) at which a shadow sortie is abandoned. */
+    batteryReserveFraction: number;
+    /** Charge needed before a shadow sortie starts. */
+    rechargeFraction: number;
+    /** Share of a sortie spent driving in and out rather than working. */
+    shadowTransitFraction: number;
+    /** Multiplies sortie planning time for a computer that can plan on its own. */
+    autonomousPlanningFactor: number;
+    /** Chance factor of reaching ice with a drill of that depth. */
+    iceFindByDepth: { depthM: number; factor: number }[];
+    /** Inputs the fast simulation uses in place of a human crew. */
+    scriptedPilot: { descentDeltaVFactor: number; operationsEfficiency: number };
+  };
+  scoring: {
+    sciencePoints: number;
+    efficiencyPoints: number;
+    marginPoints: number;
+    survivalPoints: number;
+    coordinationPoints: number;
+    /** A role must answer its event within this time for it to count as coordinated, s. */
+    coordinationResponseSeconds: number;
+    dataLossPenaltyPoints: number;
+    /** Share of an objective earned on reaching its threshold. */
+    thresholdCredit: number;
+    /** How much of the science depends on the data actually reaching Earth (0–1). */
+    returnedDataWeight: number;
+    /** Science fraction at or above which the mission is a success / a partial success. */
+    successScienceFraction: number;
+    partialScienceFraction: number;
+  };
   /** A redundant slot carries a second unit: its mass and cost scale up, its failure rate down. */
   redundancy: { massFactor: number; costFactor: number; failureFactor: number };
   /** Downlink rate of the reference link; real links scale from it. */

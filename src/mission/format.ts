@@ -4,7 +4,8 @@
 export function num(value: number, digits?: number): string {
   if (!Number.isFinite(value)) return '∞';
   const abs = Math.abs(value);
-  const places = digits ?? (abs >= 100 ? 0 : abs >= 10 ? 1 : abs >= 1 ? 1 : 2);
+  // Whole numbers never get a trailing ".0".
+  const places = digits ?? (Number.isInteger(value) || abs >= 100 ? 0 : abs >= 1 ? 1 : 2);
   const fixed = value.toFixed(places);
   const [whole, fraction] = fixed.split('.');
   const grouped = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ',');

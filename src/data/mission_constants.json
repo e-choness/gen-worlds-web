@@ -1,6 +1,6 @@
 {
   "source": "Solar constant: NASA NSSDCA Sun fact sheet. Margins: NASA mass and power margin practice at preliminary design (GSFC-STD-1000 Gold Rules, about 20-30%). Link reference: Mars Reconnaissance Orbiter (100 W X-band, 3 m antenna, about 0.5 Mbps to a 34 m Deep Space Network antenna at 2.67 au; NASA MRO telecommunications fact sheet), scaled to 1 W, 1 m and 1 au. Schedule risk by technology readiness level and the redundancy and tier factors are game balance values.",
-  "units": "Margins and fractions are 0-1. link_reference gives the downlink rate of a 1 W transmitter with a 1 m antenna at 1 au into a 34 m ground antenna. schedule_slip_warning and mission_loss_risk_warning are the probabilities above which the schedule and risk lines turn to a warning. delta_v_margin.target is the propellant reserve loaded on top of the planned manoeuvres.",
+  "units": "Margins and fractions are 0-1. link_reference gives the downlink rate of a 1 W transmitter with a 1 m antenna at 1 au into a 34 m ground antenna. schedule_slip_warning and mission_loss_risk_warning are the probabilities above which the schedule and risk lines turn to a warning. delta_v_margin.target is the propellant reserve loaded on top of the planned manoeuvres. simulation: battery_reserve_fraction is the charge at which a shadow sortie is abandoned, recharge_fraction the charge needed to start one, shadow_transit_fraction the share of a sortie spent driving in and out, ice_find_by_depth the chance factor of reaching ice with a drill of that depth, scripted_pilot the inputs the fast simulation uses in place of a human (operations_efficiency 1 is a skilled crew). scoring: points for full science, for an unspent budget (scaled by the margin), for launching with every budget healthy, for surviving to the end and for co-op coordination; threshold_credit is the share of an objective earned at its threshold; returned_data_weight is how much of the science depends on the data actually reaching Earth; the two science fractions grade the outcome. coordination_response_seconds is how fast a role must answer its event to count toward the coordination points. autonomous_planning_factor multiplies the planning time between shadow sorties for a computer with autonomy level 2.",
   "solar_constant_w_m2": 1361,
   "mass_margin": {
     "target": 0.2,
@@ -17,6 +17,39 @@
   "cost_reserve_fraction": 0.15,
   "schedule_slip_warning": 0.15,
   "mission_loss_risk_warning": 0.2,
+  "simulation": {
+    "battery_reserve_fraction": 0.2,
+    "recharge_fraction": 0.9,
+    "shadow_transit_fraction": 0.3,
+    "ice_find_by_depth": [
+      {
+        "depth_m": 1,
+        "factor": 0.75
+      },
+      {
+        "depth_m": 2,
+        "factor": 1
+      }
+    ],
+    "scripted_pilot": {
+      "descent_delta_v_factor": 1,
+      "operations_efficiency": 0.8
+    },
+    "autonomous_planning_factor": 0.5
+  },
+  "scoring": {
+    "science_points": 1000,
+    "efficiency_points": 300,
+    "margin_points": 100,
+    "survival_points": 100,
+    "coordination_points": 100,
+    "data_loss_penalty_points": 150,
+    "threshold_credit": 0.4,
+    "returned_data_weight": 0.5,
+    "success_science_fraction": 0.6,
+    "partial_science_fraction": 0.2,
+    "coordination_response_seconds": 60
+  },
   "redundancy": {
     "mass_factor": 1.9,
     "cost_factor": 1.7,

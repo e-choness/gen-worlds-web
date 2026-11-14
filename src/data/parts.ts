@@ -115,6 +115,7 @@ export interface ThermalPart extends PartBase {
 
 export interface MobilityPart extends PartBase {
   category: 'mobility';
+  /** Ground covered per hour of driving on average, stops included, m. */
   speedMPerH: number;
   maxSlopeDeg: number;
 }

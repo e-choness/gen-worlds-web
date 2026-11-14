@@ -1,6 +1,6 @@
 {
   "source": "Anchored to public NASA figures where a real unit exists: VIPER rover fact sheet and instrument pages (NSS, NIRVSS, MSolo, TRIDENT; 430 kg rover, 450 W peak solar, 0.72 km/h), the MMRTG fact sheet (about 110 W electric and 2,000 W thermal at launch, 45 kg, plutonium-238 half-life 87.7 years), the NASA Small Spacecraft Technology State-of-the-Art report (solar cell efficiency, battery specific energy, radios, avionics) and NASA flight computer descriptions (RAD750, HPSC). Masses, powers and costs of generic parts are representative values for their class, rounded for gameplay.",
-  "units": "mass_kg dry mass; power_w electrical draw while the part is on; cost_musd millions of US dollars; trl NASA technology readiness level 1-9; failure_rate_per_year chance of a disabling fault per year of operation; data_rate_mbps megabits per second averaged over the time the instrument operates (compressed products, not the raw detector rate); max_rate_mbps the ceiling of the radio hardware.",
+  "units": "mass_kg dry mass; power_w electrical draw while the part is on; cost_musd millions of US dollars; trl NASA technology readiness level 1-9; failure_rate_per_year chance of a disabling fault per year of operation; data_rate_mbps megabits per second averaged over the time the instrument operates (compressed products, not the raw detector rate); max_rate_mbps the ceiling of the radio hardware. speed_m_per_h is the ground a rover covers per hour of driving on average, including the stops to image, plan and check its footing (top speed is far higher: VIPER can do 720 m/h).",
   "parts": [
     {
       "id": "bus_light",
@@ -386,7 +386,7 @@
       "trl": 8,
       "failure_rate_per_year": 0.08,
       "min_tier": "cadet",
-      "speed_m_per_h": 360,
+      "speed_m_per_h": 15,
       "max_slope_deg": 12,
       "summary": "Simple fixed suspension. It drives on gentle ground only and slowly."
     },
@@ -400,7 +400,7 @@
       "trl": 7,
       "failure_rate_per_year": 0.05,
       "min_tier": "cadet",
-      "speed_m_per_h": 720,
+      "speed_m_per_h": 30,
       "max_slope_deg": 22,
       "summary": "Every wheel steers and lifts on its own, like VIPER: twice the speed, crater slopes within reach, more mass and power."
     },

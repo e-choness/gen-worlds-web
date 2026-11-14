@@ -88,6 +88,8 @@ export interface ScenarioOperations {
   drillHoursPerSample: number;
   /** Time one excursion into shadow takes, h: the battery must carry it. */
   shadowSortieHours: number;
+  /** Time the ground team needs to plan the next excursion, h. */
+  sortiePlanningHours: number;
   /** The Sun / Earth count as visible this far above the local horizon, degrees. */
   minSunClearanceDeg: number;
   minEarthClearanceDeg: number;

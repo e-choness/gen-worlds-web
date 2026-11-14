@@ -123,8 +123,9 @@
     "drive_fraction": 0.25,
     "science_fraction": 0.2,
     "comms_fraction": 0.3,
-    "drill_hours_per_sample": 6,
+    "drill_hours_per_sample": 20,
     "shadow_sortie_hours": 12,
+    "sortie_planning_hours": 36,
     "min_sun_clearance_deg": 0.3,
     "min_earth_clearance_deg": 2,
     "relay_coverage_fraction": 0.55,
@@ -187,7 +188,7 @@
       "requires_measures": ["subsurface_access", "volatile_composition"],
       "metric": "ice_samples",
       "threshold": 1,
-      "target": 4,
+      "target": 6,
       "weight": 0.4
     },
     {
@@ -196,8 +197,8 @@
       "summary": "Science only counts once it is on the ground.",
       "requires_measures": [],
       "metric": "data_returned_gb",
-      "threshold": 15,
-      "target": 60,
+      "threshold": 50,
+      "target": 200,
       "weight": 0.2
     },
     {

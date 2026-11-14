@@ -22,6 +22,9 @@ export interface PowerModel {
   commsLoadW: number;
   /** Time-averaged load over a working day, W. */
   averageLoadW: number;
+  /** Heat the vehicle loses in shadow after insulation, W, and the free heat that offsets it. */
+  heaterDemandW: number;
+  freeHeatW: number;
   /** Heater draw in shadow after insulation and radioisotope heat, W. */
   heaterShadowW: number;
   /** Net battery drain while working in shadow, W (≤ 0 means it can stay indefinitely). */
@@ -84,6 +87,8 @@ export function computePowerModel(resolved: ResolvedDesign, chain: MassChain | n
     scienceLoadW,
     commsLoadW,
     averageLoadW,
+    heaterDemandW: demand,
+    freeHeatW: freeHeat,
     heaterShadowW,
     shadowDrainW,
     hibernationDrainW,
