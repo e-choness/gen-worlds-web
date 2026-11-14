@@ -945,6 +945,16 @@ function isMainSequence(star: StarDesc): boolean {
  * Reads start overrides from the query string: ?body=2&alt=1500&sun=70&kind=desert&land&rings&cockpit,
  * or for the real solar system ?sol&at=mars&lat=18.4&lon=77.5&date=2027-09-01.
  */
+/** The world of a ?fly=<id> link, or undefined when there is none or it is damaged. */
+function worldFromQuery(id: string | null): WorldParams | undefined {
+  if (!id) return undefined;
+  try {
+    return decodeWorld(id);
+  } catch {
+    return undefined;
+  }
+}
+
 export function parseStartOptions(search: string): StartOptions {
   const params = new URLSearchParams(search);
   const num = (key: string): number | undefined => {
@@ -966,6 +976,7 @@ export function parseStartOptions(search: string): StartOptions {
     landed: params.has('landed'),
     solarSystem: params.has('sol'),
     at: params.get('at') ?? undefined,
+    world: worldFromQuery(params.get('fly')),
     dateJd: Number.isFinite(Date.parse(params.get('date') ?? ''))
       ? jdFromUnixMs(Date.parse(params.get('date') ?? ''))
       : undefined,

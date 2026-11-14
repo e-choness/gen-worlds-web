@@ -47,7 +47,7 @@ export function systemOfWorld(params: WorldParams): SystemDesc {
 }
 
 /** Sector the search for worlds starts from: the same neighbourhood the sandbox opens in. */
-const HOME_SECTOR = [2180, 1, 20] as const;
+export const HOME_SECTOR = [2180, 1, 20] as const;
 const SEARCH_RADIUS = 6;
 
 function landableBodies(star: StarDesc): { system: SystemDesc; body: BodyDesc }[] {

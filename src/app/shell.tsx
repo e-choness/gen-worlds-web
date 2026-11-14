@@ -24,6 +24,7 @@ import { CrewScreen } from '@/ui/screens/crew-screen';
 import { DebriefScreen } from '@/ui/screens/debrief-screen';
 import { DesignScreen } from '@/ui/screens/design-screen';
 import { FlightScreen } from '@/ui/screens/flight-screen';
+import { MapScreen } from '@/ui/screens/map-screen';
 import { PollScreen } from '@/ui/screens/poll-screen';
 import { ScenarioScreen } from '@/ui/screens/scenario-screen';
 import { TitleScreen } from '@/ui/screens/title-screen';
@@ -40,6 +41,11 @@ export interface ShellSound {
   onToggle: () => void;
   onCue: (cue: 'good' | 'bad' | 'neutral' | 'alert') => void;
 }
+
+/** The catalog missions by the solar-system body they fly to, for the galaxy map's home system. */
+const CATALOG_MISSIONS: Readonly<Record<string, string>> = Object.fromEntries(
+  SCENARIOS.map((entry) => [entry.targetBody, entry.id]),
+);
 
 interface ShellProps {
   store: GameStore;
@@ -158,7 +164,7 @@ function Shell({ store, sound }: ShellProps) {
           {TEXT.brand}
           <span>{TEXT.tagline}</span>
         </button>
-        {screen !== 'title' && screen !== 'crew' && (
+        {screen !== 'title' && screen !== 'crew' && screen !== 'map' && (
           <PhaseStepper current={phase} onSelect={(target: MissionPhase) => store.navigate(target)} />
         )}
         {sound && (
@@ -215,6 +221,24 @@ function Shell({ store, sound }: ShellProps) {
             }}
           />
         )}
+        {screen === 'map' && (
+          <MapScreen
+            catalogMissions={CATALOG_MISSIONS}
+            onPlan={(scenarioId) => {
+              store.selectScenario(scenarioId);
+              store.navigate('briefing');
+            }}
+            onFly={
+              webgpu === 'available'
+                ? (worldId) => {
+                    // The 3D engine starts on its own page load, at the chosen world.
+                    location.href = `${location.pathname}?nostart&fly=${encodeURIComponent(worldId)}`;
+                  }
+                : null
+            }
+            onBack={() => store.navigate('scenarios')}
+          />
+        )}
         {screen === 'crew' && (
           <CrewScreen
             crew={crew}
@@ -239,7 +263,7 @@ function Shell({ store, sound }: ShellProps) {
             scenarios={SCENARIOS}
             world={world}
             onAnotherWorld={() => setWorldSeed(worldSeed + 1)}
-            onExplore={webgpu === 'available' ? () => store.navigate('sandbox') : null}
+            onExplore={() => store.navigate('map')}
             tiers={MISSION_CONSTANTS.tiers}
             tier={store.tier.value}
             onTier={(tier) => store.setTier(tier)}

@@ -2243,3 +2243,210 @@ dialog.glossary dd {
 .world-art {
   align-self: flex-start;
 }
+
+/* ==== Galaxy map: list on the left, chart in the middle, the selected star or world on the right ==== */
+.map-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+.map-crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.05rem;
+}
+.map-search input {
+  width: 16rem;
+  max-width: 100%;
+  min-height: 2.75rem;
+  padding: 0 0.8rem;
+  border: 1px solid var(--ui-line);
+  background: rgba(8, 14, 22, 0.8);
+  color: var(--ui-fg);
+  font: inherit;
+}
+.map-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+}
+.map-tree {
+  flex: 1 1 14rem;
+  max-width: 17rem;
+  max-height: 46rem;
+  overflow-y: auto;
+  padding: 0.75rem;
+  border: 1px solid var(--ui-line);
+  background: rgba(8, 14, 22, 0.62);
+}
+.map-tree h2 {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 0 0.5rem;
+}
+.map-tree ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.map-tree .tree-children {
+  padding-left: 1rem;
+}
+.tree-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0 0.5rem;
+  border: 0;
+  background: none;
+  color: var(--ui-fg);
+  font: inherit;
+  font-size: 0.92rem;
+  text-align: left;
+  cursor: pointer;
+}
+.tree-row:hover {
+  background: rgba(111, 211, 255, 0.08);
+}
+.tree-row.selected {
+  background: rgba(111, 211, 255, 0.18);
+  font-weight: 600;
+}
+.tree-dot {
+  flex-shrink: 0;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+}
+.tree-name {
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tree-note {
+  color: var(--ui-dim);
+  font-size: 0.75rem;
+}
+.map-stage {
+  position: relative;
+  flex: 999 1 26rem;
+  min-width: 0;
+  max-width: 46rem;
+  border: 1px solid var(--ui-line);
+  background: #04070c;
+}
+.map-stage svg {
+  display: block;
+  width: 100%;
+  touch-action: none;
+  cursor: grab;
+}
+.map-stage text {
+  fill: var(--ui-fg);
+  font: 500 13px var(--ui-font);
+  pointer-events: none;
+}
+.map-stage text.selected,
+.map-sun-label {
+  font-weight: 600;
+}
+.map-star,
+.map-planet {
+  cursor: pointer;
+}
+.map-ring {
+  fill: none;
+  stroke: var(--ui-accent);
+  stroke-width: 2;
+}
+.map-orbit {
+  fill: none;
+  stroke: #2a3b52;
+  stroke-width: 1;
+}
+.map-orbit.selected {
+  stroke: var(--ui-accent);
+}
+.map-moon.selected {
+  stroke: var(--ui-accent);
+  stroke-width: 2;
+}
+.map-caption {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border-top: 1px solid var(--ui-line);
+  color: var(--ui-dim);
+  font-size: 0.8rem;
+}
+.map-tools {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.map-tools .button {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  background: rgba(8, 14, 22, 0.9);
+}
+.map-info {
+  display: flex;
+  flex: 1 1 17rem;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 22rem;
+  padding: 1rem;
+  border: 1px solid var(--ui-line);
+  background: rgba(8, 14, 22, 0.62);
+}
+.map-info h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+.map-info .chip {
+  width: fit-content;
+}
+.map-verdict {
+  margin: 0;
+  font-weight: 600;
+  color: var(--status-fail);
+}
+.map-verdict[data-ok="true"] {
+  color: var(--status-ok);
+}
+.map-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  border: 1px solid var(--ui-line);
+  background: var(--ui-line);
+}
+.map-facts div {
+  padding: 0.55rem 0.7rem;
+  background: rgba(6, 11, 18, 0.95);
+}
+.map-facts dt {
+  color: var(--ui-dim);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.map-facts dd {
+  margin: 0;
+  font: 500 1rem var(--ui-mono, ui-monospace, monospace);
+}
+.map-facts dd.dim {
+  font: 400 0.75rem var(--ui-font);
+}

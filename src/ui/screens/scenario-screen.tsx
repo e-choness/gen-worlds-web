@@ -12,8 +12,8 @@ export interface ScenarioScreenProps {
   /** A generated world of the galaxy offered as a mission. */
   world: Scenario;
   onAnotherWorld: () => void;
-  /** Opens the galaxy to pick a world by flying to it; null where the 3D view cannot run. */
-  onExplore: (() => void) | null;
+  /** Opens the galaxy map to pick a world. */
+  onExplore: () => void;
   onBack: () => void;
 }
 
@@ -96,8 +96,8 @@ export function ScenarioScreen({
             <button type="button" class="button" onClick={onAnotherWorld}>
               {TEXT.scenarios.anotherWorld}
             </button>
-            <button type="button" class="button" disabled={!onExplore} onClick={() => onExplore?.()}>
-              {onExplore ? TEXT.scenarios.explore : TEXT.scenarios.exploreNeedsWebgpu}
+            <button type="button" class="button" onClick={onExplore}>
+              {TEXT.scenarios.explore}
             </button>
           </div>
           <p class="hint">{TEXT.scenarios.exploreHint}</p>

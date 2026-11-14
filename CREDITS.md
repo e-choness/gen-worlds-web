@@ -57,6 +57,7 @@ something enters the repo.
 | --- | --- | --- | --- |
 | Lambert solver | D. Izzo, "Revisiting Lambert's problem", Celestial Mechanics and Dynamical Astronomy 121 (2015) | Published algorithm, own implementation | Interplanetary transfers |
 | Universal-variable Kepler propagation | D. Vallado, "Fundamentals of Astrodynamics and Applications" | Published algorithm, own implementation | Cruise trajectories |
+| Galaxy map layout (searchable world list, orbit chart, fact panel) | Echo Yin, [Solar System](https://github.com/e-choness/solar-system-engine), and SpaceEngine's map as a general model | Layout idea only; no code or assets copied | The galaxy map screen |
 | Lunar position and libration series | J. Meeus, "Astronomical Algorithms", 2nd ed., chapters 47 and 53 | Published algorithm, own implementation | Moon position, polar lighting and Earth visibility |
 | Porkchop plot | Launch energy over a grid of launch and arrival dates from Lambert arcs between JPL ephemeris positions, as in NASA mission design practice | Published method, own implementation | Choosing Mars launch and arrival dates |
 | Sun-synchronous orbit, eclipse, ground contact and drag decay | Closed-form relations from J. Wertz, "Space Mission Analysis and Design" and D. Vallado; piecewise-exponential atmosphere (U.S. Standard Atmosphere 1976) | Published relations, own implementation | Earth-orbit trajectory mode |

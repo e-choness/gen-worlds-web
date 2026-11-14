@@ -36,7 +36,9 @@ game also plays without it).
 | 3 | Jezero crater sample survey (Mars) | Launch windows, entry speed, dust, nights every sol, relay links, light time |
 
 **And any world in the galaxy.** The galaxy is procedural, and every solid planet and moon in it is
-a mission. Fly to one in the sandbox and press P, or take the world offered on the mission screen:
+a mission. Open the **galaxy map** from the mission screen (stars near home, each system's planets
+and moons on their orbits, a searchable list, and what each world demands), or fly to a world in
+the sandbox and press P:
 its gravity sets the propellant, its distance from its star the power, its day the battery, and its
 air decides between a heat shield and engines. The same rover that works on Mars may not survive
 there. The landing is flown over that world's own terrain.
