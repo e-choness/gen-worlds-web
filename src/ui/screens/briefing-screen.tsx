@@ -15,6 +15,8 @@ export function BriefingScreen({ scenario, tier, onNext, onBack }: BriefingScree
   const t = TEXT.briefing;
   return (
     <section class="screen briefing">
+      {/* Decorative: the heading names the destination. */}
+      <img class="briefing-art" src={import.meta.env.BASE_URL + scenario.art} alt="" />
       <div class="eyebrow">
         {TEXT.scenarios.mission} {scenario.number} · {tier.name}
       </div>

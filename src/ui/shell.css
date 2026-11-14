@@ -1794,3 +1794,21 @@ dialog.glossary dd {
     display: none;
   }
 }
+
+/* Briefing: the destination beside the mission statement, dropped on narrow screens. */
+.briefing-art {
+  float: right;
+  width: min(34%, 420px);
+  margin: 0 0 1rem 2rem;
+  border: 1px solid var(--ui-line);
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+.briefing .columns {
+  clear: both;
+}
+@media (max-width: 820px) {
+  .briefing-art {
+    display: none;
+  }
+}
