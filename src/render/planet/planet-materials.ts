@@ -46,6 +46,11 @@ import type { BiomeTextures } from './biome-texture';
 import { ringProfile } from './ring-view';
 import type { SurfaceMap } from './surface-maps';
 
+/** Measured colour maps are smoothed between these camera distances, over this many texels. */
+const MAP_SMOOTH_FAR_M = 1_500_000;
+const MAP_SMOOTH_NEAR_M = 150_000;
+const MAP_SMOOTH_TEXELS = 0.9;
+
 const color3 = (c: Vec3Tuple) => new THREE.Vector3(c[0], c[1], c[2]);
 
 /** Uniforms shared by all materials of one planet; updated once per frame by the PlanetRenderer. */
@@ -272,7 +277,20 @@ export function createTerrainMaterial(shading: PlanetShading): THREE.NodeMateria
     const meridian = shading.surfaceMap.heightmap.meridian;
     const longitude = atan(up.z.negate(), up.x).sub(meridian);
     const mapUv = vec2(fract(longitude.div(Math.PI * 2).add(0.5)), acos(up.y.clamp(-1, 1)).div(Math.PI));
-    const measured = texture(shading.surfaceMap.albedo, mapUv).xyz;
+    // Close to the ground one texel of the map covers kilometres and would show as blocks: there
+    // the lookup widens to a five-tap average, which keeps the regional colour and drops the grid.
+    const map = shading.surfaceMap.albedo;
+    const image = map.image as { width: number; height: number };
+    const du = vec2(MAP_SMOOTH_TEXELS / image.width, 0);
+    const dv = vec2(0, MAP_SMOOTH_TEXELS / image.height);
+    const sharp = texture(map, mapUv).xyz;
+    const smooth = sharp
+      .add(texture(map, mapUv.add(du)).xyz)
+      .add(texture(map, mapUv.sub(du)).xyz)
+      .add(texture(map, mapUv.add(dv)).xyz)
+      .add(texture(map, mapUv.sub(dv)).xyz)
+      .div(5);
+    const measured = mix(sharp, smooth, smoothstep(MAP_SMOOTH_FAR_M, MAP_SMOOTH_NEAR_M, dist));
     const structure = mix(groundLayer.detail, rockLayer.detail, rockMask).clamp(0.55, 1.6);
     // The mosaic is stretched for display; scale it back toward the true (dark) reflectance.
     albedo = measured.mul(shading.surfaceMap.albedoGain).mul(structure).mul(dn.mul(0.3).add(0.85));

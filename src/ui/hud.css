@@ -534,3 +534,28 @@ kbd {
   color: var(--ui-dim);
   font-size: 11px;
 }
+
+/* ?demo: caption of the scripted tour, lower left over the 3D view. */
+.demo-caption {
+  position: absolute;
+  left: 40px;
+  bottom: 36px;
+  color: var(--ui-fg);
+  font: 14px var(--ui-font);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+}
+.demo-caption h1 {
+  margin: 0 0 4px;
+  font-size: 34px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+.demo-caption p {
+  margin: 0;
+}
+.demo-caption .demo-status {
+  margin-top: 10px;
+  opacity: 0.6;
+  font-size: 12px;
+}

@@ -239,6 +239,18 @@ export const TEXT = {
     linkHint:
       'Anyone who opens the link gets this design and this seed: the same storms, the same faults. Change the design and see who scores higher.',
   },
+  demo: {
+    recording: 'Recording',
+    saved: 'Recording saved to your downloads.',
+    hint: 'R records the view to a video file · Esc leaves',
+    shots: {
+      earth: { title: 'Earth', source: 'NASA Blue Marble colour · NOAA ETOPO relief' },
+      moon: { title: 'The Moon', source: 'NASA LRO: LOLA elevation · LROC colour' },
+      mars: { title: 'Mars', source: 'NASA MGS MOLA elevation · Viking colour mosaic' },
+      jezero: { title: 'Jezero crater, Mars', source: '18.4° N 77.5° E: where the sample survey lands' },
+      pole: { title: 'Lunar south pole', source: 'Where the ice prospector lands' },
+    },
+  },
   sound: {
     on: '♪ On',
     off: '♪ Off',

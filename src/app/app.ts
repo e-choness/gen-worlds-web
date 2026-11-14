@@ -420,6 +420,52 @@ export class App {
     this.system.setEpoch(this.simJd);
   }
 
+  /** Unit direction from a body's centre to a latitude and east longitude on it, degrees. */
+  private directionOver(
+    body: BodyState,
+    latitudeDeg: number,
+    longitudeDeg: number,
+    out: THREE.Vector3,
+  ): THREE.Vector3 {
+    const meridian = this.surfaceMaps?.get(body.desc)?.heightmap.meridian ?? 0;
+    const latitude = THREE.MathUtils.degToRad(latitudeDeg);
+    const longitude = THREE.MathUtils.degToRad(longitudeDeg) + meridian;
+    return out.set(
+      Math.cos(latitude) * Math.cos(longitude),
+      Math.sin(latitude),
+      -Math.cos(latitude) * Math.sin(longitude),
+    );
+  }
+
+  /**
+   * Puts the craft above a point of a solar-system body, looking at it. For scripted views: call it
+   * every frame to hold or sweep the view. Returns false when the body is not in this system.
+   */
+  placeOver(bodyId: string, latitudeDeg: number, longitudeDeg: number, altitude: number): boolean {
+    const body = this.system.bodies.find((candidate) => solarBodyId(candidate.desc) === bodyId);
+    if (!body) return false;
+    this.flight.placeAbove(body, this.directionOver(body, latitudeDeg, longitudeDeg, this.scratch), altitude);
+    this.robotQuat.copy(this.flight.orientation);
+    return true;
+  }
+
+  /**
+   * Like `placeOver`, but the point is given by the Sun: `sunAngleDeg` away from the sub-solar
+   * point, swung `aroundDeg` about the Sun's direction. A lit view whatever the date.
+   */
+  placeTowardSun(bodyId: string, sunAngleDeg: number, aroundDeg: number, altitude: number): boolean {
+    const body = this.system.bodies.find((candidate) => solarBodyId(candidate.desc) === bodyId);
+    if (!body) return false;
+    const axis = this.scratch2.set(0, 1, 0).cross(body.sunDir).normalize();
+    const direction = this.scratch
+      .copy(body.sunDir)
+      .applyAxisAngle(axis, THREE.MathUtils.degToRad(sunAngleDeg))
+      .applyAxisAngle(body.sunDir, THREE.MathUtils.degToRad(aroundDeg));
+    this.flight.placeAbove(body, direction, altitude);
+    this.robotQuat.copy(this.flight.orientation);
+    return true;
+  }
+
   private placeAtStart(start: StartOptions): void {
     const bodies = this.system.bodies;
     let body: BodyState | undefined = start.body !== undefined ? bodies[start.body] : undefined;
@@ -433,14 +479,7 @@ export class App {
     const axis = new THREE.Vector3(0, 1, 0).cross(body.sunDir).normalize();
     const direction = body.sunDir.clone().applyAxisAngle(axis, angle);
     if (start.latitudeDeg !== undefined && start.longitudeDeg !== undefined) {
-      const meridian = this.surfaceMaps?.get(body.desc)?.heightmap.meridian ?? 0;
-      const latitude = THREE.MathUtils.degToRad(start.latitudeDeg);
-      const longitude = THREE.MathUtils.degToRad(start.longitudeDeg) + meridian;
-      direction.set(
-        Math.cos(latitude) * Math.cos(longitude),
-        Math.sin(latitude),
-        -Math.cos(latitude) * Math.sin(longitude),
-      );
+      this.directionOver(body, start.latitudeDeg, start.longitudeDeg, direction);
     }
     if (start.land) findLand(body, direction);
     this.flight.placeAbove(body, direction, start.altitude ?? body.desc.radius * 1.6);

@@ -29,7 +29,7 @@ function main(): void {
 
   // Capture and debug URLs (?nostart, ?menu=…, ?sandbox) open the 3D sandbox directly.
   const params = new URLSearchParams(location.search);
-  const direct = params.has('nostart') || params.has('menu') || params.has('sandbox');
+  const direct = params.has('nostart') || params.has('menu') || params.has('sandbox') || params.has('demo');
   const store = new GameStore(
     direct ? 'sandbox' : screenFromHash(location.hash),
     new MonteCarloClient(),
@@ -114,8 +114,11 @@ function main(): void {
     if (webgpu === 'unavailable') window.__status = 'failed';
     if (webgpu !== 'available' || sandbox !== 'idle') return;
     sandbox = 'starting';
-    import('@/app/sandbox')
-      .then((module) => module.startSandbox(canvas, uiRoot, location.search))
+    // ?demo plays the scripted tour of the real bodies instead of free flight.
+    (params.has('demo')
+      ? import('@/app/demo').then((module) => module.startDemo(canvas, uiRoot))
+      : import('@/app/sandbox').then((module) => module.startSandbox(canvas, uiRoot, location.search))
+    )
       .then(() => {
         sandbox = 'running';
         shellRoot.hidden = true;

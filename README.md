@@ -51,6 +51,11 @@ away.
   same design and the same luck. There is a daily mission with one seed for everybody, and a
   leaderboard on which every entry is re-flown by your browser before it is shown.
 
+## A tour without playing
+
+<https://gen-worlds.surf/?demo> flies a camera over the real Earth, Moon and Mars and down to the
+two landing sites. Press R to record the view to a WebM file, Esc to leave. It needs WebGPU.
+
 ## How it works
 
 - **One mission model.** A design is plain data. `evaluateDesign` turns it into budgets with
