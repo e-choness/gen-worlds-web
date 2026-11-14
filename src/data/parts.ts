@@ -139,6 +139,10 @@ export interface InstrumentPart extends PartBase {
   needsPointingClass: number;
   /** Depth reached, m (0 for instruments that do not drill). */
   drillDepthM: number;
+  /** Width of ground imaged from 500 km, km (0 for instruments that do not image the ground). */
+  swathKmAt500: number;
+  /** Smallest detail resolved from 500 km, m (0 for instruments that do not image the ground). */
+  gsdMAt500: number;
 }
 
 export type Part =

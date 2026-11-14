@@ -28,6 +28,9 @@ const METRIC_PHRASES: Record<
   ice_samples: (value, target, resolved) =>
     `${num(value, 0)} sample${value === 1 ? '' : 's'} ${resolved.scenario.terms.sampleCount}, target ${num(target, 0)}`,
   data_returned_gb: (value, target) => `${num(value)} Gb received on Earth, target ${num(target)} Gb`,
+  area_imaged_mkm2: (value, target) =>
+    `${num(value)} million km² imaged at the required detail and received, target ${num(target)}`,
+  days_operated: (value, target) => `${num(value, 0)} days of operations, target ${num(target, 0)}`,
   context_measures: (value, target) =>
     `${num(value, 0)} kind${value === 1 ? '' : 's'} of context measurement returned, target ${num(target, 0)}`,
 };

@@ -1,6 +1,6 @@
 {
-  "source": "Anchored to public NASA figures where a real unit exists: VIPER rover fact sheet and instrument pages (NSS, NIRVSS, MSolo, TRIDENT; 430 kg rover, 450 W peak solar, 0.72 km/h), the MMRTG fact sheet (about 110 W electric and 2,000 W thermal at launch, 45 kg, plutonium-238 half-life 87.7 years), the NASA Small Spacecraft Technology State-of-the-Art report (solar cell efficiency, battery specific energy, radios, avionics) and NASA flight computer descriptions (RAD750, HPSC). Masses, powers and costs of generic parts are representative values for their class, rounded for gameplay. Mars instruments follow the Perseverance payload (NASA Mars 2020 instrument pages: the coring drill of the Sampling and Caching System, SHERLOC, PIXL, SuperCam, MEDA) and its Electra-Lite UHF relay radio (up to 2 Mbit/s to an orbiter).",
-  "units": "mass_kg dry mass; power_w electrical draw while the part is on; cost_musd millions of US dollars; trl NASA technology readiness level 1-9; failure_rate_per_year chance of a disabling fault per year of operation; data_rate_mbps megabits per second averaged over the time the instrument operates (compressed products, not the raw detector rate); max_rate_mbps the ceiling of the radio hardware. speed_m_per_h is the ground a rover covers per hour of driving on average, including the stops to image, plan and check its footing (top speed is far higher: VIPER can do 720 m/h).",
+  "source": "Anchored to public NASA figures where a real unit exists: VIPER rover fact sheet and instrument pages (NSS, NIRVSS, MSolo, TRIDENT; 430 kg rover, 450 W peak solar, 0.72 km/h), the MMRTG fact sheet (about 110 W electric and 2,000 W thermal at launch, 45 kg, plutonium-238 half-life 87.7 years), the NASA Small Spacecraft Technology State-of-the-Art report (solar cell efficiency, battery specific energy, radios, avionics) and NASA flight computer descriptions (RAD750, HPSC). Masses, powers and costs of generic parts are representative values for their class, rounded for gameplay. Mars instruments follow the Perseverance payload (NASA Mars 2020 instrument pages: the coring drill of the Sampling and Caching System, SHERLOC, PIXL, SuperCam, MEDA) and its Electra-Lite UHF relay radio (up to 2 Mbit/s to an orbiter). Small-satellite parts (frames, cells, batteries, wheels, radios, thrusters, imagers) are representative of the classes in the NASA Small Spacecraft Technology State-of-the-Art report; imager swath and resolution follow Landsat-class (30 m, 185 km), Sentinel-2-class (10 m, 290 km from 786 km) and Dove-class (3-4 m, 24 km) instruments scaled to 500 km.",
+  "units": "mass_kg dry mass; power_w electrical draw while the part is on; cost_musd millions of US dollars; trl NASA technology readiness level 1-9; failure_rate_per_year chance of a disabling fault per year of operation; data_rate_mbps megabits per second averaged over the time the instrument operates (compressed products, not the raw detector rate); max_rate_mbps the ceiling of the radio hardware. speed_m_per_h is the ground a rover covers per hour of driving on average, including the stops to image, plan and check its footing (top speed is far higher: VIPER can do 720 m/h). swath_km_at_500 and gsd_m_at_500 give the ground width imaged and the smallest detail resolved from 500 km (both scale with altitude; 0 for instruments that do not image the ground).",
   "parts": [
     {
       "id": "bus_light",
@@ -481,7 +481,9 @@
       "measures": ["hydrogen_map"],
       "needs_pointing_class": 0,
       "drill_depth_m": 0,
-      "summary": "Senses hydrogen, the signature of water, up to a metre underground while the rover drives. Tiny, frugal and essential for finding where to drill."
+      "summary": "Senses hydrogen, the signature of water, up to a metre underground while the rover drives. Tiny, frugal and essential for finding where to drill.",
+      "swath_km_at_500": 0,
+      "gsd_m_at_500": 0
     },
     {
       "id": "inst_nir_spectrometer",
@@ -498,7 +500,9 @@
       "measures": ["surface_volatiles", "mineralogy"],
       "needs_pointing_class": 0,
       "drill_depth_m": 0,
-      "summary": "Reads the colour of the surface and of drill cuttings to tell water ice from dry minerals."
+      "summary": "Reads the colour of the surface and of drill cuttings to tell water ice from dry minerals.",
+      "swath_km_at_500": 0,
+      "gsd_m_at_500": 0
     },
     {
       "id": "inst_mass_spectrometer",
@@ -515,7 +519,9 @@
       "measures": ["volatile_composition"],
       "needs_pointing_class": 0,
       "drill_depth_m": 0,
-      "summary": "Weighs the gas molecules released by drilling: the proof of what the ice is made of. It needs a drill to feed it."
+      "summary": "Weighs the gas molecules released by drilling: the proof of what the ice is made of. It needs a drill to feed it.",
+      "swath_km_at_500": 0,
+      "gsd_m_at_500": 0
     },
     {
       "id": "inst_drill_1m",
@@ -532,7 +538,9 @@
       "measures": ["subsurface_access"],
       "needs_pointing_class": 0,
       "drill_depth_m": 1,
-      "summary": "Brings up cuttings from a metre down, as far as VIPER reaches. Power-hungry while it runs."
+      "summary": "Brings up cuttings from a metre down, as far as VIPER reaches. Power-hungry while it runs.",
+      "swath_km_at_500": 0,
+      "gsd_m_at_500": 0
     },
     {
       "id": "inst_drill_2m",
@@ -549,7 +557,9 @@
       "measures": ["subsurface_access"],
       "needs_pointing_class": 0,
       "drill_depth_m": 2,
-      "summary": "Twice the depth, where older ice may lie. Heavy, hungry and unproven: it can jam and it can slip the schedule."
+      "summary": "Twice the depth, where older ice may lie. Heavy, hungry and unproven: it can jam and it can slip the schedule.",
+      "swath_km_at_500": 0,
+      "gsd_m_at_500": 0
     },
     {
       "id": "inst_stereo_camera",
@@ -566,7 +576,9 @@
       "measures": ["imaging"],
       "needs_pointing_class": 0,
       "drill_depth_m": 0,
-      "summary": "Colour panoramas and 3D terrain. Images are the bulkiest data aboard and will fill the recorder unless the downlink keeps up."
+      "summary": "Colour panoramas and 3D terrain. Images are the bulkiest data aboard and will fill the recorder unless the downlink keeps up.",
+      "swath_km_at_500": 0,
+      "gsd_m_at_500": 0
     },
     {
       "id": "inst_ground_radar",
@@ -583,7 +595,9 @@
       "measures": ["subsurface_structure"],
       "needs_pointing_class": 0,
       "drill_depth_m": 0,
-      "summary": "Profiles buried layers along the drive, showing how deep the ice-bearing ground goes."
+      "summary": "Profiles buried layers along the drive, showing how deep the ice-bearing ground goes.",
+      "swath_km_at_500": 0,
+      "gsd_m_at_500": 0
     },
     {
       "id": "inst_thermal_radiometer",
@@ -600,7 +614,9 @@
       "measures": ["thermal_map"],
       "needs_pointing_class": 0,
       "drill_depth_m": 0,
-      "summary": "Maps ground temperature to find the cold traps where ice can last for billions of years."
+      "summary": "Maps ground temperature to find the cold traps where ice can last for billions of years.",
+      "swath_km_at_500": 0,
+      "gsd_m_at_500": 0
     },
     {
       "id": "inst_core_drill",
@@ -617,7 +633,9 @@
       "measures": ["rock_coring"],
       "needs_pointing_class": 0,
       "drill_depth_m": 0.06,
-      "summary": "Cuts a chalk-sized core out of solid rock and seals it in a tube, as Perseverance does. The cores are the mission: everything else decides which rocks deserve one."
+      "summary": "Cuts a chalk-sized core out of solid rock and seals it in a tube, as Perseverance does. The cores are the mission: everything else decides which rocks deserve one.",
+      "swath_km_at_500": 0,
+      "gsd_m_at_500": 0
     },
     {
       "id": "inst_raman_spectrometer",
@@ -634,7 +652,9 @@
       "measures": ["organics_detection"],
       "needs_pointing_class": 0,
       "drill_depth_m": 0,
-      "summary": "Shines an ultraviolet laser on a rock from a few centimetres away and maps organic molecules and the minerals water left behind."
+      "summary": "Shines an ultraviolet laser on a rock from a few centimetres away and maps organic molecules and the minerals water left behind.",
+      "swath_km_at_500": 0,
+      "gsd_m_at_500": 0
     },
     {
       "id": "inst_xray_spectrometer",
@@ -651,7 +671,9 @@
       "measures": ["elemental_chemistry"],
       "needs_pointing_class": 0,
       "drill_depth_m": 0,
-      "summary": "Maps the chemical elements across a postage stamp of rock, grain by grain: the texture that tells a lake bed from a lava flow."
+      "summary": "Maps the chemical elements across a postage stamp of rock, grain by grain: the texture that tells a lake bed from a lava flow.",
+      "swath_km_at_500": 0,
+      "gsd_m_at_500": 0
     },
     {
       "id": "inst_laser_spectrometer",
@@ -668,7 +690,9 @@
       "measures": ["remote_chemistry"],
       "needs_pointing_class": 0,
       "drill_depth_m": 0,
-      "summary": "Vaporises a pinhead of rock up to seven metres away and reads the flash. It surveys dozens of targets a day without the rover moving."
+      "summary": "Vaporises a pinhead of rock up to seven metres away and reads the flash. It surveys dozens of targets a day without the rover moving.",
+      "swath_km_at_500": 0,
+      "gsd_m_at_500": 0
     },
     {
       "id": "inst_weather_station",
@@ -685,7 +709,388 @@
       "measures": ["weather"],
       "needs_pointing_class": 0,
       "drill_depth_m": 0,
-      "summary": "Wind, pressure, temperature and dust, day and night: the record future crews will plan around."
+      "summary": "Wind, pressure, temperature and dust, day and night: the record future crews will plan around.",
+      "swath_km_at_500": 0,
+      "gsd_m_at_500": 0
+    },
+    {
+      "id": "bus_cubesat",
+      "name": "12U CubeSat frame",
+      "category": "bus",
+      "mass_kg": 6,
+      "power_w": 0,
+      "cost_musd": 0.5,
+      "trl": 9,
+      "failure_rate_per_year": 0.03,
+      "min_tier": "cadet",
+      "payload_capacity_kg": 16,
+      "summary": "A shoebox-sized standard frame. Cheap and quick to build, with room for one small instrument."
+    },
+    {
+      "id": "bus_microsat",
+      "name": "Microsatellite frame",
+      "category": "bus",
+      "mass_kg": 28,
+      "power_w": 0,
+      "cost_musd": 2.2,
+      "trl": 9,
+      "failure_rate_per_year": 0.02,
+      "min_tier": "cadet",
+      "payload_capacity_kg": 70,
+      "summary": "The size of a washing machine: room for a real telescope, bigger wheels and a propulsion unit."
+    },
+    {
+      "id": "bus_smallsat",
+      "name": "Small satellite frame",
+      "category": "bus",
+      "mass_kg": 60,
+      "power_w": 0,
+      "cost_musd": 5,
+      "trl": 9,
+      "failure_rate_per_year": 0.015,
+      "min_tier": "engineer",
+      "payload_capacity_kg": 160,
+      "summary": "A stiff, well-proven frame for a wide instrument and years of work. It no longer fits the cheapest launch seats."
+    },
+    {
+      "id": "solar_cells_body",
+      "name": "Body-mounted solar cells",
+      "category": "power",
+      "mass_kg": 1.5,
+      "power_w": 0,
+      "cost_musd": 0.3,
+      "trl": 9,
+      "failure_rate_per_year": 0.005,
+      "min_tier": "cadet",
+      "power_kind": "solar",
+      "area_m2": 0.1,
+      "efficiency": 0.295,
+      "mounting": "body",
+      "summary": "Cells glued to the sides of the satellite. Nothing to deploy and nothing to break, but most of them face away from the Sun."
+    },
+    {
+      "id": "solar_wings_fixed",
+      "name": "Fold-out solar wings",
+      "category": "power",
+      "mass_kg": 4,
+      "power_w": 0,
+      "cost_musd": 0.8,
+      "trl": 9,
+      "failure_rate_per_year": 0.01,
+      "min_tier": "cadet",
+      "power_kind": "solar",
+      "area_m2": 0.25,
+      "efficiency": 0.295,
+      "mounting": "vertical",
+      "summary": "Two panels that spring open after launch. Several times the power; the satellite must turn to face them at the Sun."
+    },
+    {
+      "id": "solar_wings_tracking",
+      "name": "Sun-tracking solar wings",
+      "category": "power",
+      "mass_kg": 9,
+      "power_w": 2,
+      "cost_musd": 2.2,
+      "trl": 8,
+      "failure_rate_per_year": 0.02,
+      "min_tier": "engineer",
+      "power_kind": "solar",
+      "area_m2": 0.8,
+      "efficiency": 0.295,
+      "mounting": "tracking_mast",
+      "summary": "Wings on motors that follow the Sun while the instrument keeps looking down. The most power, the most drag, and a mechanism that can jam."
+    },
+    {
+      "id": "battery_cubesat",
+      "name": "CubeSat battery pack",
+      "category": "battery",
+      "mass_kg": 1.2,
+      "power_w": 0,
+      "cost_musd": 0.1,
+      "trl": 9,
+      "failure_rate_per_year": 0.01,
+      "min_tier": "cadet",
+      "capacity_wh": 150,
+      "depth_of_discharge": 0.4,
+      "summary": "Enough for a small satellite through each half-hour of shadow. Batteries cycled fifteen times a day wear out fast, so only part of the charge is used."
+    },
+    {
+      "id": "battery_smallsat",
+      "name": "Small satellite battery",
+      "category": "battery",
+      "mass_kg": 5,
+      "power_w": 0,
+      "cost_musd": 0.4,
+      "trl": 9,
+      "failure_rate_per_year": 0.01,
+      "min_tier": "cadet",
+      "capacity_wh": 700,
+      "depth_of_discharge": 0.4,
+      "summary": "Carries a hungry payload through every eclipse with room to spare."
+    },
+    {
+      "id": "prop_cold_gas",
+      "name": "Cold-gas thruster",
+      "category": "propulsion",
+      "mass_kg": 2.5,
+      "power_w": 5,
+      "cost_musd": 0.4,
+      "trl": 9,
+      "failure_rate_per_year": 0.01,
+      "min_tier": "cadet",
+      "isp_s": 60,
+      "thrust_n": 0.5,
+      "tank_mass_fraction": 0.5,
+      "max_coast_days": 3650,
+      "summary": "Compressed gas through a valve. Simple and safe; so inefficient that it can only nudge the orbit."
+    },
+    {
+      "id": "prop_green_mono",
+      "name": "Green monopropellant thruster",
+      "category": "propulsion",
+      "mass_kg": 5,
+      "power_w": 12,
+      "cost_musd": 1.2,
+      "trl": 8,
+      "failure_rate_per_year": 0.015,
+      "min_tier": "cadet",
+      "isp_s": 220,
+      "thrust_n": 1,
+      "tank_mass_fraction": 0.2,
+      "max_coast_days": 3650,
+      "summary": "A compact chemical thruster that holds the orbit against drag and brings the satellite down at the end."
+    },
+    {
+      "id": "prop_hall_small",
+      "name": "Miniature Hall thruster",
+      "category": "propulsion",
+      "mass_kg": 8,
+      "power_w": 150,
+      "cost_musd": 2.5,
+      "trl": 7,
+      "failure_rate_per_year": 0.03,
+      "min_tier": "engineer",
+      "isp_s": 1300,
+      "thrust_n": 0.01,
+      "tank_mass_fraction": 0.15,
+      "max_coast_days": 3650,
+      "summary": "Electric propulsion: a whisper of thrust for a sixth of the propellant. It needs a lot of power while it runs."
+    },
+    {
+      "id": "adcs_magnetic",
+      "name": "Magnetic torquers",
+      "category": "adcs",
+      "mass_kg": 0.6,
+      "power_w": 1.5,
+      "cost_musd": 0.1,
+      "trl": 9,
+      "failure_rate_per_year": 0.01,
+      "min_tier": "cadet",
+      "pointing_class": 1,
+      "summary": "Electromagnets that push against Earth’s magnetic field. They keep the satellite roughly facing down: enough for a wide radio beam, not for a telescope."
+    },
+    {
+      "id": "adcs_wheels_small",
+      "name": "Reaction wheels and star tracker",
+      "category": "adcs",
+      "mass_kg": 3.5,
+      "power_w": 9,
+      "cost_musd": 1.4,
+      "trl": 9,
+      "failure_rate_per_year": 0.04,
+      "min_tier": "cadet",
+      "pointing_class": 3,
+      "summary": "Spinning wheels turn the satellite precisely and a star camera tells it where it is looking. Sharp pictures need this; wheels are also what most often fails."
+    },
+    {
+      "id": "obc_cubesat",
+      "name": "CubeSat computer",
+      "category": "computer",
+      "mass_kg": 0.4,
+      "power_w": 2,
+      "cost_musd": 0.15,
+      "trl": 9,
+      "failure_rate_per_year": 0.05,
+      "min_tier": "cadet",
+      "storage_gb": 256,
+      "radiation_hardened": false,
+      "autonomy": 1,
+      "summary": "A phone-class processor with a memory card. Plenty of storage for the price; a solar storm can knock it over."
+    },
+    {
+      "id": "obc_smallsat",
+      "name": "Radiation-tolerant small computer",
+      "category": "computer",
+      "mass_kg": 1.5,
+      "power_w": 8,
+      "cost_musd": 1.1,
+      "trl": 8,
+      "failure_rate_per_year": 0.015,
+      "min_tier": "engineer",
+      "storage_gb": 1024,
+      "radiation_hardened": true,
+      "autonomy": 2,
+      "summary": "Rides out radiation without a reset and schedules its own imaging and downlinks."
+    },
+    {
+      "id": "comms_uhf_small",
+      "name": "UHF radio",
+      "category": "comms",
+      "mass_kg": 0.3,
+      "power_w": 6,
+      "cost_musd": 0.08,
+      "trl": 9,
+      "failure_rate_per_year": 0.01,
+      "min_tier": "cadet",
+      "tx_power_w": 2,
+      "antenna_diameter_m": 0.1,
+      "max_rate_mbps": 0.02,
+      "needs_pointing_class": 0,
+      "relay": false,
+      "summary": "A whip antenna that works in any attitude. Commands and health data only: pictures would take years."
+    },
+    {
+      "id": "comms_s_band_small",
+      "name": "S-band radio",
+      "category": "comms",
+      "mass_kg": 1,
+      "power_w": 15,
+      "cost_musd": 0.3,
+      "trl": 9,
+      "failure_rate_per_year": 0.01,
+      "min_tier": "cadet",
+      "tx_power_w": 4,
+      "antenna_diameter_m": 0.1,
+      "max_rate_mbps": 4,
+      "needs_pointing_class": 1,
+      "relay": false,
+      "summary": "A few megabits a second through a patch antenna: fine for a modest camera and a couple of passes a day."
+    },
+    {
+      "id": "comms_x_band_small",
+      "name": "X-band downlink",
+      "category": "comms",
+      "mass_kg": 2.5,
+      "power_w": 45,
+      "cost_musd": 1,
+      "trl": 8,
+      "failure_rate_per_year": 0.02,
+      "min_tier": "cadet",
+      "tx_power_w": 10,
+      "antenna_diameter_m": 0.2,
+      "max_rate_mbps": 150,
+      "needs_pointing_class": 3,
+      "relay": false,
+      "summary": "Empties the recorder in a single pass. The narrow beam needs precise pointing and a lot of power while it transmits."
+    },
+    {
+      "id": "thermal_small",
+      "name": "Coatings and a small heater",
+      "category": "thermal",
+      "mass_kg": 0.8,
+      "power_w": 0,
+      "cost_musd": 0.1,
+      "trl": 9,
+      "failure_rate_per_year": 0.002,
+      "min_tier": "cadet",
+      "heat_leak_factor": 1,
+      "radioisotope_heat_w": 0,
+      "summary": "Paint, tape and a thermostat. Earth orbit is gentle: half an hour of shadow at a time."
+    },
+    {
+      "id": "inst_imager_compact",
+      "name": "Compact colour imager",
+      "category": "instrument",
+      "mass_kg": 4,
+      "power_w": 12,
+      "cost_musd": 0.9,
+      "trl": 9,
+      "failure_rate_per_year": 0.03,
+      "min_tier": "cadet",
+      "data_rate_mbps": 8,
+      "science_value": 10,
+      "measures": ["multispectral_imaging"],
+      "needs_pointing_class": 3,
+      "drill_depth_m": 0,
+      "swath_km_at_500": 24,
+      "gsd_m_at_500": 3.5,
+      "summary": "Sees cars and field edges through a small telescope. Its narrow strip means the same field comes round only now and then."
+    },
+    {
+      "id": "inst_imager_wide",
+      "name": "Wide-swath multispectral imager",
+      "category": "instrument",
+      "mass_kg": 22,
+      "power_w": 45,
+      "cost_musd": 3.8,
+      "trl": 8,
+      "failure_rate_per_year": 0.03,
+      "min_tier": "cadet",
+      "data_rate_mbps": 30,
+      "science_value": 26,
+      "measures": ["multispectral_imaging", "vegetation_index"],
+      "needs_pointing_class": 3,
+      "drill_depth_m": 0,
+      "swath_km_at_500": 180,
+      "gsd_m_at_500": 9,
+      "summary": "Thirteen colour bands across a wide strip: crop health for a whole region in one pass. Heavy, hungry and it floods the downlink."
+    },
+    {
+      "id": "inst_thermal_imager_small",
+      "name": "Thermal infrared imager",
+      "category": "instrument",
+      "mass_kg": 9,
+      "power_w": 25,
+      "cost_musd": 2.1,
+      "trl": 7,
+      "failure_rate_per_year": 0.04,
+      "min_tier": "engineer",
+      "data_rate_mbps": 5,
+      "science_value": 14,
+      "measures": ["surface_temperature"],
+      "needs_pointing_class": 3,
+      "drill_depth_m": 0,
+      "swath_km_at_500": 120,
+      "gsd_m_at_500": 60,
+      "summary": "Measures how warm the ground is: water stress in crops, wildfires, city heat. Coarse detail, and a new detector."
+    },
+    {
+      "id": "inst_ais_receiver",
+      "name": "Ship-tracking receiver",
+      "category": "instrument",
+      "mass_kg": 1,
+      "power_w": 4,
+      "cost_musd": 0.3,
+      "trl": 9,
+      "failure_rate_per_year": 0.01,
+      "min_tier": "cadet",
+      "data_rate_mbps": 0.05,
+      "science_value": 6,
+      "measures": ["ship_tracking"],
+      "needs_pointing_class": 0,
+      "drill_depth_m": 0,
+      "swath_km_at_500": 0,
+      "gsd_m_at_500": 0,
+      "summary": "Listens to the position beacons of ships across a whole ocean at once. Tiny, frugal, and it works in any attitude."
+    },
+    {
+      "id": "inst_gnss_occultation",
+      "name": "Atmosphere sounder (GNSS occultation)",
+      "category": "instrument",
+      "mass_kg": 1.5,
+      "power_w": 8,
+      "cost_musd": 0.6,
+      "trl": 8,
+      "failure_rate_per_year": 0.02,
+      "min_tier": "engineer",
+      "data_rate_mbps": 0.2,
+      "science_value": 9,
+      "measures": ["atmosphere_profile"],
+      "needs_pointing_class": 1,
+      "drill_depth_m": 0,
+      "swath_km_at_500": 0,
+      "gsd_m_at_500": 0,
+      "summary": "Watches navigation signals bend as they set behind the Earth to profile temperature and moisture for weather forecasts."
     }
   ]
 }

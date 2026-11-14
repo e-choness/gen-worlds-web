@@ -1,6 +1,6 @@
 {
   "source": "Event types follow real mission experience: solar particle events upsetting flight computers, Deep Space Network scheduling conflicts, lunar lander navigation losses in engine-blown dust, wheel and drill actuator faults on Mars rovers, programme budget reductions. Probabilities and magnitudes are game balance values.",
-  "units": "probability is the chance the event happens once in its phase; rate_per_day is used instead for events that can strike at any time in a phase. Effects: lose_days (days of operations lost), lose_data_fraction (share of stored data lost), power_loss_fraction (share of generated power lost for the rest of the mission), budget_cut_fraction (share of the budget cap removed), slip_lunar_months (landing date moves by whole lunar months), disable_slot (the part in that slot stops working), mission_loss. A mitigation applies when its condition is true for the design: it multiplies the probability and the magnitude.",
+  "units": "probability is the chance the event happens once in its phase; rate_per_day is used instead for events that can strike at any time in a phase. Effects: lose_days (days of operations lost), lose_data_fraction (share of stored data lost), power_loss_fraction (share of generated power lost for the rest of the mission), budget_cut_fraction (share of the budget cap removed), slip_lunar_months (landing date moves by whole lunar months), disable_slot (the part in that slot stops working), mission_loss. A mitigation applies when its condition is true for the design: it multiplies the probability and the magnitude. drag_factor multiplies atmospheric drag on an orbiter for the rest of the mission.",
   "events": [
     {
       "id": "budget_cut",
@@ -394,6 +394,112 @@
           "probability_factor": 1,
           "magnitude_factor": 0.5,
           "why": "Terrain-relative navigation knew where the lander was the moment the heat shield dropped, and steered to its pre-mapped safe zone with the time it had."
+        }
+      ]
+    },
+    {
+      "id": "reaction_wheel_fault",
+      "name": "Reaction wheel fault",
+      "phase": "surface",
+      "role": "engineer",
+      "probability": 0,
+      "rate_per_day": 0.0006,
+      "effect": {
+        "kind": "disable_slot",
+        "magnitude": 1,
+        "slot": "adcs"
+      },
+      "description": "A wheel bearing starts to drag and the wheel is switched off.",
+      "unmitigated_why": "With a wheel gone the satellite could no longer hold still on a target. Every image after that day was smeared and useless.",
+      "mitigations": [
+        {
+          "condition": {
+            "slot": "adcs",
+            "property": "",
+            "value": 0,
+            "kind": "redundant"
+          },
+          "probability_factor": 1,
+          "magnitude_factor": 0,
+          "why": "The spare wheel spun up and pointing carried on as before."
+        },
+        {
+          "condition": {
+            "slot": "adcs",
+            "property": "adcs_magnetic",
+            "value": 0,
+            "kind": "has_part"
+          },
+          "probability_factor": 0,
+          "magnitude_factor": 0,
+          "why": "Magnetic torquers have no moving parts to wear out."
+        }
+      ]
+    },
+    {
+      "id": "ground_station_outage",
+      "name": "Ground station outage",
+      "phase": "surface",
+      "role": "comms",
+      "probability": 0,
+      "rate_per_day": 0.006,
+      "effect": {
+        "kind": "lose_data_fraction",
+        "magnitude": 0.3,
+        "slot": "comms"
+      },
+      "description": "A storm takes the ground station off the air for two days.",
+      "unmitigated_why": "With nowhere to send it, new images overwrote 30 % of what was waiting in the recorder.",
+      "mitigations": [
+        {
+          "condition": {
+            "slot": "computer",
+            "property": "storage_gb",
+            "value": 1024,
+            "kind": "slot_property_at_least"
+          },
+          "probability_factor": 1,
+          "magnitude_factor": 0,
+          "why": "The large recorder held two days of images until the station came back."
+        }
+      ]
+    },
+    {
+      "id": "solar_maximum",
+      "name": "Active Sun",
+      "phase": "surface",
+      "role": "comms",
+      "probability": 0.3,
+      "rate_per_day": 0,
+      "effect": {
+        "kind": "drag_factor",
+        "magnitude": 3,
+        "slot": "trajectory"
+      },
+      "description": "The Sun turns out more active than forecast and the upper atmosphere swells.",
+      "unmitigated_why": "The air at orbital height became three times denser, and drag pulled the orbit down three times faster than planned. In 2022 a batch of 38 new satellites was lost this way.",
+      "mitigations": [
+        {
+          "condition": {
+            "slot": "propulsion",
+            "property": "prop_green_mono",
+            "value": 0,
+            "kind": "has_part"
+          },
+          "probability_factor": 1,
+          "magnitude_factor": 0,
+          "why": "The thruster simply burned a little more often to hold the orbit."
+        },
+        {
+          "condition": {
+            "slot": "propulsion",
+            "property": "prop_hall_small",
+            "value": 0,
+            "kind": "has_part"
+          },
+          "probability_factor": 1,
+          "magnitude_factor": 0,
+          "why": "The electric thruster made up the extra drag with propellant to spare."
         }
       ]
     }

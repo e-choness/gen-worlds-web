@@ -46,14 +46,18 @@ export function BriefingScreen({ scenario, tier, onNext, onBack }: BriefingScree
             <dd>
               ${cap}M <span class="dim">{t.budgetNote}</span>
             </dd>
-            <dt>{t.duration}</dt>
+            <dt>{scenario.orbit ? t.orbitDuration : t.duration}</dt>
             <dd>
               {scenario.surfaceDurationDays} {t.days}
             </dd>
-            <dt>{t.window}</dt>
-            <dd>
-              {scenario.landingWindow.startDate} → {scenario.landingWindow.endDate}
-            </dd>
+            {!scenario.orbit && (
+              <>
+                <dt>{t.window}</dt>
+                <dd>
+                  {scenario.landingWindow.startDate} → {scenario.landingWindow.endDate}
+                </dd>
+              </>
+            )}
             <dt>{t.critical}</dt>
             <dd class="chips">
               {scenario.criticalResources.map((resource) => (
@@ -62,8 +66,12 @@ export function BriefingScreen({ scenario, tier, onNext, onBack }: BriefingScree
                 </span>
               ))}
             </dd>
-            <dt>{t.sites}</dt>
-            <dd>{scenario.sites.map((site) => site.name).join(' · ')}</dd>
+            <dt>{scenario.orbit ? t.orbits : t.sites}</dt>
+            <dd>
+              {(scenario.orbit ? scenario.orbit.options : scenario.sites)
+                .map((option) => option.name)
+                .join(' · ')}
+            </dd>
           </dl>
 
           <aside class="reference-card">

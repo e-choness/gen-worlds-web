@@ -16,6 +16,15 @@ import {
 import { computeDataModel, type DataModel, dataLine } from '@/mission/data-budget';
 import { type MissionDesign, type ResolvedDesign, resolveDesign } from '@/mission/design';
 import { computeMassChain, deltaVLine, launchLine, type MassChain, massLine } from '@/mission/mass-budget';
+import {
+  computeOrbitMassChain,
+  eclipseLine,
+  orbitDeltaVLine,
+  orbitLaunchLine,
+  orbitPowerLine,
+  orbitVisibility,
+} from '@/mission/orbit-budgets';
+import { computeOrbitModel, type OrbitModel } from '@/mission/orbit-model';
 import { computePowerModel, type PowerModel, powerLine, thermalLine } from '@/mission/power-budget';
 import { computeRiskModel, type RiskModel, riskLine } from '@/mission/risk-budget';
 import { computeSiteVisibility, type SiteVisibility } from '@/mission/site-visibility';
@@ -31,6 +40,8 @@ export interface DesignEvaluation {
   mass: MassChain | null;
   power: PowerModel | null;
   visibility: SiteVisibility | null;
+  /** The orbit of a mission flown in orbit; null for a lander or before an orbit is chosen. */
+  orbit: OrbitModel | null;
   data: DataModel | null;
   cost: CostModel;
   schedule: ScheduleModel;
@@ -42,9 +53,11 @@ export function evaluateDesign(design: MissionDesign): DesignEvaluation {
   const { scenario, site } = resolved;
   const landingJd = design.trajectory.landingJd;
 
-  const mass = computeMassChain(resolved);
-  const visibility =
-    site && landingJd !== null
+  const orbit = computeOrbitModel(resolved);
+  const mass = scenario.orbit ? computeOrbitMassChain(resolved, orbit) : computeMassChain(resolved);
+  const visibility = scenario.orbit
+    ? orbit && orbitVisibility(orbit, scenario.surfaceDurationDays)
+    : site && landingJd !== null
       ? computeSiteVisibility(
           site,
           landingJd,
@@ -63,10 +76,10 @@ export function evaluateDesign(design: MissionDesign): DesignEvaluation {
 
   const budgets = [
     massLine(resolved),
-    deltaVLine(resolved, mass),
-    launchLine(resolved, mass),
-    powerLine(resolved, power),
-    thermalLine(resolved, power, visibility),
+    scenario.orbit ? orbitDeltaVLine(resolved, mass, orbit) : deltaVLine(resolved, mass),
+    scenario.orbit ? orbitLaunchLine(resolved, mass, orbit) : launchLine(resolved, mass),
+    scenario.orbit ? orbitPowerLine(resolved, power, orbit) : powerLine(resolved, power),
+    scenario.orbit ? eclipseLine(resolved, power, orbit) : thermalLine(resolved, power, visibility),
     dataLine(resolved, data),
     costLine(resolved, cost),
     scheduleLine(resolved, schedule),
@@ -76,7 +89,20 @@ export function evaluateDesign(design: MissionDesign): DesignEvaluation {
   const worst = worstStatus(budgets.map((line) => line.status));
   const launchable =
     worst !== 'fail' && worst !== 'incomplete' && !issues.some((issue) => issue.severity === 'error');
-  return { resolved, budgets, issues, launchable, mass, power, visibility, data, cost, schedule, risk };
+  return {
+    resolved,
+    budgets,
+    issues,
+    launchable,
+    mass,
+    power,
+    visibility,
+    orbit,
+    data,
+    cost,
+    schedule,
+    risk,
+  };
 }
 
 export function budgetById(evaluation: DesignEvaluation, id: BudgetLine['id']): BudgetLine {

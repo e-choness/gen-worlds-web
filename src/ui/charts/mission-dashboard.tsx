@@ -123,10 +123,12 @@ export function MissionDashboard({ telemetry, landingDay, playheadDay }: Mission
           <dt>{t.onBoard}</dt>
           <dd>{num(telemetry.bufferGb[at], 1)} Gb</dd>
         </div>
-        <div>
-          <dt>{t.driven}</dt>
-          <dd>{num(telemetry.traverseKm[at], 1)} km</dd>
-        </div>
+        {telemetry.traverseKm[hours - 1] > 0 && (
+          <div>
+            <dt>{t.driven}</dt>
+            <dd>{num(telemetry.traverseKm[at], 1)} km</dd>
+          </div>
+        )}
       </dl>
       <svg viewBox={`0 0 ${WIDTH} ${bottom + 16}`} role="img" aria-label={t.label}>
         {ticks.map((day) => (

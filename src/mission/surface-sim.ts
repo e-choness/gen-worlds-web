@@ -38,6 +38,7 @@ export type SurfaceEnd =
   | { kind: 'completed' }
   | { kind: 'froze'; hour: number; darkHours: number }
   | { kind: 'battery_flat'; hour: number }
+  | { kind: 'reentered'; hour: number }
   | { kind: 'hardware'; hour: number; item: InstalledPart };
 
 /** What the vehicle was doing in one hour, as stored in `SurfaceTelemetry.mode`. */
@@ -74,6 +75,8 @@ export interface SurfaceOutcome {
   /** Drill samples taken, and those in which ice was confirmed. */
   samplesTaken: number;
   iceSamples: number;
+  /** Ground imaged at the required detail and received on Earth, millions of km² (orbiters only). */
+  areaImagedMkm2: number;
   dataGeneratedGb: number;
   dataReturnedGb: number;
   dataLostGb: number;
@@ -440,6 +443,7 @@ export function simulateSurface(input: SurfaceInput): SurfaceOutcome {
     traverseKm,
     samplesTaken,
     iceSamples,
+    areaImagedMkm2: 0,
     dataGeneratedGb: generated,
     dataReturnedGb: returned,
     dataLostGb: lost,

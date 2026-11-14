@@ -102,11 +102,12 @@ describe('data catalogs', () => {
           expect(part.capacityWh / part.massKg, part.id).toBeLessThan(250);
           break;
         case 'propulsion':
-          expect(part.ispS, part.id).toBeGreaterThan(150);
-          expect(part.ispS, part.id).toBeLessThan(480);
+          // From cold gas (about 60 s) to electric thrusters (a few thousand).
+          expect(part.ispS, part.id).toBeGreaterThan(40);
+          expect(part.ispS, part.id).toBeLessThan(3500);
           expect(part.thrustN, part.id).toBeGreaterThan(0);
           expect(part.tankMassFraction, part.id).toBeGreaterThan(0);
-          expect(part.tankMassFraction, part.id).toBeLessThan(0.3);
+          expect(part.tankMassFraction, part.id).toBeLessThan(0.7);
           expect(part.maxCoastDays, part.id).toBeGreaterThan(0);
           break;
         case 'adcs':
@@ -174,7 +175,10 @@ describe('data catalogs', () => {
       expect(Date.parse(scenario.landingWindow.endDate), scenario.id).toBeGreaterThan(
         Date.parse(scenario.landingWindow.startDate),
       );
-      expect(scenario.transfers.length + (scenario.route ? 1 : 0), scenario.id).toBeGreaterThan(0);
+      expect(
+        scenario.transfers.length + (scenario.route ? 1 : 0) + (scenario.orbit?.options.length ?? 0),
+        scenario.id,
+      ).toBeGreaterThan(0);
       for (const site of scenario.sites) {
         expect(site.horizonMaskDeg, site.id).toHaveLength(12);
         expect(Math.abs(site.latitudeDeg), site.id).toBeLessThanOrEqual(90);

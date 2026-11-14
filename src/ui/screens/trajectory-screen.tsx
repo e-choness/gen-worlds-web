@@ -7,6 +7,8 @@ import { tierAllows } from '@/data/mission-constants';
 import type { MissionDesign, TrajectoryChoice } from '@/mission/design';
 import { type DesignEvaluation, evaluateDesign } from '@/mission/evaluate-design';
 import { money, num, percent } from '@/mission/format';
+import { lifetimeText } from '@/mission/orbit-budgets';
+import { computeOrbitModel } from '@/mission/orbit-model';
 import { type BudgetChange, previewChanges } from '@/mission/preview';
 import { computeSiteCalendar } from '@/mission/site-calendar';
 import { landingWindowJd } from '@/mission/validation';
@@ -52,6 +54,9 @@ export function TrajectoryScreen({ evaluation, crew, onChange, onNext, onBack }:
       vehicles: new Map(scenario.launchVehicles.map((id) => [id, preview({ launchVehicleId: id })])),
       transfers: new Map(scenario.transfers.map((option) => [option.id, preview({ transferId: option.id })])),
       sites: new Map(scenario.sites.map((option) => [option.id, preview({ siteId: option.id })])),
+      orbits: new Map(
+        (scenario.orbit?.options ?? []).map((option) => [option.id, preview({ orbitId: option.id })]),
+      ),
     }),
     [evaluation],
   );
@@ -111,7 +116,12 @@ export function TrajectoryScreen({ evaluation, crew, onChange, onNext, onBack }:
                 { label: t.cost, value: money(option.costMusd) },
                 { label: t.reliability, value: percent(option.reliability) },
               ];
-              if (transfer) {
+              if (resolved.orbit) {
+                stats.push({
+                  label: t.liftsToOrbit,
+                  value: `${num(capacityAt(option.ssoCapacity, resolved.orbit.altitudeKm))} kg`,
+                });
+              } else if (transfer) {
                 stats.push({
                   label: t.lifts,
                   value: `${num(capacityAt(option.c3Capacity, transfer.c3Km2S2))} kg`,
@@ -137,14 +147,59 @@ export function TrajectoryScreen({ evaluation, crew, onChange, onNext, onBack }:
           <CapacityChart
             vehicles={vehicles}
             selectedId={vehicle?.id ?? null}
-            c3={transfer?.c3Km2S2 ?? null}
+            c3={scenario.orbit ? (resolved.orbit?.altitudeKm ?? null) : (transfer?.c3Km2S2 ?? null)}
             neededKg={neededKg}
+            axis={scenario.orbit ? 'altitude' : 'energy'}
           />
         </div>
 
-        <h2>
-          {t.transfer} {scenario.terms.destination}
-        </h2>
+        {scenario.orbit && (
+          <>
+            <h2>{t.orbit}</h2>
+            <ul class="part-list two">
+              {scenario.orbit.options.map((option) => {
+                // Each card shows what this orbit would mean for the satellite as designed.
+                const model = computeOrbitModel({ ...resolved, orbit: option });
+                return (
+                  <li key={option.id}>
+                    <ChoiceCard
+                      title={option.name}
+                      summary={option.summary}
+                      stats={
+                        model
+                          ? [
+                              {
+                                label: t.eclipse,
+                                value: `${percent(model.eclipseFraction)} ${t.perOrbit}`,
+                              },
+                              {
+                                label: t.contact,
+                                value: `${num(model.contactFraction * 1440, 0)} ${t.perDay}`,
+                              },
+                              { label: t.lifetime, value: lifetimeText(model.naturalLifetimeYears) },
+                              {
+                                label: t.detail,
+                                value: `${num(500 / option.altitudeKm, 2)} ${t.detailUnit}`,
+                              },
+                            ]
+                          : []
+                      }
+                      selected={resolved.orbit?.id === option.id}
+                      changes={previews.orbits.get(option.id) ?? []}
+                      disabled={!routeMine}
+                      onChoose={() => onChange({ orbitId: option.id })}
+                    />
+                  </li>
+                );
+              })}
+            </ul>
+          </>
+        )}
+        {!scenario.orbit && (
+          <h2>
+            {t.transfer} {scenario.terms.destination}
+          </h2>
+        )}
         {porkchop && (
           <div class="date-picker">
             <PorkchopChart
@@ -227,7 +282,7 @@ export function TrajectoryScreen({ evaluation, crew, onChange, onNext, onBack }:
           ))}
         </ul>
 
-        <h2>{t.site}</h2>
+        {!scenario.orbit && <h2>{t.site}</h2>}
         {!siteMine && <p class="banner owned">{ownedBy(crew, 'science')}</p>}
         <ul class="part-list three">
           {scenario.sites.map((option) => (
@@ -257,8 +312,8 @@ export function TrajectoryScreen({ evaluation, crew, onChange, onNext, onBack }:
           ))}
         </ul>
 
-        {!route && <h2>{t.date}</h2>}
-        {route ? null : calendar ? (
+        {!route && !scenario.orbit && <h2>{t.date}</h2>}
+        {route || scenario.orbit ? null : calendar ? (
           <div class="date-picker">
             <SkyCalendar
               calendar={calendar}

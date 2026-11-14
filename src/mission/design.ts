@@ -25,7 +25,13 @@ import {
   type SlotId,
   type ThermalPart,
 } from '@/data/parts';
-import { getScenario, type LandingSite, type Scenario, type TransferOption } from '@/data/scenarios';
+import {
+  getScenario,
+  type LandingSite,
+  type OrbitOption,
+  type Scenario,
+  type TransferOption,
+} from '@/data/scenarios';
 
 export interface TrajectoryChoice {
   launchVehicleId: string | null;
@@ -35,6 +41,8 @@ export interface TrajectoryChoice {
   landingJd: number | null;
   /** Julian date of launch for scenarios whose route is flown between chosen dates; null otherwise. */
   departureJd?: number | null;
+  /** Orbit option of a mission flown in orbit; null otherwise. */
+  orbitId?: string | null;
 }
 
 export interface MissionDesign {
@@ -77,6 +85,7 @@ export function createReferenceDesign(scenario: Scenario, tier: TierId): Mission
       siteId: reference.site,
       landingJd: jdFromUnixMs(Date.parse(reference.landingDate)),
       departureJd: reference.departureDate ? jdFromUnixMs(Date.parse(reference.departureDate)) : null,
+      orbitId: reference.orbit || null,
     },
   };
 }
@@ -100,6 +109,7 @@ export interface ResolvedDesign {
   vehicle?: LaunchVehicle;
   transfer?: TransferOption;
   site?: LandingSite;
+  orbit?: OrbitOption;
   /** Arrival at a planet with an atmosphere: how fast the vehicle meets it. */
   arrival?: { vInfinityMS: number; entrySpeedMS: number };
   /** Every measurement tag the chosen instruments provide. */
@@ -181,6 +191,7 @@ export function resolveDesign(design: MissionDesign): ResolvedDesign {
         : undefined,
     transfer: flown?.transfer ?? scenario.transfers.find((transfer) => transfer.id === transferId),
     arrival: flown?.arrival,
+    orbit: scenario.orbit?.options.find((option) => option.id === design.trajectory.orbitId),
     site: scenario.sites.find((site) => site.id === siteId),
     measures: new Set(instruments.flatMap((instrument) => instrument.measures)),
   };

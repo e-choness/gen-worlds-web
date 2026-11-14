@@ -69,7 +69,30 @@ export function validateDesign(resolved: ResolvedDesign): DesignIssue[] {
   }
 
   const { vehicle, transfer, site } = resolved;
-  if (!vehicle || !transfer || !site || design.trajectory.landingJd === null) {
+  if (scenario.orbit) {
+    if (!vehicle || !resolved.orbit) {
+      const missing = [!vehicle && 'a launch vehicle', !resolved.orbit && 'an orbit'].filter(Boolean);
+      issues.push({
+        severity: 'error',
+        code: 'trajectory_incomplete',
+        slot: 'trajectory',
+        message: `The trajectory still needs ${missing.join(' and ')}.`,
+      });
+    } else {
+      const scale = resolved.orbit.altitudeKm / 500;
+      for (const instrument of resolved.instruments) {
+        const gsd = instrument.gsdMAt500 * scale;
+        if (instrument.swathKmAt500 > 0 && gsd > scenario.orbit.requiredGsdM) {
+          issues.push({
+            severity: 'warning',
+            code: 'imager_too_coarse',
+            slot: 'trajectory',
+            message: `From ${num(resolved.orbit.altitudeKm)} km the ${instrument.name.toLowerCase()} resolves ${num(gsd, 1)} m, and the imaging objective needs ${num(scenario.orbit.requiredGsdM)} m or better. Its pictures will not count: fly lower or carry a sharper imager.`,
+          });
+        }
+      }
+    }
+  } else if (!vehicle || !transfer || !site || design.trajectory.landingJd === null) {
     const missing = [
       !vehicle && 'a launch vehicle',
       !transfer && (scenario.route ? 'a launch date and a landing date' : 'a transfer'),
@@ -149,7 +172,7 @@ export function validateDesign(resolved: ResolvedDesign): DesignIssue[] {
     }
   }
 
-  if (site && site.shadowDistanceKm > 0) {
+  if (site && site.shadowDistanceKm > 0 && !scenario.orbit) {
     const { mobility } = resolved;
     if (!mobility) {
       issues.push({

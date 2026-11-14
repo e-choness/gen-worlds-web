@@ -16,7 +16,10 @@ describe('mission code', () => {
 
     const decoded = decodeMissionCode(encodeMissionCode({ design, seed: 123456, inputLog }));
 
-    expect(decoded?.design).toEqual({ ...design, trajectory: { ...design.trajectory, departureJd: null } });
+    expect(decoded?.design).toEqual({
+      ...design,
+      trajectory: { ...design.trajectory, departureJd: null, orbitId: null },
+    });
     expect(decoded?.seed).toBe(123456);
     expect(decoded?.inputLog).toEqual(inputLog);
   });

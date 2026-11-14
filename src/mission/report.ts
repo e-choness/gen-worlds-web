@@ -39,6 +39,7 @@ function endFinding(input: ReportInput, surface: SurfaceOutcome): Finding | null
   const { evaluation, landingDay } = input;
   const { resolved, power, budgets } = evaluation;
   const day = num(surface.hoursOperated / 24, 0);
+  const opsDay = resolved.scenario.terms.opsDay;
   const thermal = budgets.find((line) => line.id === 'thermal');
   const colder = input.timeline.some(
     (entry) => entry.phase === 'surface' && entry.slot === 'thermal' && entry.tone === 'bad',
@@ -49,16 +50,25 @@ function endFinding(input: ReportInput, surface: SurfaceOutcome): Finding | null
     case 'froze':
       return {
         tone: 'bad',
-        title: `Froze on surface day ${day}`,
+        title: `Froze on ${opsDay} ${day}`,
         detail: `Night fell for ${duration(surface.end.darkHours)} and counting. Hibernating, the vehicle drew ${num(power?.hibernationDrainW ?? 0)} W from a battery with ${num(power?.usableBatteryWh ?? 0)} Wh usable, and it ran flat before sunrise.${thermal?.status === 'warning' ? ' The design screen warned about this night before launch.' : ''} ${colder ? ' The ground was also colder than predicted, which made the heaters work harder.' : ''} A landing date in polar summer, a larger battery, better insulation or radioisotope heat would have carried it through.`,
         slot: 'thermal',
       };
     case 'battery_flat':
       return {
         tone: 'bad',
-        title: `Battery flat on surface day ${day}`,
-        detail: `Working in shadow drew ${num(power?.shadowDrainW ?? 0)} W (${num(power?.heaterShadowW ?? 0)} W of it heaters) with nothing to recharge the battery. ${resolved.site?.name ?? 'This site'} needs a power source that does not depend on the Sun.`,
+        title: `Battery flat on ${opsDay} ${day}`,
+        detail: resolved.scenario.orbit
+          ? 'The solar cells could no longer keep the satellite alive, the battery ran flat and it never answered again. More solar area or a lighter load would have kept it going.'
+          : `Working in shadow drew ${num(power?.shadowDrainW ?? 0)} W (${num(power?.heaterShadowW ?? 0)} W of it heaters) with nothing to recharge the battery. ${resolved.site?.name ?? 'This site'} needs a power source that does not depend on the Sun.`,
         slot: 'power',
+      };
+    case 'reentered':
+      return {
+        tone: 'bad',
+        title: `Burned up on ${opsDay} ${day}`,
+        detail: `Nothing held the orbit against drag, and the air at ${num(resolved.orbit?.altitudeKm ?? 0)} km is thick enough to bring a satellite like this down in ${num(evaluation.orbit ? evaluation.orbit.naturalLifetimeYears * 365 : 0, 0)} days in a quiet year. A higher orbit, or a thruster to hold this one, keeps it flying.`,
+        slot: 'trajectory',
       };
     case 'hardware': {
       const { item } = surface.end;
@@ -67,7 +77,7 @@ function endFinding(input: ReportInput, surface: SurfaceOutcome): Finding | null
         : 'A backup unit would have cut this risk tenfold for less than twice the mass and cost.';
       return {
         tone: 'bad',
-        title: `${item.part.name} failed on surface day ${day}`,
+        title: `${item.part.name} failed on ${opsDay} ${day}`,
         detail: `The mission cannot continue without it (mission day ${num(landingDay + surface.hoursOperated / 24, 0)}). Its failure rate is ${percent(item.failureRatePerYear)} per year. ${redundantNote}`,
         slot: item.slot,
       };
@@ -88,7 +98,9 @@ function objectiveFinding(
   const title = `${result.objective.name}: ${percent(result.achieved)}`;
   const endedEarly = surface.end.kind !== 'completed';
   const totalHours = input.evaluation.visibility?.sunVisible.length ?? 1;
-  const early = endedEarly ? ` The mission ended on surface day ${num(surface.hoursOperated / 24, 0)}.` : '';
+  const early = endedEarly
+    ? ` The mission ended on ${resolved.scenario.terms.opsDay} ${num(surface.hoursOperated / 24, 0)}.`
+    : '';
   const missing = result.objective.requiresMeasures.filter((tag) => !resolved.measures.has(tag));
   if (missing.length > 0) return { tone: 'bad', title, detail: result.why, slot: 'instrument' };
 
@@ -204,9 +216,31 @@ function objectiveFinding(
       return {
         tone: 'bad',
         title,
-        detail: `${result.why} Cameras, mineral and temperature sensors and radar each add one.`,
+        detail: resolved.scenario.orbit
+          ? `${result.why} Each instrument beyond the imager adds one.`
+          : `${result.why} Cameras, mineral and temperature sensors and radar each add one.`,
         slot: 'instrument',
       };
+    case 'area_imaged_mkm2': {
+      const returnedShare =
+        surface.dataGeneratedGb > 0 ? surface.dataReturnedGb / surface.dataGeneratedGb : 0;
+      if (surface.dataGeneratedGb > 0 && returnedShare < 0.7) {
+        return {
+          tone: 'bad',
+          title,
+          detail: `${result.why} Only ${percent(returnedShare)} of what the instruments recorded reached the ground: the radio sends about ${num(data?.downlinkGbPerDay ?? 0)} Gb a day and they produce ${num(data?.generatedGbPerDay ?? 0)}. A faster radio turns recorded ground into delivered ground.${early}`,
+          slot: 'comms',
+        };
+      }
+      return {
+        tone: 'bad',
+        title,
+        detail: `${result.why}${early} A wider swath covers more ground on every orbit, as long as the detail stays within the requirement at your altitude and the satellite can hold still enough to use it.`,
+        slot: 'instrument',
+      };
+    }
+    case 'days_operated':
+      return { tone: 'bad', title, detail: `${result.why}${early}`, slot: null };
   }
 }
 

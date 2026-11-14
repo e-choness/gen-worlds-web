@@ -1,0 +1,273 @@
+{
+  "source": "Modelled on NASA and commercial Earth-observation small satellites (NASA Earth Science Technology Office CubeSat missions, Landsat and Sentinel-2 for imaging requirements, Planet's Dove constellation for the small end). Sun-synchronous orbit geometry, eclipse and ground-contact fractions are computed from first principles; atmospheric density follows the piecewise-exponential table in the body catalog (mean solar activity). The five-year disposal rule is the 2022 FCC orbital debris rule that NASA missions also follow. Budget and part costs are representative of university and small-company missions.",
+  "units": "orbit.options: altitude_km of a circular sun-synchronous orbit and beta_angle_deg, the angle between the orbit plane and the Sun (22 degrees for a mid-morning orbit, about 75 for a dawn-dusk orbit that almost never enters shadow). orbit.station_*: latitude and number of ground stations and the lowest elevation at which a pass counts. drag_coefficient and body_frontal_area_m2 set the drag (half the solar array area is added). reentry_altitude_km: where the satellite burns up. deorbit_perigee_km: the perigee a disposal burn must reach. debris_rule_years: how soon after the mission the satellite must be gone. required_gsd_m: the coarsest ground resolution that still serves the imaging objective. Fields about landing (sites, descent, landing_window, route, entry, sky) are unused here and kept at neutral values. objectives: area_imaged_mkm2 is millions of square kilometres imaged at the required resolution or better; days_operated counts days until the mission ended. orbit.options.image_quality (0-1) scales the ground that counts as usefully imaged: low Sun and long shadows spoil pictures of fields.",
+  "id": "earth_observation",
+  "number": 1,
+  "name": "Earth observation small satellite",
+  "tagline": "Watch the world’s farmland from orbit, on a university budget.",
+  "briefing": "A food-security agency wants fresh pictures of the world’s croplands every few days, sharp enough to tell one field from the next, for a year. You have the budget of a small satellite, not a flagship. Choose a frame, a camera and a radio, find a cheap ride to orbit, and decide how high to fly: low orbits see more detail and fall out of the sky sooner; high orbits last for decades, which is a problem of its own. This is the place to learn how mass, power, data and money pull against each other.",
+  "trajectory_mode": "earth_orbit",
+  "target_body": "earth",
+  "critical_resources": ["cost", "data"],
+  "budget_cap_musd": 14,
+  "operations_cost_musd_per_month": 0.12,
+  "surface_duration_days": 365,
+  "required_slots": ["bus", "power", "battery", "adcs", "computer", "comms", "thermal"],
+  "optional_slots": ["propulsion"],
+  "max_instruments": 3,
+  "catalog": [
+    "bus_cubesat",
+    "bus_microsat",
+    "bus_smallsat",
+    "solar_cells_body",
+    "solar_wings_fixed",
+    "solar_wings_tracking",
+    "battery_cubesat",
+    "battery_smallsat",
+    "prop_cold_gas",
+    "prop_green_mono",
+    "prop_hall_small",
+    "adcs_magnetic",
+    "adcs_wheels_small",
+    "obc_cubesat",
+    "obc_smallsat",
+    "comms_uhf_small",
+    "comms_s_band_small",
+    "comms_x_band_small",
+    "thermal_small",
+    "inst_imager_compact",
+    "inst_imager_wide",
+    "inst_thermal_imager_small",
+    "inst_ais_receiver",
+    "inst_gnss_occultation"
+  ],
+  "launch_vehicles": ["rideshare", "electron", "firefly_alpha"],
+  "launch_adapter_mass_kg": 4,
+  "landing_window": {
+    "start_date": "2027-01-01",
+    "end_date": "2027-12-31"
+  },
+  "transfers": [],
+  "route": null,
+  "orbit": {
+    "options": [
+      {
+        "id": "sso_420",
+        "name": "Low orbit, 420 km",
+        "altitude_km": 420,
+        "beta_angle_deg": 22,
+        "summary": "As low as the Space Station. The sharpest pictures and an orbit that cleans itself up; without a thruster the air drags the satellite down within the year.",
+        "image_quality": 1
+      },
+      {
+        "id": "sso_525",
+        "name": "Rideshare orbit, 525 km",
+        "altitude_km": 525,
+        "beta_angle_deg": 22,
+        "summary": "Where the cheap shared launches go. A sound compromise: good detail, a few years of natural life, home within the disposal rule.",
+        "image_quality": 1
+      },
+      {
+        "id": "sso_650",
+        "name": "Mid orbit, 650 km",
+        "altitude_km": 650,
+        "beta_angle_deg": 22,
+        "summary": "A wider view and longer passes over the ground station. Details blur, and a dead satellite would stay up for decades: it needs a way down.",
+        "image_quality": 1
+      },
+      {
+        "id": "sso_525_dawn_dusk",
+        "name": "Dawn-dusk orbit, 525 km",
+        "altitude_km": 525,
+        "beta_angle_deg": 75,
+        "summary": "Rides the line between day and night, in sunlight nearly all the time: power is never a problem. The ground below is always at sunrise or sunset, with long shadows across every field.",
+        "image_quality": 0.35
+      }
+    ],
+    "station_latitude_deg": 64.8,
+    "station_count": 1,
+    "min_elevation_deg": 10,
+    "drag_coefficient": 2.2,
+    "body_frontal_area_m2": 0.35,
+    "reentry_altitude_km": 150,
+    "deorbit_perigee_km": 60,
+    "debris_rule_years": 5,
+    "required_gsd_m": 10
+  },
+  "entry": null,
+  "sky": {
+    "model": "lunar",
+    "equinox_longitude_deg": 0,
+    "landing_local_hour": 12,
+    "conjunction_elongation_deg": 0
+  },
+  "terms": {
+    "destination": "orbit",
+    "vehicle": "satellite",
+    "local_weight": "weight",
+    "target_ground": "the target",
+    "target_short": "the target",
+    "find_title": "First image",
+    "find_detail": "was taken",
+    "sample_count": "taken",
+    "found_in": "took",
+    "no_find": "took no images",
+    "empty_sample": "were empty",
+    "find_advice": "",
+    "ops_day": "day in orbit",
+    "quality_label": "Quality",
+    "drive_label": "Distance",
+    "at_target": "on the spot"
+  },
+  "descent": {
+    "delta_v_m_s": 1900,
+    "min_thrust_to_weight": 1.3,
+    "summary": "From a 100 km orbit to a soft touchdown.",
+    "terminal_delta_v_m_s": 260,
+    "start_altitude_m": 1800,
+    "start_descent_rate_m_s": 38,
+    "start_ground_speed_m_s": 45,
+    "start_range_m": 1400,
+    "max_touchdown_speed_m_s": 3.5,
+    "max_touchdown_drift_m_s": 2.5
+  },
+  "environment": {
+    "solar_distance_au": 1,
+    "earth_distance_au": 0.00001,
+    "mounting_factors": [
+      {
+        "mounting": "body",
+        "factor": 0.3
+      },
+      {
+        "mounting": "vertical",
+        "factor": 0.7
+      },
+      {
+        "mounting": "tracking_mast",
+        "factor": 0.95
+      }
+    ],
+    "heater_demand_shadow_w": 6,
+    "heater_reference_mass_kg": 50,
+    "survival_heater_fraction": 0.5,
+    "hibernation_load_w": 2,
+    "dust_degradation_per_day": 0.00008
+  },
+  "operations": {
+    "drive_fraction": 0,
+    "science_fraction": 0.12,
+    "comms_fraction": 1,
+    "drill_hours_per_sample": 1,
+    "shadow_sortie_hours": 0,
+    "sortie_planning_hours": 0,
+    "min_sun_clearance_deg": 0,
+    "min_earth_clearance_deg": 0,
+    "relay_coverage_fraction": 0,
+    "ground_station": "commercial_3m7",
+    "ground_pass_hours_per_day": 24,
+    "target_in_shadow": false,
+    "sample_find_by_depth": [
+      {
+        "depth_m": 1,
+        "factor": 1
+      }
+    ]
+  },
+  "sites": [],
+  "objectives": [
+    {
+      "id": "image_croplands",
+      "name": "Image the croplands, field by field",
+      "summary": "Cover as much ground as you can at 10 m detail or better. All the world’s cropland is about 16 million km²: revisit it again and again through the seasons.",
+      "requires_measures": ["multispectral_imaging"],
+      "metric": "area_imaged_mkm2",
+      "threshold": 60,
+      "target": 1500,
+      "weight": 0.4
+    },
+    {
+      "id": "return_data",
+      "name": "Get the pictures to the ground",
+      "summary": "An image in the recorder helps nobody. The radio and the passes decide what the agency actually receives.",
+      "requires_measures": [],
+      "metric": "data_returned_gb",
+      "threshold": 800,
+      "target": 8000,
+      "weight": 0.3
+    },
+    {
+      "id": "full_year",
+      "name": "Work through a full growing year",
+      "summary": "Crops are judged by how they change. A satellite that stops in spring misses the harvest.",
+      "requires_measures": [],
+      "metric": "days_operated",
+      "threshold": 180,
+      "target": 365,
+      "weight": 0.2
+    },
+    {
+      "id": "context",
+      "name": "Carry a second experiment",
+      "summary": "A spare corner of the satellite can host another measurement: ships, weather or ground temperature.",
+      "requires_measures": [],
+      "metric": "context_measures",
+      "threshold": 1,
+      "target": 2,
+      "weight": 0.1
+    }
+  ],
+  "events": [
+    "budget_cut",
+    "solar_particle_event",
+    "reaction_wheel_fault",
+    "ground_station_outage",
+    "solar_maximum"
+  ],
+  "reference_design": {
+    "name": "Rideshare microsatellite",
+    "summary": "A microsatellite with fold-out wings, a compact imager, reaction wheels and an S-band radio, on a shared launch to 525 km.",
+    "slots": [
+      {
+        "slot": "bus",
+        "part": "bus_microsat"
+      },
+      {
+        "slot": "power",
+        "part": "solar_wings_fixed"
+      },
+      {
+        "slot": "battery",
+        "part": "battery_smallsat"
+      },
+      {
+        "slot": "adcs",
+        "part": "adcs_wheels_small"
+      },
+      {
+        "slot": "computer",
+        "part": "obc_cubesat"
+      },
+      {
+        "slot": "comms",
+        "part": "comms_s_band_small"
+      },
+      {
+        "slot": "thermal",
+        "part": "thermal_small"
+      }
+    ],
+    "instruments": ["inst_imager_compact", "inst_ais_receiver"],
+    "launch_vehicle": "rideshare",
+    "transfer": "",
+    "site": "",
+    "landing_date": "2027-06-01",
+    "departure_date": "",
+    "orbit": "sso_525"
+  },
+  "nasa_reference": {
+    "mission": "Landsat and NASA’s small-satellite Earth science missions",
+    "summary": "NASA has imaged every field on Earth since 1972 with Landsat: a sun-synchronous orbit at 705 km, crossing the equator mid-morning so the light is the same on every pass. Small satellites now fill the gaps between its 16-day revisits. They fly lower and cheaper, ride to orbit with dozens of others, and live or die by the same budgets: enough power through every eclipse, enough passes to empty the recorder, and a way out of orbit when the work is done.",
+    "url": "https://landsat.gsfc.nasa.gov/"
+  }
+}

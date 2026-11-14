@@ -5,8 +5,10 @@ import { TEXT } from '@/ui/text';
 export interface CapacityChartProps {
   vehicles: readonly LaunchVehicle[];
   selectedId: string | null;
-  /** Launch energy of the chosen transfer, km²/s², or null before one is chosen. */
+  /** Where on the x axis the mission sits, or null before it is chosen: launch energy in km²/s², or altitude in km. */
   c3: number | null;
+  /** `altitude` plots payload to a sun-synchronous orbit instead of payload against launch energy. */
+  axis?: 'energy' | 'altitude';
   /** Mass the launcher must lift (fuelled spacecraft + adapter), kg, or null if not known yet. */
   neededKg: number | null;
 }
@@ -14,28 +16,37 @@ export interface CapacityChartProps {
 const WIDTH = 520;
 const HEIGHT = 250;
 const PAD = { left: 56, right: 16, top: 14, bottom: 36 };
-const C3_MIN = -4;
-const C3_MAX = 60;
+const ENERGY_RANGE = { min: -4, max: 60, ticks: [0, 20, 40, 60] };
+const ALTITUDE_RANGE = { min: 380, max: 820, ticks: [400, 500, 600, 700, 800] };
 
 /**
  * What each rocket can send away from Earth against launch energy. The vertical line is the energy
  * the chosen transfer needs and the horizontal one the spacecraft's mass: a rocket whose curve
  * passes above their crossing can fly the mission.
  */
-export function CapacityChart({ vehicles, selectedId, c3, neededKg }: CapacityChartProps) {
-  const capable = vehicles.filter((vehicle) => vehicle.c3Capacity.length > 0);
-  const maxKg = Math.max(neededKg ?? 0, ...capable.map((vehicle) => vehicle.c3Capacity[0][1])) * 1.08;
+export function CapacityChart({ vehicles, selectedId, c3, neededKg, axis = 'energy' }: CapacityChartProps) {
+  const range = axis === 'altitude' ? ALTITUDE_RANGE : ENERGY_RANGE;
+  const C3_MIN = range.min;
+  const C3_MAX = range.max;
+  const curveOf = (vehicle: LaunchVehicle) =>
+    axis === 'altitude' ? vehicle.ssoCapacity : vehicle.c3Capacity;
+  const capable = vehicles.filter((vehicle) => curveOf(vehicle).length > 0);
+  const maxKg = Math.max(neededKg ?? 0, ...capable.map((vehicle) => curveOf(vehicle)[0][1])) * 1.08;
   // A square-root mass axis keeps the small rockets readable next to the giants.
   const x = (value: number): number =>
     PAD.left + ((value - C3_MIN) / (C3_MAX - C3_MIN)) * (WIDTH - PAD.left - PAD.right);
   const y = (kg: number): number =>
     HEIGHT - PAD.bottom - Math.sqrt(Math.max(kg, 0) / maxKg) * (HEIGHT - PAD.top - PAD.bottom);
   const t = TEXT.trajectory;
-  const massTicks = [500, 2000, 5000, 10000, 20000].filter((kg) => kg < maxKg);
+  const massTicks = [50, 200, 500, 2000, 5000, 10000, 20000].filter((kg) => kg < maxKg && kg > maxKg / 40);
 
   return (
     <figure class="chart capacity-chart">
-      <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} role="img" aria-label={t.capacityLabel}>
+      <svg
+        viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+        role="img"
+        aria-label={axis === 'altitude' ? t.capacityAltitudeLabel : t.capacityLabel}
+      >
         {massTicks.map((kg) => (
           <g key={kg} class="tick">
             <line x1={PAD.left} y1={y(kg)} x2={WIDTH - PAD.right} y2={y(kg)} />
@@ -44,18 +55,18 @@ export function CapacityChart({ vehicles, selectedId, c3, neededKg }: CapacityCh
             </text>
           </g>
         ))}
-        {[0, 20, 40, 60].map((value) => (
+        {range.ticks.map((value) => (
           <text key={value} class="axis" x={x(value)} y={HEIGHT - PAD.bottom + 15} text-anchor="middle">
             {value}
           </text>
         ))}
         <text class="axis" x={(PAD.left + WIDTH - PAD.right) / 2} y={HEIGHT - 4} text-anchor="middle">
-          {t.c3Axis}
+          {axis === 'altitude' ? t.altitudeAxis : t.c3Axis}
         </text>
 
         {capable.map((vehicle) => {
           const selected = vehicle.id === selectedId;
-          const points = vehicle.c3Capacity.filter(([value]) => value <= C3_MAX);
+          const points = curveOf(vehicle).filter(([value]) => value <= C3_MAX);
           const path = points
             .map(([value, kg], index) => `${index ? 'L' : 'M'}${x(value)},${y(kg)}`)
             .join(' ');
@@ -84,12 +95,12 @@ export function CapacityChart({ vehicles, selectedId, c3, neededKg }: CapacityCh
         )}
       </svg>
       <figcaption>
-        {t.capacityCaption}
+        {axis === 'altitude' ? t.capacityAltitudeCaption : t.capacityCaption}
         {c3 !== null && selectedId && (
           <>
             {' '}
-            {t.capacityAt} {num(capacityAt(vehicles.find((v) => v.id === selectedId)?.c3Capacity ?? [], c3))}{' '}
-            kg.
+            {t.capacityAt}{' '}
+            {num(capacityAt(curveOf(vehicles.find((v) => v.id === selectedId) ?? vehicles[0]), c3))} kg.
           </>
         )}
       </figcaption>

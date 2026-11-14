@@ -18,6 +18,7 @@ export type EventEffectKind =
   | 'disable_slot'
   | 'landing_risk_factor'
   | 'heater_demand_factor'
+  | 'drag_factor'
   | 'mission_loss';
 
 /**

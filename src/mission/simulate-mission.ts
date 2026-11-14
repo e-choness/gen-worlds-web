@@ -20,6 +20,7 @@ import { type DesignEvaluation, evaluateDesign } from '@/mission/evaluate-design
 import { rollEvents } from '@/mission/event-roll';
 import { money, num, percent } from '@/mission/format';
 import { type InputLog, operationsEfficiency, SCRIPTED_INPUT_LOG } from '@/mission/input-log';
+import { simulateOrbit } from '@/mission/orbit-sim';
 import { buildFindings, type Finding } from '@/mission/report';
 import {
   type MissionMetrics,
@@ -35,7 +36,8 @@ export type SimPhase = 'development' | 'launch' | 'cruise' | 'landing' | 'surfac
 
 export const PHASE_TRANSITIONS: Record<SimPhase, readonly SimPhase[]> = {
   development: ['launch'],
-  launch: ['cruise', 'lost'],
+  // A satellite starts work straight from launch: there is no cruise and no landing.
+  launch: ['cruise', 'surface', 'lost'],
   cruise: ['landing', 'lost'],
   landing: ['surface', 'lost'],
   surface: ['complete'],
@@ -72,6 +74,8 @@ const ZERO_METRICS: MissionMetrics = {
   ice_samples: 0,
   data_returned_gb: 0,
   context_measures: 0,
+  area_imaged_mkm2: 0,
+  days_operated: 0,
 };
 
 /** @throws when the design is not launchable: check `evaluateDesign(design).launchable` first. */
@@ -171,6 +175,8 @@ export function simulateMission(
           ice_samples: surface.iceSamples,
           data_returned_gb: surface.dataReturnedGb,
           context_measures: surface.dataReturnedGb > 0 ? contextMeasures(evaluation, surface) : 0,
+          area_imaged_mkm2: surface.areaImagedMkm2,
+          days_operated: surface.hoursOperated / 24,
         }
       : ZERO_METRICS;
     const objectives = scoreObjectives(resolved, metrics);
@@ -192,7 +198,11 @@ export function simulateMission(
       seed,
       flownDesign: flown,
       lostIn,
-      headline: surface ? surfaceHeadline(score, surface, scenario.terms) : headline,
+      headline: surface
+        ? scenario.orbit
+          ? orbitHeadline(score, surface)
+          : surfaceHeadline(score, surface, scenario.terms)
+        : headline,
       metrics,
       objectives,
       score,
@@ -233,9 +243,31 @@ export function simulateMission(
     tone: 'neutral',
     mitigated: false,
     title: 'Launch',
-    detail: `${vehicle?.name ?? 'The rocket'} put ${num(mass?.wetMassKg ?? 0)} kg onto the ${resolved.transfer?.name.toLowerCase() ?? 'transfer'}.`,
+    detail: resolved.orbit
+      ? `${vehicle?.name ?? 'The rocket'} released the ${num(mass?.wetMassKg ?? 0)} kg satellite at ${num(resolved.orbit.altitudeKm)} km.`
+      : `${vehicle?.name ?? 'The rocket'} put ${num(mass?.wetMassKg ?? 0)} kg onto the ${resolved.transfer?.name.toLowerCase() ?? 'transfer'}.`,
     slot: 'trajectory',
   });
+
+  // ---- a mission flown in orbit goes straight to work
+  if (scenario.orbit) {
+    advance('surface');
+    const failures: ScheduledFailure[] = [];
+    for (const item of installedParts(resolved)) {
+      if (item.failureRatePerYear <= 0) continue;
+      const draw = Math.max(stream(`failure:${item.part.id}`).next(), 1e-12);
+      const failHour = (-Math.log(draw) / item.failureRatePerYear) * HOURS_PER_YEAR;
+      if (failHour < surfaceDays * 24) failures.push({ hour: failHour, item });
+    }
+    const outcome = simulateOrbit({
+      evaluation,
+      events: events.filter((occurrence) => occurrence.phase === 'surface' || occurrence.phase === 'cruise'),
+      failures,
+      efficiency: operationsEfficiency(inputLog),
+    });
+    advance('complete');
+    return finish(null, '', outcome);
+  }
 
   // ---- cruise: events, and hardware that fails before or after arrival
   advance('cruise');
@@ -390,6 +422,22 @@ function contextMeasures(evaluation: DesignEvaluation, surface: SurfaceOutcome):
     for (const tag of instrument.measures) if (!required.has(tag)) context.add(tag);
   }
   return context.size;
+}
+
+function orbitHeadline(score: ScoreBreakdown, surface: SurfaceOutcome): string {
+  const verdict =
+    score.outcome === 'success'
+      ? 'Mission success'
+      : score.outcome === 'partial'
+        ? 'Partial success'
+        : 'Mission failed';
+  const ending =
+    surface.end.kind === 'completed'
+      ? 'and was still working at the end of the mission'
+      : surface.end.kind === 'reentered'
+        ? `before it burned up on day ${num(surface.hoursOperated / 24, 0)}`
+        : `before it was lost on day ${num(surface.hoursOperated / 24, 0)}`;
+  return `${verdict}: the satellite imaged ${num(surface.areaImagedMkm2)} million km², returned ${num(surface.dataReturnedGb)} Gb ${ending}.`;
 }
 
 function surfaceHeadline(score: ScoreBreakdown, surface: SurfaceOutcome, terms: ScenarioTerms): string {

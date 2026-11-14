@@ -2,6 +2,7 @@
 import { camelize, indexById } from '@/data/camelize';
 import type { SlotId, SolarMounting } from '@/data/parts';
 import type { PlanetId } from '@/data/planet-elements';
+import earthObservation from '@/data/scenario_earth_observation.json';
 import lunarIceProspector from '@/data/scenario_lunar_ice_prospector.json';
 import marsJezeroSurvey from '@/data/scenario_mars_jezero_survey.json';
 
@@ -20,7 +21,13 @@ export type ResourceId =
   | 'risk';
 
 /** What the simulation measures to judge an objective. */
-export type ObjectiveMetric = 'traverse_km' | 'ice_samples' | 'data_returned_gb' | 'context_measures';
+export type ObjectiveMetric =
+  | 'traverse_km'
+  | 'ice_samples'
+  | 'data_returned_gb'
+  | 'context_measures'
+  | 'area_imaged_mkm2'
+  | 'days_operated';
 
 export interface TransferOption {
   id: string;
@@ -133,10 +140,44 @@ export interface ScenarioTerms {
   emptySample: string;
   /** What finds it more often: "A richer site or a deeper drill finds ice more often." */
   findAdvice: string;
+  /** How days of operations are counted in explanations: "surface day" / "day in orbit". */
+  opsDay: string;
   /** Labels on the landing-site cards. */
   qualityLabel: string;
   driveLabel: string;
   atTarget: string;
+}
+
+/** One orbit a satellite mission may be flown in. */
+export interface OrbitOption {
+  id: string;
+  name: string;
+  altitudeKm: number;
+  /** Angle between the orbit plane and the Sun: 0 = longest eclipses, near 90 = none. */
+  betaAngleDeg: number;
+  /** 0–1: share of the imaged ground that is usable in this lighting. */
+  imageQuality: number;
+  summary: string;
+}
+
+/** What makes a scenario an orbiter mission: its orbits, its ground stations and the debris rule. */
+export interface OrbitMission {
+  options: OrbitOption[];
+  stationLatitudeDeg: number;
+  stationCount: number;
+  /** A pass counts once the satellite is this high above the station's horizon, degrees. */
+  minElevationDeg: number;
+  dragCoefficient: number;
+  /** Frontal area of the body alone, m²; half the solar array area is added to it. */
+  bodyFrontalAreaM2: number;
+  /** Below this altitude the satellite burns up, km. */
+  reentryAltitudeKm: number;
+  /** Perigee a deorbit burn must reach, km. */
+  deorbitPerigeeKm: number;
+  /** A satellite must be gone this many years after its mission ends. */
+  debrisRuleYears: number;
+  /** Coarsest ground resolution that still serves the imaging objective, m. */
+  requiredGsdM: number;
 }
 
 /** How the Sun and Earth move in the destination's sky. */
@@ -196,6 +237,8 @@ export interface Scenario {
   /** Fixed routes to choose from; empty when `route` lets the player pick the dates instead. */
   transfers: TransferOption[];
   route: InterplanetaryRoute | null;
+  /** Set for missions flown in orbit instead of landed; null for landers. */
+  orbit: OrbitMission | null;
   entry: EntrySystem | null;
   sky: SkyModel;
   terms: ScenarioTerms;
@@ -234,11 +277,14 @@ export interface Scenario {
     landingDate: string;
     /** ISO date (UTC) of the launch, for scenarios with a `route`; empty otherwise. */
     departureDate: string;
+    /** Orbit option id, for scenarios with `orbit`; empty otherwise. */
+    orbit: string;
   };
   nasaReference: { mission: string; summary: string; url: string };
 }
 
 export const SCENARIOS: readonly Scenario[] = [
+  camelize<Scenario>(earthObservation),
   camelize<Scenario>(lunarIceProspector),
   camelize<Scenario>(marsJezeroSurvey),
 ];

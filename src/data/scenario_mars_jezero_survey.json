@@ -81,6 +81,7 @@
     "correction_delta_v_m_s": 40,
     "summary": "A coasting arc around the Sun. The launch date and the arrival date together fix how hard the rocket must push and how fast the spacecraft meets Mars."
   },
+  "orbit": null,
   "entry": {
     "mass_fraction": 0.95,
     "max_entry_speed_m_s": 6100,
@@ -107,7 +108,8 @@
     "find_advice": "A site with a richer rock record makes more of the cores count.",
     "quality_label": "Rock record",
     "drive_label": "Drive to the rocks",
-    "at_target": "on the spot"
+    "at_target": "on the spot",
+    "ops_day": "sol"
   },
   "descent": {
     "delta_v_m_s": 380,
@@ -309,7 +311,8 @@
     "transfer": "",
     "site": "crater_floor",
     "landing_date": "2029-09-25",
-    "departure_date": "2028-11-28"
+    "departure_date": "2028-11-28",
+    "orbit": ""
   },
   "nasa_reference": {
     "mission": "Mars 2020 Perseverance",
