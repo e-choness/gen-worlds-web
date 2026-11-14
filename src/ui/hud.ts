@@ -220,8 +220,8 @@ export class Hud {
       else if (target) list.push(['F', 'Scan site']);
       if (t.body && t.body.desc.bands === null && t.altitude < LANDING_ALTITUDE)
         list.push(['L', frame.landing ? 'Abort landing' : 'Land']);
-      if (!target) list.push(['Tab', 'Galaxy map']);
     }
+    if (!frame.autopilotTarget) list.push(['Tab', 'Galaxy map']);
     if (t.body && isLandable(t.body.desc)) list.push(['P', 'Plan a mission here']);
     list.push(['Esc', 'Menu']);
     const key = list.map((p) => p.join(':')).join('|');

@@ -54,7 +54,7 @@ export async function startSandbox(
         // May be refused right after Esc released the pointer; the HUD then asks for a click.
         app.input.lock();
       },
-      navigateTo: (body) => app.navigateTo(body),
+      galaxyMap: () => openMap(),
       // The engine has no warm shutdown: the main menu is a fresh page.
       exit: () => {
         location.href = location.pathname;
@@ -84,6 +84,7 @@ export async function startSandbox(
   const closeMap = (): void => {
     if (!mapOpen) return;
     mapOpen = false;
+    menu.suspended = false;
     render(null, mapRoot);
     mapRoot.hidden = true;
     app.setControlsEnabled(true);
@@ -91,6 +92,7 @@ export async function startSandbox(
   };
   const openMap = (): void => {
     mapOpen = true;
+    menu.suspended = true;
     mapRoot.hidden = false;
     app.setControlsEnabled(false);
     app.input.unlock();

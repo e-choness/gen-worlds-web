@@ -1,6 +1,6 @@
 // Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /**
- * Full-screen menus: title, pause, settings, controls, system map and logbook.
+ * Full-screen menus: title, pause, settings, controls and logbook.
  *
  * One screen is open at a time; sub-screens remember where they were opened from so Back / Esc
  * returns there. The menu owns no simulation state: it reads through `MenuSource` and raises intents
@@ -11,13 +11,12 @@ import { type Disposable, DisposableStore } from '@/core/disposable';
 import type { Settings, SettingsValues } from '@/core/settings';
 import type { Beacon } from '@/player/beacon';
 import type { Scanner } from '@/player/scanner';
-import type { BodyState, SystemView } from '@/render/space/system-view';
+import type { SystemView } from '@/render/space/system-view';
 import { clear, h } from './dom';
 import { formatDistance } from './format';
-import { cssColor, kindLabel } from './scan-report';
 import { TEXT } from './text';
 
-export type MenuScreen = 'title' | 'pause' | 'settings' | 'controls' | 'map' | 'logbook';
+export type MenuScreen = 'title' | 'pause' | 'settings' | 'controls' | 'logbook';
 
 export interface MenuSource {
   system(): SystemView;
@@ -28,8 +27,8 @@ export interface MenuSource {
 export interface MenuActions {
   /** The last screen closed: hand control back to the player. */
   resume(): void;
-  /** Engage the autopilot toward a body. */
-  navigateTo(body: BodyState): void;
+  /** Open the galaxy map in place of the menu. */
+  galaxyMap(): void;
   /** A screen opened while none was open. */
   opened(): void;
   /** Leave the sandbox for the game's main menu. */
@@ -66,7 +65,7 @@ export const CONTROLS: Array<{ group: string; keys: Array<[string, string]> }> =
     group: 'Instruments',
     keys: [
       ['F', 'Scan the target under the reticle, or the ground below'],
-      ['Tab', 'System map'],
+      ['Tab', 'Galaxy map'],
       ['J', 'Logbook'],
       ['V', 'Chase / cockpit camera'],
       ['M', 'Mute'],
@@ -82,6 +81,8 @@ export class Menu implements Disposable {
   private stack: MenuScreen[] = [];
   /** False until the first time play starts: the title offers "Begin" rather than "Continue". */
   private started = false;
+  /** True while another full-screen view (the galaxy map) owns the keyboard: Esc is then its key. */
+  suspended = false;
 
   constructor(
     parent: HTMLElement,
@@ -136,6 +137,7 @@ export class Menu implements Disposable {
   }
 
   private onKey(e: KeyboardEvent): void {
+    if (this.suspended) return;
     // Esc is handled here in both directions so one key press cannot close and reopen the menu.
     if (e.code === 'Escape') {
       e.preventDefault();
@@ -168,9 +170,7 @@ export class Menu implements Disposable {
             ? this.settingsScreen()
             : screen === 'controls'
               ? this.controlsScreen()
-              : screen === 'map'
-                ? this.mapScreen()
-                : this.logbookScreen();
+              : this.logbookScreen();
     this.panel.append(...content);
     // Focus the first control so the keyboard works without a click.
     this.panel.querySelector<HTMLElement>('button, input')?.focus({ preventScroll: true });
@@ -213,7 +213,13 @@ export class Menu implements Disposable {
         'nav.menu-list',
         null,
         this.button('Resume', () => this.close(), '.primary'),
-        this.button('System map', () => this.open('map')),
+        this.button(TEXT.sandbox.galaxyMap, () => {
+          // The map takes over the screen and hands control back itself when it closes.
+          this.stack = [];
+          this.started = true;
+          this.root.classList.remove('open');
+          this.actions.galaxyMap();
+        }),
         this.button('Logbook', () => this.open('logbook')),
         this.button('Settings', () => this.open('settings')),
         this.button('Controls', () => this.open('controls')),
@@ -310,44 +316,6 @@ export class Menu implements Disposable {
           ),
         ),
       ),
-      h('nav.menu-row', null, this.backButton()),
-    ];
-  }
-
-  private mapScreen(): HTMLElement[] {
-    const system = this.source.system();
-    const camera = this.source.cameraPosition();
-    const star = system.system.star;
-    const list = h('div.map-list');
-    for (const body of system.bodies) {
-      const dot = h('i.dot');
-      dot.style.background = cssColor(body.desc.bands ? body.desc.bands[0] : body.desc.palette.midland, 2.2);
-      const known = this.scanner.discovered.has(body.desc.id);
-      list.append(
-        h(
-          `button.entry${body.parent ? '.moon' : ''}`,
-          {
-            type: 'button',
-            onclick: () => {
-              this.actions.navigateTo(body);
-              this.close();
-            },
-          },
-          dot,
-          h('span.name', null, body.desc.name),
-          h('span.kind', null, kindLabel(body.desc.kind)),
-          h('span.dist', null, formatDistance(body.position.distanceTo(camera))),
-          h(`span.state${known ? '.known' : ''}`, null, known ? 'surveyed' : 'unsurveyed'),
-        ),
-      );
-    }
-    const moons = system.bodies.length - system.system.planets.length;
-    return [
-      h('div.eyebrow', null, 'SYSTEM MAP'),
-      h('h2', null, star.name),
-      h('p.lede', null, `${star.spectralType} · ${system.system.planets.length} planets · ${moons} moons`),
-      system.bodies.length ? list : h('p.lede', null, 'No bodies orbit this star.'),
-      h('div.footnote', null, 'Select a destination to engage the autopilot'),
       h('nav.menu-row', null, this.backButton()),
     ];
   }

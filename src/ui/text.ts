@@ -340,6 +340,7 @@ export const TEXT = {
   },
   sandbox: {
     mainMenu: 'Main menu',
+    galaxyMap: 'Galaxy map',
     planning: 'Planning a mission to',
     planNotLandable: 'A rover cannot land here. Fly to a solid planet or moon.',
     planRealBody: 'The Earth, Moon and Mars missions are on the mission list.',

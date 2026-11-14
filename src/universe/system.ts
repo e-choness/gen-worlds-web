@@ -671,7 +671,8 @@ function makeClouds(rng: Rng, kind: PlanetKind, atmosphere: AtmosphereDesc | nul
     case 'terra':
     case 'ocean':
       return {
-        coverage: rng.range(0.35, 0.65),
+        // Broken cloud, not overcast: from orbit the seas and continents should read through it.
+        coverage: rng.range(0.2, 0.45),
         baseHeight: h * 0.22,
         thickness: h * 0.4,
         color: [1, 1, 1],
