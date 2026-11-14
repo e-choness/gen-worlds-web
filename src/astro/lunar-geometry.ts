@@ -85,3 +85,17 @@ export function siteSky(jd: number, siteLatitude: number, siteLongitude: number)
     earthElevation: elevationAtSite(subEarthPoint(jd), siteLatitude, siteLongitude),
   };
 }
+
+/**
+ * Compass bearing (radians, 0 = north, increasing eastward, in [0, 2π)) from a site toward the point
+ * beneath a body: the direction in which that body stands above the site's horizon.
+ */
+export function bearingToSubPoint(sub: SubPoint, siteLatitude: number, siteLongitude: number): number {
+  const deltaLongitude = sub.longitude - siteLongitude;
+  const bearing = Math.atan2(
+    Math.sin(deltaLongitude) * Math.cos(sub.latitude),
+    Math.cos(siteLatitude) * Math.sin(sub.latitude) -
+      Math.sin(siteLatitude) * Math.cos(sub.latitude) * Math.cos(deltaLongitude),
+  );
+  return bearing < 0 ? bearing + 2 * Math.PI : bearing;
+}

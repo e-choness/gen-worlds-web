@@ -1,12 +1,27 @@
 {
   "source": "Solar constant: NASA NSSDCA Sun fact sheet. Margins: NASA mass and power margin practice at preliminary design (GSFC-STD-1000 Gold Rules, about 20-30%). Link reference: Mars Reconnaissance Orbiter (100 W X-band, 3 m antenna, about 0.5 Mbps to a 34 m Deep Space Network antenna at 2.67 au; NASA MRO telecommunications fact sheet), scaled to 1 W, 1 m and 1 au. Schedule risk by technology readiness level and the redundancy and tier factors are game balance values.",
-  "units": "Margins and fractions are 0-1. link_reference gives the downlink rate of a 1 W transmitter with a 1 m antenna at 1 au into a 34 m ground antenna.",
+  "units": "Margins and fractions are 0-1. link_reference gives the downlink rate of a 1 W transmitter with a 1 m antenna at 1 au into a 34 m ground antenna. schedule_slip_warning and mission_loss_risk_warning are the probabilities above which the schedule and risk lines turn to a warning. delta_v_margin.target is the propellant reserve loaded on top of the planned manoeuvres.",
   "solar_constant_w_m2": 1361,
-  "mass_margin": { "target": 0.2, "warning": 0.1 },
-  "power_margin": { "target": 0.2, "warning": 0.1 },
-  "delta_v_margin": { "target": 0.1, "warning": 0.03 },
+  "mass_margin": {
+    "target": 0.2,
+    "warning": 0.1
+  },
+  "power_margin": {
+    "target": 0.2,
+    "warning": 0.1
+  },
+  "delta_v_margin": {
+    "target": 0.1,
+    "warning": 0.03
+  },
   "cost_reserve_fraction": 0.15,
-  "redundancy": { "mass_factor": 1.9, "cost_factor": 1.7, "failure_factor": 0.1 },
+  "schedule_slip_warning": 0.15,
+  "mission_loss_risk_warning": 0.2,
+  "redundancy": {
+    "mass_factor": 1.9,
+    "cost_factor": 1.7,
+    "failure_factor": 0.1
+  },
   "link_reference": {
     "rate_bps": 4000,
     "tx_power_w": 1,
@@ -29,12 +44,30 @@
     }
   ],
   "schedule_risk_by_trl": [
-    { "trl": 9, "slip_probability": 0.0 },
-    { "trl": 8, "slip_probability": 0.01 },
-    { "trl": 7, "slip_probability": 0.03 },
-    { "trl": 6, "slip_probability": 0.08 },
-    { "trl": 5, "slip_probability": 0.16 },
-    { "trl": 4, "slip_probability": 0.3 }
+    {
+      "trl": 9,
+      "slip_probability": 0
+    },
+    {
+      "trl": 8,
+      "slip_probability": 0.01
+    },
+    {
+      "trl": 7,
+      "slip_probability": 0.03
+    },
+    {
+      "trl": 6,
+      "slip_probability": 0.08
+    },
+    {
+      "trl": 5,
+      "slip_probability": 0.16
+    },
+    {
+      "trl": 4,
+      "slip_probability": 0.3
+    }
   ],
   "tiers": [
     {
@@ -48,9 +81,9 @@
     {
       "id": "engineer",
       "name": "Engineer",
-      "budget_factor": 1.0,
-      "event_rate_factor": 1.0,
-      "score_factor": 1.0,
+      "budget_factor": 1,
+      "event_rate_factor": 1,
+      "score_factor": 1,
       "summary": "The full trade space with realistic margins."
     },
     {

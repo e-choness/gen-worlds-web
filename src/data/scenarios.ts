@@ -6,7 +6,16 @@ import lunarIceProspector from '@/data/scenario_lunar_ice_prospector.json';
 export type TrajectoryMode = 'earth_orbit' | 'lunar' | 'interplanetary';
 
 /** The resources the budget panel tracks; a scenario marks which ones are critical. */
-export type ResourceId = 'mass' | 'delta_v' | 'launch' | 'power' | 'thermal' | 'data' | 'cost' | 'schedule';
+export type ResourceId =
+  | 'mass'
+  | 'delta_v'
+  | 'launch'
+  | 'power'
+  | 'thermal'
+  | 'data'
+  | 'cost'
+  | 'schedule'
+  | 'risk';
 
 /** What the simulation measures to judge an objective. */
 export type ObjectiveMetric = 'traverse_km' | 'ice_samples' | 'data_returned_gb' | 'context_measures';
@@ -57,6 +66,8 @@ export interface Objective {
 
 export interface ScenarioEnvironment {
   solarDistanceAu: number;
+  /** Distance the downlink has to cross, au. */
+  earthDistanceAu: number;
   /** Average share of full output a solar array of each mounting delivers here when lit. */
   mountingFactors: { mounting: SolarMounting; factor: number }[];
   /** Heater power needed in shadow by a vehicle of the reference mass with no insulation credit, W. */

@@ -1,6 +1,6 @@
 {
   "source": "Modelled on NASA's VIPER mission and the Commercial Lunar Payload Services programme (NASA VIPER fact sheet and mission pages: 100-day mission at Mons Mouton, one-metre drill, direct-to-Earth communications; NASA Artemis III candidate landing region descriptions for the Shackleton connecting ridge and Haworth). Transfer and descent velocity changes are typical published values for a 100 km polar lunar orbit (Apollo and LRO-era mission design). Site coordinates are real; horizon masks, ice quality and hazard factors are simplified for gameplay.",
-  "units": "delta_v in m/s; c3 in km^2/s^2; angles in degrees (longitude east positive); horizon_mask_deg has 12 values, one per 30-degree sector of azimuth starting at north and going east, giving the elevation of the local horizon in that direction (negative on a ridge that looks down on its surroundings).",
+  "units": "delta_v in m/s; c3 in km^2/s^2; angles in degrees (longitude east positive); horizon_mask_deg has 12 values, one per 30-degree sector of azimuth starting at north and going east, giving the elevation of the local horizon in that direction (negative where the site stands above its surroundings: from the top of a 6 km mountain the horizon dips almost 5 degrees).",
   "id": "lunar_ice_prospector",
   "number": 2,
   "name": "Lunar south pole ice prospector",
@@ -67,13 +67,16 @@
   ],
   "launch_vehicles": ["electron", "falcon9", "vulcan_vc2", "falcon_heavy", "sls_block1"],
   "launch_adapter_mass_kg": 60,
-  "landing_window": { "start_date": "2027-10-01", "end_date": "2028-06-30" },
+  "landing_window": {
+    "start_date": "2027-08-01",
+    "end_date": "2028-03-31"
+  },
   "transfers": [
     {
       "id": "direct",
       "name": "Direct transfer",
       "duration_days": 4.5,
-      "c3_km2_s2": -2.0,
+      "c3_km2_s2": -2,
       "correction_delta_v_m_s": 25,
       "orbit_insertion_delta_v_m_s": 850,
       "summary": "Four and a half days to the Moon. The spacecraft arrives fast and must brake hard into orbit."
@@ -94,11 +97,21 @@
     "summary": "From a 100 km orbit to a soft touchdown."
   },
   "environment": {
-    "solar_distance_au": 1.0,
+    "solar_distance_au": 1,
+    "earth_distance_au": 0.00257,
     "mounting_factors": [
-      { "mounting": "body", "factor": 0.06 },
-      { "mounting": "vertical", "factor": 0.33 },
-      { "mounting": "tracking_mast", "factor": 0.9 }
+      {
+        "mounting": "body",
+        "factor": 0.06
+      },
+      {
+        "mounting": "vertical",
+        "factor": 0.33
+      },
+      {
+        "mounting": "tracking_mast",
+        "factor": 0.9
+      }
     ],
     "heater_demand_shadow_w": 110,
     "heater_reference_mass_kg": 500,
@@ -113,7 +126,7 @@
     "drill_hours_per_sample": 6,
     "shadow_sortie_hours": 12,
     "min_sun_clearance_deg": 0.3,
-    "min_earth_clearance_deg": 2.0,
+    "min_earth_clearance_deg": 2,
     "relay_coverage_fraction": 0.55,
     "ground_station": "dsn_34m",
     "ground_pass_hours_per_day": 10
@@ -124,10 +137,10 @@
       "name": "Mons Mouton",
       "latitude_deg": -85.42,
       "longitude_deg": 31.63,
-      "horizon_mask_deg": [0.5, 1.0, 2.5, 4.0, 2.0, 1.0, 0.5, 1.5, 3.0, 1.5, 0.8, 0.4],
+      "horizon_mask_deg": [0.2, 0.4, 0.8, 0.6, -0.3, -3.2, -4.5, -3.2, -1.5, 0.6, 0.4, 0.2],
       "ice_quality": 0.7,
       "shadow_distance_km": 0.6,
-      "landing_hazard_factor": 1.0,
+      "landing_hazard_factor": 1,
       "slope_deg": 10,
       "summary": "A flat-topped mountain with small cold traps a short drive away, about two weeks of sunlight at a time and a good view of Earth. VIPER's chosen site."
     },
@@ -136,7 +149,7 @@
       "name": "Shackleton connecting ridge",
       "latitude_deg": -89.45,
       "longitude_deg": -137.3,
-      "horizon_mask_deg": [-1.2, -1.0, -0.6, 0.4, -0.8, -1.2, -1.0, 0.6, -0.9, -1.1, -1.2, -1.3],
+      "horizon_mask_deg": [-2, -1.8, -1.2, 0.4, -1.4, -2, -1.9, 0.6, -1.5, -1.9, -2, -2.1],
       "ice_quality": 0.85,
       "shadow_distance_km": 2.5,
       "landing_hazard_factor": 1.6,
@@ -147,9 +160,9 @@
       "id": "haworth_floor",
       "name": "Haworth crater floor",
       "latitude_deg": -87.45,
-      "longitude_deg": -5.0,
+      "longitude_deg": -5,
       "horizon_mask_deg": [9, 10, 11, 10, 9, 9, 10, 11, 10, 9, 9, 10],
-      "ice_quality": 1.0,
+      "ice_quality": 1,
       "shadow_distance_km": 0,
       "landing_hazard_factor": 2.2,
       "slope_deg": 8,
@@ -183,8 +196,8 @@
       "summary": "Science only counts once it is on the ground.",
       "requires_measures": [],
       "metric": "data_returned_gb",
-      "threshold": 4,
-      "target": 15,
+      "threshold": 15,
+      "target": 60,
       "weight": 0.2
     },
     {

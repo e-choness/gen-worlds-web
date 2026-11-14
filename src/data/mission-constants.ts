@@ -40,6 +40,10 @@ export interface MissionConstants {
   deltaVMargin: MarginThresholds;
   /** Share of the estimated cost held back for surprises and counted against the cap. */
   costReserveFraction: number;
+  /** Probability above which the schedule line warns. */
+  scheduleSlipWarning: number;
+  /** Probability of losing the mission above which the risk line warns. */
+  missionLossRiskWarning: number;
   /** A redundant slot carries a second unit: its mass and cost scale up, its failure rate down. */
   redundancy: { massFactor: number; costFactor: number; failureFactor: number };
   /** Downlink rate of the reference link; real links scale from it. */
