@@ -91,6 +91,8 @@ export interface BodyInput {
     dayLengthHours: number;
     orbitalPeriodDays: number;
     rings: boolean;
+    /** Measured surface pressure, bar: rocky worlds then get their real air instead of a drawn one. */
+    surfacePressureBar?: number;
   };
 }
 
@@ -125,7 +127,14 @@ function makeBody(input: BodyInput): BodyDesc {
   }
   const gravity = input.fixed?.gravity ?? (EARTH_GRAVITY * massEarths) / (radius / EARTH_RADIUS) ** 2;
 
-  const atmosphere = makeAtmosphere(rng.fork(1), kind, input.equilibriumK, gravity, radius);
+  const atmosphere = makeAtmosphere(
+    rng.fork(1),
+    kind,
+    input.equilibriumK,
+    gravity,
+    radius,
+    input.fixed?.surfacePressureBar,
+  );
   const greenhouse = atmosphere
     ? 12 * Math.log1p(atmosphere.surfacePressureBar * 4) * (kind === 'toxic' ? 9 : 1)
     : 0;
@@ -259,6 +268,7 @@ function makeAtmosphere(
   tempK: number,
   gravity: number,
   radius: number,
+  measuredPressureBar?: number,
 ): AtmosphereDesc | null {
   if (kind === 'barren') return null;
   if (kind === 'ice' && rng.chance(0.55)) return null;
@@ -276,10 +286,10 @@ function makeAtmosphere(
   switch (kind) {
     case 'terra':
     case 'ocean': {
-      pressure = rng.range(0.6, 2.2);
+      pressure = measuredPressureBar ?? rng.range(0.6, 2.2);
       molarMass = 29;
       // Mostly Earth-like, with occasional exotic chemistry that shifts the sky hue.
-      const exotic = rng.chance(0.3);
+      const exotic = measuredPressureBar === undefined && rng.chance(0.3);
       rayleigh = exotic ? rotateSpectrum(EARTH_RAYLEIGH, rng.range(0.25, 1)) : EARTH_RAYLEIGH;
       absorption = scaleColor(EARTH_OZONE, rng.range(0.5, 1.5));
       mie = rng.range(2.5e-6, 7e-6);
@@ -292,7 +302,7 @@ function makeAtmosphere(
       break;
     }
     case 'desert': {
-      pressure = rng.logRange(0.01, 0.6);
+      pressure = measuredPressureBar ?? rng.logRange(0.01, 0.6);
       molarMass = 44;
       rayleigh = scaleColor(EARTH_RAYLEIGH, 1.3);
       // Suspended dust: strong forward scattering, absorbs blue → butterscotch day sky, blue sunsets.

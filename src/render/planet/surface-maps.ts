@@ -15,6 +15,8 @@ export interface SurfaceMap {
   heightmap: HeightmapData;
   /** Equirectangular colour, sRGB. */
   albedo: THREE.Texture;
+  /** Brightness applied to `albedo` in the shader. */
+  albedoGain: number;
 }
 
 /**
@@ -35,15 +37,19 @@ function meridianAt(id: string, jd: number): number {
 export class SurfaceMaps implements Disposable {
   private readonly maps = new Map<string, SurfaceMap>();
 
-  /** Loads the maps of every body of `system` that has them. Resolves empty for generated systems. */
-  static async load(system: SystemDesc, jd: number): Promise<SurfaceMaps> {
+  /**
+   * Loads the maps of the bodies of `system` that have them: all of them, or just `only` (a catalog
+   * id) when the session stays at one body, which saves tens of megabytes. Resolves empty for
+   * generated systems.
+   */
+  static async load(system: SystemDesc, jd: number, only?: string): Promise<SurfaceMaps> {
     const store = new SurfaceMaps();
     if (!system.real) return store;
     const bodies = system.planets.flatMap((planet) => [planet, ...planet.moons]);
     await Promise.all(
       SURFACE_MAPS.map(async (entry) => {
         const body = bodies.find((candidate) => solarBodyId(candidate) === entry.body);
-        if (!body) return;
+        if (!body || (only !== undefined && only !== entry.body)) return;
         const base = import.meta.env.BASE_URL;
         const [buffer, albedo] = await Promise.all([
           fetch(base + entry.height).then((response) => {
@@ -62,12 +68,14 @@ export class SurfaceMaps implements Disposable {
         albedo.minFilter = THREE.LinearFilter;
         store.maps.set(body.id, {
           albedo,
+          albedoGain: entry.albedoGain,
           heightmap: {
             width: entry.heightWidth,
             height: entry.heightHeight,
             samples: new Int16Array(buffer),
             offset: entry.referenceRadiusM - getBody(entry.body).equatorialRadiusM,
             meridian: meridianAt(entry.body, jd),
+            sea: body.ocean !== null,
           },
         });
       }),

@@ -489,7 +489,8 @@ export class FlightController {
   placeAbove(body: BodyState, direction: THREE.Vector3, altitude: number): void {
     const up = direction.clone().normalize();
     const surface = body.view ? body.view.surfaceHeightAt(up) : 0;
-    this.position.copy(body.position).addScaledVector(up, body.desc.radius + Math.max(surface, 0) + altitude);
+    // `surface` is already the sea surface where there is one; real ground can lie below the datum.
+    this.position.copy(body.position).addScaledVector(up, body.desc.radius + surface + altitude);
     // Look along the surface toward the sun's azimuth, slightly down.
     const toSun = body.sunDir.clone();
     const forward = toSun.addScaledVector(up, -toSun.dot(up));

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { jdFromDate } from '@/astro/time';
 import { getScenario } from '@/data/scenarios';
+import { planDescent } from '@/mission/descent-plan';
 import { createReferenceDesign, type MissionDesign } from '@/mission/design';
 import { evaluateDesign } from '@/mission/evaluate-design';
 import { runMonteCarlo } from '@/mission/monte-carlo';
@@ -63,6 +64,32 @@ describe('Mars scenario', () => {
 
     expect(relayRate).toBe(2);
     expect(directRate).toBeLessThan(0.05);
+  });
+
+  it('hands the last kilometres to the pilot under a mid-afternoon Sun in the west', () => {
+    const plan = planDescent(evaluateDesign(baseline()))!;
+
+    const elevationDeg = (plan.sunElevation * 180) / Math.PI;
+    const bearingDeg = ((((plan.sunBearing * 180) / Math.PI) % 360) + 360) % 360;
+
+    expect(plan.bodyId).toBe('mars');
+    expect(plan.gravity).toBeCloseTo(3.71, 1);
+    expect(plan.thrustAcceleration).toBeGreaterThan(plan.gravity);
+    expect(elevationDeg).toBeGreaterThan(20);
+    expect(elevationDeg).toBeLessThan(60);
+    expect(bearingDeg).toBeGreaterThan(200);
+    expect(bearingDeg).toBeLessThan(340);
+  });
+
+  it('logs nothing after the day the spacecraft is lost in cruise', () => {
+    const lost = Array.from({ length: 600 }, (_, seed) => simulateMission(baseline(), seed)).filter(
+      (result) => result.lostIn === 'cruise',
+    );
+
+    const lastDays = lost.map((result) => result.timeline.at(-1)!);
+
+    expect(lost.length).toBeGreaterThan(5);
+    for (const entry of lastDays) expect(entry.title).toBe('Hardware failure');
   });
 
   it('returns the identical result for the same seed', () => {

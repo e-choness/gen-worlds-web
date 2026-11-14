@@ -8,7 +8,6 @@
  * UI → render.
  */
 import * as THREE from 'three/webgpu';
-import { bearingToSubPoint, elevationAtSite, subSolarPoint } from '@/astro/lunar-geometry';
 import { isoDateFromJd, jdFromUnixMs } from '@/astro/time';
 import { AudioEngine } from '@/audio/audio-engine';
 import { DisposableStore } from '@/core/disposable';
@@ -52,6 +51,9 @@ export interface StartOptions {
   altitude?: number;
   /** Angle in degrees between the start point and the sub-solar point (0 = noon, 90 = terminator). */
   sunAngle?: number;
+  /** Body latitude and east longitude to start above, degrees; both or neither. Overrides `sunAngle`. */
+  latitudeDeg?: number;
+  longitudeDeg?: number;
   kind?: string;
   /** Require the start body to have rings. */
   rings?: boolean;
@@ -201,7 +203,7 @@ export class App {
     const system = options.start?.solarSystem
       ? createSolarSystem()
       : app.findHomeSystem(options.start?.kind, options.start?.rings);
-    app.surfaceMaps = app.store.add(await SurfaceMaps.load(system, app.simJd));
+    app.surfaceMaps = app.store.add(await SurfaceMaps.load(system, app.simJd, options.start?.at));
     app.enterSystem(system);
     app.placeAtStart(options.start ?? {});
     engine.renderer.setAnimationLoop(() => app.frame());
@@ -231,10 +233,8 @@ export class App {
       -Math.cos(latitude) * Math.sin(angle),
     );
     // Light the site as the mission's sky model has it: Sun elevation and compass bearing at the site.
-    const subSolar = subSolarPoint(plan.landingJd);
-    const siteLongitude = THREE.MathUtils.degToRad(plan.longitudeDeg);
-    const elevation = Math.max(elevationAtSite(subSolar, latitude, siteLongitude), MIN_PILOT_SUN_ELEVATION);
-    const bearing = bearingToSubPoint(subSolar, latitude, siteLongitude);
+    const elevation = Math.max(plan.sunElevation, MIN_PILOT_SUN_ELEVATION);
+    const bearing = plan.sunBearing;
     const north = new THREE.Vector3(0, 1, 0).addScaledVector(target, -target.y).normalize();
     const east = new THREE.Vector3().crossVectors(north, target);
     body.sunOverride = target
@@ -420,6 +420,16 @@ export class App {
     // Rotate the sub-solar direction about an axis perpendicular to it.
     const axis = new THREE.Vector3(0, 1, 0).cross(body.sunDir).normalize();
     const direction = body.sunDir.clone().applyAxisAngle(axis, angle);
+    if (start.latitudeDeg !== undefined && start.longitudeDeg !== undefined) {
+      const meridian = this.surfaceMaps?.get(body.desc)?.heightmap.meridian ?? 0;
+      const latitude = THREE.MathUtils.degToRad(start.latitudeDeg);
+      const longitude = THREE.MathUtils.degToRad(start.longitudeDeg) + meridian;
+      direction.set(
+        Math.cos(latitude) * Math.cos(longitude),
+        Math.sin(latitude),
+        -Math.cos(latitude) * Math.sin(longitude),
+      );
+    }
     if (start.land) findLand(body, direction);
     this.flight.placeAbove(body, direction, start.altitude ?? body.desc.radius * 1.6);
     this.robotQuat.copy(this.flight.orientation);
@@ -850,7 +860,7 @@ function isMainSequence(star: StarDesc): boolean {
 
 /**
  * Reads start overrides from the query string: ?body=2&alt=1500&sun=70&kind=desert&land&rings&cockpit,
- * or for the real solar system ?sol&at=moon&date=2027-09-01.
+ * or for the real solar system ?sol&at=mars&lat=18.4&lon=77.5&date=2027-09-01.
  */
 export function parseStartOptions(search: string): StartOptions {
   const params = new URLSearchParams(search);
@@ -864,6 +874,8 @@ export function parseStartOptions(search: string): StartOptions {
     body: num('body'),
     altitude: num('alt'),
     sunAngle: num('sun'),
+    latitudeDeg: num('lat'),
+    longitudeDeg: num('lon'),
     kind: params.get('kind') ?? undefined,
     land: params.has('land'),
     rings: params.has('rings'),

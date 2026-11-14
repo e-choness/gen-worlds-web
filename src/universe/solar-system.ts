@@ -41,7 +41,7 @@ const SUN: StarDesc = {
 };
 
 function catalogBody(data: BodyData, parentId: string | null, index: number): BodyDesc {
-  return makeCatalogBody({
+  const body = makeCatalogBody({
     rng: new Rng(LOOK_SEED + index * 7919),
     id: `${SYSTEM_ID}/${data.id}`,
     name: data.name,
@@ -59,8 +59,15 @@ function catalogBody(data: BodyData, parentId: string | null, index: number): Bo
       dayLengthHours: data.solarDayS / 3600,
       orbitalPeriodDays: data.yearS / 86400,
       rings: RINGED.has(data.id),
+      surfacePressureBar: data.surfacePressurePa > 0 ? data.surfacePressurePa / 1e5 : undefined,
     },
   });
+  // A measured surface should stay visible under the generated weather.
+  if (data.cloudCoverage === undefined || !body.clouds) return body;
+  return {
+    ...body,
+    clouds: data.cloudCoverage > 0 ? { ...body.clouds, coverage: data.cloudCoverage } : null,
+  };
 }
 
 /** The catalog id ("earth", "moon"…) of a body of the solar system, or null for any other body. */

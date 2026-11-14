@@ -30,6 +30,8 @@ export interface BodyData {
   /** Obliquity to the orbit, degrees (above 90 for retrograde spin). */
   axialTiltDeg: number;
   meanTemperatureK: number;
+  /** Share of the sky the renderer covers with cloud (0 = none); absent to let the surface class decide. */
+  cloudCoverage?: number;
   /** Piecewise-exponential upper atmosphere for drag; empty where it is not modelled. */
   atmosphereLayers: AtmosphereLayerData[];
 }

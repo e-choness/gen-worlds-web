@@ -1,6 +1,6 @@
 {
-  "source": "Moon: NASA Scientific Visualization Studio, CGI Moon Kit (https://svs.gsfc.nasa.gov/4720/), public domain. Colour from the Lunar Reconnaissance Orbiter Camera wide-angle mosaic; elevation from the Lunar Orbiter Laser Altimeter gridded data, averaged from 16 to 8 pixels per degree. Built by tools/build-surface-maps.sh.",
-  "units": "Paths are relative to the site root. Both maps are equirectangular with the north pole at the top and longitude 0 at the centre. Heights are raw little-endian signed 16-bit metres relative to reference_radius_m, height_width by height_height samples.",
+  "source": "Built by tools/build-surface-maps.sh from public-domain data. Moon: NASA Scientific Visualization Studio, CGI Moon Kit (https://svs.gsfc.nasa.gov/4720/); colour from the Lunar Reconnaissance Orbiter Camera wide-angle mosaic, elevation from the Lunar Orbiter Laser Altimeter gridded data averaged from 16 to 8 pixels per degree. Mars: USGS Astrogeology Science Center; colour from the Viking MDIM 2.1 colour mosaic (232 m), elevation from the Mars Global Surveyor MOLA mosaic (463 m), both reduced by nearest neighbour. Earth: colour from NASA Blue Marble Next Generation, cloud-free (NASA GIBS, https://gibs.earthdata.nasa.gov); elevation and ocean depth from NOAA NCEI ETOPO 2022 at one arc-minute (doi:10.25921/fd45-gt74) averaged to 8 pixels per degree.",
+  "units": "Paths are relative to the site root. Both maps are equirectangular with the north pole at the top and longitude 0 at the centre. Heights are raw little-endian signed 16-bit metres relative to reference_radius_m, height_width by height_height samples. albedo_gain is a dimensionless display choice: it scales the stretched mosaic back toward the body's true reflectance.",
   "maps": [
     {
       "body": "moon",
@@ -8,7 +8,26 @@
       "height": "maps/moon_height_2880x1440.i16",
       "height_width": 2880,
       "height_height": 1440,
-      "reference_radius_m": 1737400
+      "reference_radius_m": 1737400,
+      "albedo_gain": 0.5
+    },
+    {
+      "body": "mars",
+      "albedo": "maps/mars_albedo_4k.jpg",
+      "height": "maps/mars_height_2880x1440.i16",
+      "height_width": 2880,
+      "height_height": 1440,
+      "reference_radius_m": 3396190,
+      "albedo_gain": 0.7
+    },
+    {
+      "body": "earth",
+      "albedo": "maps/earth_albedo_4k.jpg",
+      "height": "maps/earth_height_2880x1440.i16",
+      "height_width": 2880,
+      "height_height": 1440,
+      "reference_radius_m": 6378137,
+      "albedo_gain": 1
     }
   ]
 }

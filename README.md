@@ -21,7 +21,8 @@ game also plays without it).
 4. **Go/No-Go.** Each role answers for its part of the mission. A forecast flies the design 200 times
    to show how often it works and what usually goes wrong.
 5. **Flight.** The mission plays out day by day with a dashboard of sunlight, Earth in view, battery
-   and data. On the Moon you can fly the last two kilometres of the landing yourself in 3D, with the
+   and data. On the Moon and on Mars you can fly the last kilometres of the landing yourself in 3D
+   over the real terrain, with the
    propellant your design left you.
 6. **Debrief.** Every outcome is traced back to the design decision behind it, with a link to the
    screen where you can change it. Change one thing, fly again, compare.
@@ -61,8 +62,9 @@ away.
 - **Data, not code.** Parts, launch vehicles, bodies, scenarios and events live in JSON under
   `src/data/`, each file with its sources and units. [`CREDITS.md`](CREDITS.md) lists every dataset,
   texture, library and technique with its licence.
-- **3D.** three.js with the WebGPU renderer: the real solar system at ephemeris positions, the Moon
-  with NASA LOLA elevation and LROC colour, a procedural galaxy to explore in the sandbox.
+- **3D.** three.js with the WebGPU renderer: the real solar system at ephemeris positions; the Moon
+  (NASA LOLA elevation, LROC colour), Mars (MOLA elevation, Viking colour) and the Earth (Blue
+  Marble colour, ETOPO relief) from measured maps; a procedural galaxy to explore in the sandbox.
 
 ## Run it locally
 
@@ -81,6 +83,15 @@ Firebase project with **Firestore** and **anonymous sign-in**, publish the rules
 [`firestore.rules`](firestore.rules), and put the web config in `.env.local` (see
 [`.env.example`](.env.example)). The web config is public by design; the rules are the access
 control.
+
+The database and the rules can be set up from the command line by an owner of the Firebase project
+(the login is kept under `.cache/`, never committed):
+
+```sh
+docker compose run --rm firebase login --no-localhost
+docker compose run --rm firebase firestore:databases:create "(default)" --location nam5
+docker compose run --rm firebase deploy --only firestore:rules
+```
 
 ## Layout
 

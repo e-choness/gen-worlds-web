@@ -10,6 +10,8 @@ export interface SurfaceMapEntry {
   heightWidth: number;
   heightHeight: number;
   referenceRadiusM: number;
+  /** Brightness applied to the colour map to bring its display stretch back toward true reflectance. */
+  albedoGain: number;
 }
 
 export const SURFACE_MAPS: readonly SurfaceMapEntry[] = camelize<SurfaceMapEntry[]>(raw.maps);

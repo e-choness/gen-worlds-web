@@ -18,6 +18,9 @@ something enters the repo.
 | `src/data/glossary_terms.json` | Written for this game after NASA's public glossaries, the NASA Systems Engineering Handbook (SP-2016-6105) and JPL's Basics of Space Flight | Own work | In-game glossary |
 | `src/data/mission_constants.json` | NASA NSSDCA Sun fact sheet (solar constant); NASA GSFC-STD-1000 Gold Rules (margins); NASA Mars Reconnaissance Orbiter telecommunications figures (link reference) | Public domain (NASA) | Power, margins and downlink models |
 | `public/maps/moon_albedo_4k.jpg`, `public/maps/moon_height_2880x1440.i16` | NASA Scientific Visualization Studio, [CGI Moon Kit](https://svs.gsfc.nasa.gov/4720/): LROC wide-angle colour mosaic and LOLA gridded elevation | Public domain (NASA) | The Moon's real colour and terrain |
+| `public/maps/mars_albedo_4k.jpg`, `public/maps/mars_height_2880x1440.i16` | USGS Astrogeology Science Center: [Viking MDIM 2.1 colour mosaic](https://astrogeology.usgs.gov/search/map/mars_viking_colorized_global_mosaic_232m) (NASA Viking Orbiters) and [MGS MOLA elevation mosaic](https://astrogeology.usgs.gov/search/map/mars_mgs_mola_dem_463m) (NASA Mars Global Surveyor) | Public domain (NASA / USGS) | Mars's real colour and terrain |
+| `public/maps/earth_albedo_4k.jpg` | NASA [Blue Marble Next Generation](https://earthobservatory.nasa.gov/features/BlueMarble), cloud-free, served by [NASA GIBS](https://gibs.earthdata.nasa.gov) | Public domain (NASA) | The Earth's real colour |
+| `public/maps/earth_height_2880x1440.i16` | NOAA NCEI [ETOPO 2022](https://www.ncei.noaa.gov/products/etopo-global-relief-model) 60 arc-second global relief, doi:10.25921/fd45-gt74 | Public domain (NOAA) | The Earth's real terrain and sea floor |
 | `src/data/events_catalog.json` | Event types from real mission experience; probabilities are game balance values | Own work | Random events |
 
 ## Textures

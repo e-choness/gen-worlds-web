@@ -46,9 +46,6 @@ import type { BiomeTextures } from './biome-texture';
 import { ringProfile } from './ring-view';
 import type { SurfaceMap } from './surface-maps';
 
-/** Brightness applied to measured colour maps so they sit in range with the generated worlds. */
-const MEASURED_ALBEDO_GAIN = 0.5;
-
 const color3 = (c: Vec3Tuple) => new THREE.Vector3(c[0], c[1], c[2]);
 
 /** Uniforms shared by all materials of one planet; updated once per frame by the PlanetRenderer. */
@@ -278,7 +275,7 @@ export function createTerrainMaterial(shading: PlanetShading): THREE.NodeMateria
     const measured = texture(shading.surfaceMap.albedo, mapUv).xyz;
     const structure = mix(groundLayer.detail, rockLayer.detail, rockMask).clamp(0.55, 1.6);
     // The mosaic is stretched for display; scale it back toward the true (dark) reflectance.
-    albedo = measured.mul(MEASURED_ALBEDO_GAIN).mul(structure).mul(dn.mul(0.3).add(0.85));
+    albedo = measured.mul(shading.surfaceMap.albedoGain).mul(structure).mul(dn.mul(0.3).add(0.85));
     snow = float(0);
   }
 
@@ -524,6 +521,9 @@ export function createWaterMaterial(shading: PlanetShading): THREE.NodeMaterial 
       .add(mix(vec3(...ocean.deepColor).mul(0.02), vec3(...ocean.shallowColor), glow).mul(ocean.emissive));
   }
   material.colorNode = vec4(color, 1);
+  // The sheet spans its whole chunk, under the land too. Seen from orbit the depth buffer cannot
+  // separate it from lowlands a few tens of metres above it, so the part under land is cut away.
+  material.maskNode = depth.greaterThan(-0.5);
   return material;
 }
 

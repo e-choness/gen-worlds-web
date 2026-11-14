@@ -59,3 +59,16 @@ export function elevationFromHourAngle(latitude: number, declination: number, ho
       Math.cos(latitude) * Math.cos(declination) * Math.cos(hourAngle),
   );
 }
+
+/**
+ * Compass bearing (radians from north, east positive) of a body with the given declination and
+ * hour angle. The hour angle is positive after the body has crossed the meridian, so an afternoon
+ * Sun bears west.
+ */
+export function bearingFromHourAngle(latitude: number, declination: number, hourAngle: number): number {
+  return Math.atan2(
+    -Math.cos(declination) * Math.sin(hourAngle),
+    Math.sin(declination) * Math.cos(latitude) -
+      Math.cos(declination) * Math.sin(latitude) * Math.cos(hourAngle),
+  );
+}

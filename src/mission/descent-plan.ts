@@ -5,7 +5,11 @@
  *
  * What the player does comes back as a `LandingInput`, and the simulation decides the rest.
  */
+import { bearingToSubPoint, elevationAtSite, subSolarPoint } from '@/astro/lunar-geometry';
+import { bearingFromHourAngle, elevationFromHourAngle, planetSeason } from '@/astro/planet-sky';
 import { getBody } from '@/data/bodies';
+import type { PlanetId } from '@/data/planet-elements';
+import type { Scenario } from '@/data/scenarios';
 import type { DesignEvaluation } from '@/mission/evaluate-design';
 import type { LandingInput } from '@/mission/input-log';
 
@@ -17,6 +21,10 @@ export interface DescentPlan {
   /** East positive. */
   longitudeDeg: number;
   landingJd: number;
+  /** Where the Sun stands at the site at touchdown: elevation above the ideal horizon, radians. */
+  sunElevation: number;
+  /** Compass bearing of the Sun at the site, radians from north, east positive. */
+  sunBearing: number;
   /** Local gravity, m/s². */
   gravity: number;
   /** Main engine acceleration at landing mass, m/s². */
@@ -35,13 +43,42 @@ export interface DescentPlan {
   maxTouchdownDriftMS: number;
 }
 
+const DEG = Math.PI / 180;
+
+/** The Sun in the site's sky at touchdown, from the scenario's sky model. */
+function sunAtSite(
+  scenario: Scenario,
+  latitudeDeg: number,
+  longitudeDeg: number,
+  landingJd: number,
+): { sunElevation: number; sunBearing: number } {
+  const latitude = latitudeDeg * DEG;
+  if (scenario.sky.model === 'lunar') {
+    const subSolar = subSolarPoint(landingJd);
+    return {
+      sunElevation: elevationAtSite(subSolar, latitude, longitudeDeg * DEG),
+      sunBearing: bearingToSubPoint(subSolar, latitude, longitudeDeg * DEG),
+    };
+  }
+  // A rotating planet: the landing is timed for a local hour, and the season sets the Sun's height.
+  const season = planetSeason(
+    scenario.targetBody as PlanetId,
+    landingJd,
+    getBody(scenario.targetBody).axialTiltDeg * DEG,
+    scenario.sky.equinoxLongitudeDeg * DEG,
+  );
+  const hourAngle = (scenario.sky.landingLocalHour - 12) * 15 * DEG;
+  return {
+    sunElevation: elevationFromHourAngle(latitude, season.sunDeclination, hourAngle),
+    sunBearing: bearingFromHourAngle(latitude, season.sunDeclination, hourAngle),
+  };
+}
+
 /** Null until the design is complete enough to land. */
 export function planDescent(evaluation: DesignEvaluation): DescentPlan | null {
   const { resolved, mass } = evaluation;
   const { scenario, site, propulsion, design } = resolved;
   if (!mass?.feasible || !site || !propulsion || design.trajectory.landingJd === null) return null;
-  // The 3D descent lights the site from the lunar sky model; other bodies land on the guidance computer.
-  if (scenario.sky.model !== 'lunar') return null;
   const descent = scenario.descent;
   // The landing system's hover and divert allowance is extra propellant the pilot can spend.
   const allowance = mass.descentDeltaV - descent.deltaVMS;
@@ -51,6 +88,7 @@ export function planDescent(evaluation: DesignEvaluation): DescentPlan | null {
     latitudeDeg: site.latitudeDeg,
     longitudeDeg: site.longitudeDeg,
     landingJd: design.trajectory.landingJd,
+    ...sunAtSite(scenario, site.latitudeDeg, site.longitudeDeg, design.trajectory.landingJd),
     gravity: getBody(scenario.targetBody).surfaceGravityMS2,
     thrustAcceleration: propulsion.thrustN / mass.dryMassKg,
     nominalDeltaV: descent.terminalDeltaVMS,

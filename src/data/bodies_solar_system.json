@@ -1,6 +1,6 @@
 {
   "source": "NASA NSSDCA Planetary Fact Sheets (all planets and the Moon), https://nssdc.gsfc.nasa.gov/planetary/factsheet/, values as published; gravitational parameters from JPL SSD astrodynamic parameters. Earth atmosphere layers: U.S. Standard Atmosphere 1976 as tabulated in Wertz & Larson, Space Mission Analysis and Design (mean solar activity).",
-  "units": "SI. mu in m^3/s^2, radii in m, periods in s, gravity in m/s^2, pressure in Pa, density in kg/m^3, altitudes and scale heights in m. render_kind is the surface class the renderer draws the body as; axial_tilt_deg is the obliquity to the orbit (for the Moon: to the ecliptic); mean_temperature_k is the mean surface (or 1 bar) temperature. For the giant planets radius, gravity and pressure are at the 1 bar level.",
+  "units": "SI. mu in m^3/s^2, radii in m, periods in s, gravity in m/s^2, pressure in Pa, density in kg/m^3, altitudes and scale heights in m. render_kind is the surface class the renderer draws the body as; axial_tilt_deg is the obliquity to the orbit (for the Moon: to the ecliptic); mean_temperature_k is the mean surface (or 1 bar) temperature. For the giant planets radius, gravity and pressure are at the 1 bar level. cloud_coverage (optional, 0 to 1) is a display choice: the share of sky the renderer covers with generated cloud, kept low where a measured surface map should stay visible.",
   "bodies": [
     {
       "id": "earth",
@@ -69,7 +69,8 @@
       ],
       "render_kind": "terra",
       "axial_tilt_deg": 23.44,
-      "mean_temperature_k": 288
+      "mean_temperature_k": 288,
+      "cloud_coverage": 0.28
     },
     {
       "id": "moon",
@@ -105,7 +106,8 @@
       "atmosphere_layers": [],
       "render_kind": "desert",
       "axial_tilt_deg": 25.19,
-      "mean_temperature_k": 210
+      "mean_temperature_k": 210,
+      "cloud_coverage": 0
     },
     {
       "id": "mercury",

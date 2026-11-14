@@ -15,6 +15,11 @@ export interface HeightmapData {
    * +Y (counter-clockwise seen from the north). The body's north pole is taken as +Y.
    */
   meridian: number;
+  /**
+   * True when the datum is a sea surface: generated relief then fades out toward it, so measured
+   * lowlands stay dry and the sea floor stays under water.
+   */
+  sea: boolean;
 }
 
 const TAU = Math.PI * 2;

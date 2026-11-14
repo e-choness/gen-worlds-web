@@ -17,6 +17,8 @@ import { type HeightmapData, heightmapResolution, sampleHeightmap } from './heig
 import type { TerrainDesc } from './types';
 
 const LACUNARITY = 2.03;
+/** Measured elevation above a sea datum at which generated relief reaches full strength, m. */
+const COAST_FADE_M = 300;
 
 export class TerrainField {
   private readonly nContinent: Noise3;
@@ -60,8 +62,13 @@ export class TerrainField {
       // Real relief down to the data's resolution, generated relief only below it.
       const resolution = heightmapResolution(this.base, R);
       let real = sampleHeightmap(this.base, dx, dy, dz);
+      if (this.base.sea && real <= 0) return real;
+      const dry = this.base.sea ? Math.min(1, real / COAST_FADE_M) : 1;
       real +=
-        Math.min(d.hillHeight, 260) * 0.6 * this.erodedFbm(dx * R, dy * R, dz * R, resolution, minWavelength);
+        dry *
+        Math.min(d.hillHeight, 260) *
+        0.6 *
+        this.erodedFbm(dx * R, dy * R, dz * R, resolution, minWavelength);
       if (d.craterDensity > 0) real += this.craters(dx, dy, dz, minWavelength, resolution * 1.5);
       return real;
     }
