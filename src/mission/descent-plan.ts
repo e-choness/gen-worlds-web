@@ -40,6 +40,8 @@ export function planDescent(evaluation: DesignEvaluation): DescentPlan | null {
   const { resolved, mass } = evaluation;
   const { scenario, site, propulsion, design } = resolved;
   if (!mass?.feasible || !site || !propulsion || design.trajectory.landingJd === null) return null;
+  // The 3D descent lights the site from the lunar sky model; other bodies land on the guidance computer.
+  if (scenario.sky.model !== 'lunar') return null;
   const descent = scenario.descent;
   // The landing system's hover and divert allowance is extra propellant the pilot can spend.
   const allowance = mass.descentDeltaV - descent.deltaVMS;

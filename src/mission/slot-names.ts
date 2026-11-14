@@ -25,6 +25,11 @@ export const MEASURE_NAMES: Record<string, string> = {
   subsurface_structure: 'profiling of buried layers',
   imaging: 'imaging',
   thermal_map: 'temperature mapping',
+  rock_coring: 'rock coring',
+  organics_detection: 'detection of organic molecules',
+  elemental_chemistry: 'fine-scale chemistry',
+  remote_chemistry: 'chemistry at a distance',
+  weather: 'weather monitoring',
 };
 
 export function measureName(tag: string): string {

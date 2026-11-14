@@ -56,9 +56,13 @@ export function computeDataModel(
   const ops = scenario.operations;
   const station = getGroundStation(ops.groundStation);
   const pointed = (resolved.adcs?.pointingClass ?? 0) >= comms.needsPointingClass;
-  const rate = pointed
-    ? linkRateMbps(comms, scenario.environment.earthDistanceAu, station.antennaDiameterM)
-    : 0;
+  const earthDistanceAu = visibility.earthDistanceAu ?? scenario.environment.earthDistanceAu;
+  // A relay orbiter carries the long haul to Earth: the vehicle only has to reach the orbiter.
+  const rate = !pointed
+    ? 0
+    : comms.relay
+      ? comms.maxRateMbps
+      : linkRateMbps(comms, earthDistanceAu, station.antennaDiameterM);
   const availability = comms.relay
     ? ops.relayCoverageFraction
     : visibility.earthFraction * Math.min(1, ops.groundPassHoursPerDay / 24 / ops.commsFraction);
@@ -78,7 +82,7 @@ export function computeDataModel(
     downlinkGbPerDay: rate * contactFraction * GB_PER_MBPS_DAY,
     storageGb: computer.storageGb,
     longestOutageHours: comms.relay ? 0 : visibility.longestEarthOutageHours,
-    lightTimeS: (scenario.environment.earthDistanceAu * AU) / SPEED_OF_LIGHT,
+    lightTimeS: (earthDistanceAu * AU) / SPEED_OF_LIGHT,
   };
 }
 

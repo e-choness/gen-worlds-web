@@ -11,7 +11,10 @@ import {
   subEarthPoint,
   subSolarPoint,
 } from '@/astro/lunar-geometry';
-import type { LandingSite } from '@/data/scenarios';
+import { elevationFromHourAngle, planetSeason } from '@/astro/planet-sky';
+import { getBody } from '@/data/bodies';
+import type { PlanetId } from '@/data/planet-elements';
+import type { LandingSite, SkyModel } from '@/data/scenarios';
 
 export interface SiteVisibility {
   /** Julian date of the first sample (touchdown). */
@@ -27,6 +30,8 @@ export interface SiteVisibility {
   longestEarthOutageHours: number;
   /** Hours from touchdown until the first darkness longer than a day begins (Infinity if none). */
   hoursToFirstLongNight: number;
+  /** Greatest distance to Earth during the mission, au; null where the scenario fixes it. */
+  earthDistanceAu: number | null;
 }
 
 /** True when a body with sub-point `sub` stands at least `clearanceDeg` above the site's local horizon. */
@@ -60,6 +65,49 @@ function fractionOfOnes(samples: Uint8Array): number {
   return samples.length ? ones / samples.length : 0;
 }
 
+/**
+ * A rotating planet: the Sun and Earth rise and set every local day, with the season setting how
+ * high they climb. Fills the hourly arrays and returns the greatest Earth distance, au.
+ */
+function fillDiurnalSky(
+  sunVisible: Uint8Array,
+  earthVisible: Uint8Array,
+  site: LandingSite,
+  landingJd: number,
+  minSunClearanceDeg: number,
+  minEarthClearanceDeg: number,
+  sky: SkyModel,
+  bodyId: string,
+): number {
+  const body = getBody(bodyId);
+  const latitude = site.latitudeDeg * DEG;
+  const tilt = body.axialTiltDeg * DEG;
+  const equinox = sky.equinoxLongitudeDeg * DEG;
+  const dayHours = body.solarDayS / 3600;
+  const startHourAngle = ((sky.landingLocalHour - 12) / 24) * 2 * Math.PI;
+  let farthest = 0;
+  let season = planetSeason(bodyId as PlanetId, landingJd, tilt, equinox);
+  for (let hour = 0; hour < sunVisible.length; hour++) {
+    // The season moves slowly: once a day is plenty.
+    if (hour % 24 === 0) {
+      season = planetSeason(bodyId as PlanetId, landingJd + hour / 24, tilt, equinox);
+      farthest = Math.max(farthest, season.earthDistanceAu);
+    }
+    const sunHourAngle = startHourAngle + (hour / dayHours) * 2 * Math.PI;
+    const sun = elevationFromHourAngle(latitude, season.sunDeclination, sunHourAngle);
+    // A body east of the Sun crosses the meridian later.
+    const earth = elevationFromHourAngle(
+      latitude,
+      season.earthDeclination,
+      sunHourAngle - season.earthElongation,
+    );
+    const heard = Math.abs(season.earthElongation) >= sky.conjunctionElongationDeg * DEG;
+    sunVisible[hour] = sun >= minSunClearanceDeg * DEG ? 1 : 0;
+    earthVisible[hour] = heard && earth >= minEarthClearanceDeg * DEG ? 1 : 0;
+  }
+  return farthest;
+}
+
 let cacheKey = '';
 let cacheValue: SiteVisibility | null = null;
 
@@ -74,17 +122,33 @@ export function computeSiteVisibility(
   durationDays: number,
   minSunClearanceDeg: number,
   minEarthClearanceDeg: number,
+  sky: SkyModel | null = null,
+  bodyId = 'moon',
 ): SiteVisibility {
-  const key = `${site.id}|${landingJd}|${durationDays}|${minSunClearanceDeg}|${minEarthClearanceDeg}`;
+  const key = `${bodyId}|${site.id}|${landingJd}|${durationDays}|${minSunClearanceDeg}|${minEarthClearanceDeg}`;
   if (cacheValue && cacheKey === key) return cacheValue;
 
   const hours = Math.max(1, Math.round(durationDays * 24));
   const sunVisible = new Uint8Array(hours);
   const earthVisible = new Uint8Array(hours);
-  for (let hour = 0; hour < hours; hour++) {
-    const jd = landingJd + hour / 24;
-    sunVisible[hour] = clearsHorizon(subSolarPoint(jd), site, minSunClearanceDeg) ? 1 : 0;
-    earthVisible[hour] = clearsHorizon(subEarthPoint(jd), site, minEarthClearanceDeg) ? 1 : 0;
+  let earthDistanceAu: number | null = null;
+  if (sky?.model === 'diurnal') {
+    earthDistanceAu = fillDiurnalSky(
+      sunVisible,
+      earthVisible,
+      site,
+      landingJd,
+      minSunClearanceDeg,
+      minEarthClearanceDeg,
+      sky,
+      bodyId,
+    );
+  } else {
+    for (let hour = 0; hour < hours; hour++) {
+      const jd = landingJd + hour / 24;
+      sunVisible[hour] = clearsHorizon(subSolarPoint(jd), site, minSunClearanceDeg) ? 1 : 0;
+      earthVisible[hour] = clearsHorizon(subEarthPoint(jd), site, minEarthClearanceDeg) ? 1 : 0;
+    }
   }
 
   let hoursToFirstLongNight = Number.POSITIVE_INFINITY;
@@ -107,6 +171,7 @@ export function computeSiteVisibility(
     longestDarkHours: longestRunOfZeros(sunVisible),
     longestEarthOutageHours: longestRunOfZeros(earthVisible),
     hoursToFirstLongNight,
+    earthDistanceAu,
   };
   return cacheValue;
 }

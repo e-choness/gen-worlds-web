@@ -1,0 +1,319 @@
+{
+  "source": "Modelled on NASA's Mars 2020 Perseverance mission (NASA Mars 2020 mission pages and launch press kit: landing in Jezero crater at 18.4 N 77.5 E, entry at about 5.4 km/s, sky-crane powered descent, relay through Mars orbiters, coring of rock samples) and Mars Science Laboratory mass breakdown (3,893 kg at launch for an 899 kg rover: aeroshell, parachute, descent and cruise stages make up the rest). Launch and arrival dates use the 2028 Earth-Mars window computed from JPL Keplerian elements. Dust accumulation of about 0.2 % per sol follows Mars Exploration Rover experience. Site science values, distances and hazard factors are simplified for gameplay.",
+  "units": "Same fields as the lunar scenario. route: the launch window for a ballistic Earth-Mars transfer whose launch energy and arrival speed follow from the chosen dates (landing_window bounds the arrival). entry: mass_fraction is the heat shield, parachute and cruise stage as a share of the fuelled lander mass; max_entry_speed_m_s the fastest atmospheric entry the heat shield survives; interface_altitude_m where the atmosphere begins. descent.delta_v_m_s is the powered descent after the parachute. sky: diurnal = Sun and Earth rise and set each sol; equinox_longitude_deg is the heliocentric ecliptic longitude of Mars at northern spring equinox; conjunction_elongation_deg the Sun-Earth angle below which the Sun drowns the radio link. sites: horizon masks are unused by the diurnal sky (flat horizon); ice_quality is the richness of the rock record; shadow_distance_km the drive from the landing zone to the rocks worth coring.",
+  "id": "mars_jezero_survey",
+  "number": 3,
+  "name": "Jezero crater sample survey",
+  "tagline": "Core the rocks of a vanished Martian lake.",
+  "briefing": "Three and a half billion years ago a river filled Jezero crater and built a delta on its floor. If Mars ever had life, mud like that is where its traces would be kept. Send a rover across 200 million kilometres, land it beside the delta, and core the rocks that record the water. Mars is only in reach every 26 months: pick your launch and arrival dates from the porkchop plot, bring power that survives dust and cold nights, and remember that every command takes many minutes to arrive.",
+  "trajectory_mode": "interplanetary",
+  "target_body": "mars",
+  "critical_resources": ["mass", "power", "data"],
+  "budget_cap_musd": 430,
+  "operations_cost_musd_per_month": 5,
+  "surface_duration_days": 150,
+  "required_slots": [
+    "bus",
+    "power",
+    "battery",
+    "propulsion",
+    "adcs",
+    "computer",
+    "comms",
+    "thermal",
+    "landing"
+  ],
+  "optional_slots": ["mobility"],
+  "max_instruments": 6,
+  "catalog": [
+    "bus_light",
+    "bus_standard",
+    "bus_heavy",
+    "solar_body",
+    "solar_vertical",
+    "solar_mast",
+    "rtg_mmrtg",
+    "battery_small",
+    "battery_medium",
+    "battery_large",
+    "prop_monoprop",
+    "prop_biprop",
+    "adcs_basic",
+    "adcs_star_tracker",
+    "obc_commercial",
+    "obc_rad_hard",
+    "obc_hpsc",
+    "comms_medium_gain",
+    "comms_high_gain",
+    "comms_mars_relay",
+    "thermal_passive",
+    "thermal_louvers",
+    "thermal_rhu",
+    "mobility_basic",
+    "mobility_agile",
+    "landing_altimeter",
+    "landing_trn",
+    "landing_hazard_lidar",
+    "inst_core_drill",
+    "inst_raman_spectrometer",
+    "inst_xray_spectrometer",
+    "inst_laser_spectrometer",
+    "inst_weather_station",
+    "inst_stereo_camera",
+    "inst_ground_radar",
+    "inst_nir_spectrometer"
+  ],
+  "launch_vehicles": ["falcon9", "vulcan_vc2", "atlas5_541", "falcon_heavy"],
+  "launch_adapter_mass_kg": 80,
+  "landing_window": {
+    "start_date": "2029-05-01",
+    "end_date": "2030-02-28"
+  },
+  "transfers": [],
+  "route": {
+    "from": "earth",
+    "to": "mars",
+    "name": "Interplanetary transfer",
+    "departure_window": {
+      "start_date": "2028-08-01",
+      "end_date": "2029-03-31"
+    },
+    "correction_delta_v_m_s": 40,
+    "summary": "A coasting arc around the Sun. The launch date and the arrival date together fix how hard the rocket must push and how fast the spacecraft meets Mars."
+  },
+  "entry": {
+    "mass_fraction": 0.95,
+    "max_entry_speed_m_s": 6100,
+    "interface_altitude_m": 125000
+  },
+  "sky": {
+    "model": "diurnal",
+    "equinox_longitude_deg": 85.06,
+    "landing_local_hour": 15,
+    "conjunction_elongation_deg": 3
+  },
+  "terms": {
+    "destination": "Mars",
+    "vehicle": "rover",
+    "local_weight": "weight on Mars",
+    "target_ground": "the delta's layered rocks",
+    "target_short": "the delta rocks",
+    "find_title": "Water-laid rock cored",
+    "find_detail": "of rock laid down in water was sealed in its tube",
+    "sample_count": "of water-laid rock cored",
+    "found_in": "cored water-laid rock in",
+    "no_find": "cored no water-laid rock",
+    "empty_sample": "were of rock that never saw water",
+    "find_advice": "A site with a richer rock record makes more of the cores count.",
+    "quality_label": "Rock record",
+    "drive_label": "Drive to the rocks",
+    "at_target": "on the spot"
+  },
+  "descent": {
+    "delta_v_m_s": 380,
+    "min_thrust_to_weight": 1.5,
+    "summary": "Heat shield, parachute, then a powered descent for the last two kilometres.",
+    "terminal_delta_v_m_s": 200,
+    "start_altitude_m": 1500,
+    "start_descent_rate_m_s": 60,
+    "start_ground_speed_m_s": 30,
+    "start_range_m": 800,
+    "max_touchdown_speed_m_s": 3,
+    "max_touchdown_drift_m_s": 2
+  },
+  "environment": {
+    "solar_distance_au": 1.52,
+    "earth_distance_au": 1.5,
+    "mounting_factors": [
+      {
+        "mounting": "body",
+        "factor": 0.55
+      },
+      {
+        "mounting": "vertical",
+        "factor": 0.3
+      },
+      {
+        "mounting": "tracking_mast",
+        "factor": 0.85
+      }
+    ],
+    "heater_demand_shadow_w": 60,
+    "heater_reference_mass_kg": 500,
+    "survival_heater_fraction": 0.5,
+    "hibernation_load_w": 8,
+    "dust_degradation_per_day": 0.002
+  },
+  "operations": {
+    "drive_fraction": 0.2,
+    "science_fraction": 0.2,
+    "comms_fraction": 0.1,
+    "drill_hours_per_sample": 14,
+    "shadow_sortie_hours": 0,
+    "sortie_planning_hours": 0,
+    "min_sun_clearance_deg": 10,
+    "min_earth_clearance_deg": 10,
+    "relay_coverage_fraction": 0.35,
+    "ground_station": "dsn_34m",
+    "ground_pass_hours_per_day": 8,
+    "target_in_shadow": false,
+    "sample_find_by_depth": [
+      {
+        "depth_m": 0.05,
+        "factor": 1
+      }
+    ]
+  },
+  "sites": [
+    {
+      "id": "crater_floor",
+      "name": "Crater floor",
+      "latitude_deg": 18.44,
+      "longitude_deg": 77.45,
+      "horizon_mask_deg": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "ice_quality": 0.55,
+      "shadow_distance_km": 0.3,
+      "landing_hazard_factor": 1,
+      "slope_deg": 6,
+      "summary": "Flat volcanic plains east of the delta: the safest touchdown and rocks within a short drive, but they are lava, and only some of them were ever soaked by the lake."
+    },
+    {
+      "id": "delta_front",
+      "name": "Delta front",
+      "latitude_deg": 18.46,
+      "longitude_deg": 77.4,
+      "horizon_mask_deg": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "ice_quality": 0.9,
+      "shadow_distance_km": 1.2,
+      "landing_hazard_factor": 1.7,
+      "slope_deg": 14,
+      "summary": "Right under the delta cliffs, where Perseverance was aimed. The mudstones are a short climb away; the landing zone is full of boulders, dunes and scarps."
+    },
+    {
+      "id": "crater_rim",
+      "name": "Western rim",
+      "latitude_deg": 18.5,
+      "longitude_deg": 77.2,
+      "horizon_mask_deg": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "ice_quality": 1,
+      "shadow_distance_km": 4.5,
+      "landing_hazard_factor": 1.3,
+      "slope_deg": 20,
+      "summary": "High ground where the river cut through the crater wall. The oldest and most varied rocks in Jezero, at the end of a long drive over steep slopes."
+    }
+  ],
+  "objectives": [
+    {
+      "id": "core_samples",
+      "name": "Core rocks that record the lake",
+      "summary": "Drill cores from water-laid rock and check them for the minerals and organic molecules water leaves behind.",
+      "requires_measures": ["rock_coring", "organics_detection"],
+      "metric": "ice_samples",
+      "threshold": 2,
+      "target": 12,
+      "weight": 0.4
+    },
+    {
+      "id": "traverse",
+      "name": "Survey the route with cameras",
+      "summary": "Drive and image as you go: the context that tells scientists where each core came from.",
+      "requires_measures": ["imaging"],
+      "metric": "traverse_km",
+      "threshold": 1.5,
+      "target": 6,
+      "weight": 0.2
+    },
+    {
+      "id": "return_data",
+      "name": "Return the data to Earth",
+      "summary": "Science only counts once it is on the ground, and Mars is a long way to shout.",
+      "requires_measures": [],
+      "metric": "data_returned_gb",
+      "threshold": 50,
+      "target": 200,
+      "weight": 0.25
+    },
+    {
+      "id": "context",
+      "name": "Characterise the site",
+      "summary": "Each extra kind of measurement (chemistry, buried layers, weather) tells the next mission what to expect.",
+      "requires_measures": [],
+      "metric": "context_measures",
+      "threshold": 1,
+      "target": 4,
+      "weight": 0.15
+    }
+  ],
+  "events": [
+    "budget_cut",
+    "solar_particle_event",
+    "thin_air_on_entry",
+    "wheel_actuator_fault",
+    "drill_jam",
+    "deep_space_network_conflict",
+    "dust_on_arrays",
+    "regional_dust_storm"
+  ],
+  "reference_design": {
+    "name": "Solar rover baseline",
+    "summary": "A solar rover with a deck array, a coring drill and a Raman spectrometer, landing on the crater floor with terrain-relative navigation and talking through the orbiters.",
+    "slots": [
+      {
+        "slot": "bus",
+        "part": "bus_standard"
+      },
+      {
+        "slot": "power",
+        "part": "solar_body"
+      },
+      {
+        "slot": "battery",
+        "part": "battery_medium"
+      },
+      {
+        "slot": "propulsion",
+        "part": "prop_biprop"
+      },
+      {
+        "slot": "adcs",
+        "part": "adcs_star_tracker"
+      },
+      {
+        "slot": "computer",
+        "part": "obc_rad_hard"
+      },
+      {
+        "slot": "comms",
+        "part": "comms_mars_relay"
+      },
+      {
+        "slot": "thermal",
+        "part": "thermal_louvers"
+      },
+      {
+        "slot": "mobility",
+        "part": "mobility_agile"
+      },
+      {
+        "slot": "landing",
+        "part": "landing_trn"
+      }
+    ],
+    "instruments": [
+      "inst_core_drill",
+      "inst_raman_spectrometer",
+      "inst_stereo_camera",
+      "inst_weather_station"
+    ],
+    "launch_vehicle": "falcon9",
+    "transfer": "",
+    "site": "crater_floor",
+    "landing_date": "2029-09-25",
+    "departure_date": "2028-11-28"
+  },
+  "nasa_reference": {
+    "mission": "Mars 2020 Perseverance",
+    "summary": "NASA sent Perseverance to Jezero for exactly this: a one-tonne rover that cores rock, seals the samples in tubes and leaves them for a later mission to bring home. It runs on a radioisotope generator, so dust storms and winter do not stop it; it landed within metres of its target using terrain-relative navigation and a sky crane; and it sends almost all of its data through orbiters overhead rather than straight to Earth.",
+    "url": "https://science.nasa.gov/mission/mars-2020-perseverance/"
+  }
+}

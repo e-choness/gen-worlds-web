@@ -1,7 +1,9 @@
 /** Mission scenarios (source and units in each `scenario_*.json`). */
 import { camelize, indexById } from '@/data/camelize';
 import type { SlotId, SolarMounting } from '@/data/parts';
+import type { PlanetId } from '@/data/planet-elements';
 import lunarIceProspector from '@/data/scenario_lunar_ice_prospector.json';
+import marsJezeroSurvey from '@/data/scenario_mars_jezero_survey.json';
 
 export type TrajectoryMode = 'earth_orbit' | 'lunar' | 'interplanetary';
 
@@ -39,9 +41,9 @@ export interface LandingSite {
   longitudeDeg: number;
   /** Elevation of the local horizon in 12 azimuth sectors of 30°, from north going east. */
   horizonMaskDeg: number[];
-  /** 0–1: how much ice the shadowed ground here holds. */
+  /** 0–1: how rich the science target here is (ice in the shadowed ground, the rock record). */
   iceQuality: number;
-  /** Drive from the landing zone to shadowed, ice-bearing ground, km (0 = landing inside it). */
+  /** Drive from the landing zone to the science target, km (0 = landing on it). */
   shadowDistanceKm: number;
   /** Multiplies the landing system's failure risk. */
   landingHazardFactor: number;
@@ -97,6 +99,77 @@ export interface ScenarioOperations {
   relayCoverageFraction: number;
   groundStation: string;
   groundPassHoursPerDay: number;
+  /**
+   * True when the science target lies in permanent shadow, so sampling means battery-powered
+   * excursions; false when the vehicle samples in daylight once it has driven there.
+   */
+  targetInShadow: boolean;
+  /** Chance factor of a sample holding the find, by the depth the drill reaches. */
+  sampleFindByDepth: { depthM: number; factor: number }[];
+}
+
+/** The words that differ between destinations, used inside explanation strings. */
+export interface ScenarioTerms {
+  /** "the Moon" */
+  destination: string;
+  /** "prospector" */
+  vehicle: string;
+  /** "lunar weight" */
+  localWeight: string;
+  /** "the shadowed, ice-bearing ground" */
+  targetGround: string;
+  /** "the ice" */
+  targetShort: string;
+  /** Title of the first find: "Water ice confirmed". */
+  findTitle: string;
+  /** Completes "The first sample …": "with water ice came up". */
+  findDetail: string;
+  /** Completes "3 samples …": "with ice confirmed". */
+  sampleCount: string;
+  /** Completes "the rover …" in the headline: "confirmed water ice in" / "found no ice". */
+  foundIn: string;
+  noFind: string;
+  /** Completes "5 samples …": "came up dry". */
+  emptySample: string;
+  /** What finds it more often: "A richer site or a deeper drill finds ice more often." */
+  findAdvice: string;
+  /** Labels on the landing-site cards. */
+  qualityLabel: string;
+  driveLabel: string;
+  atTarget: string;
+}
+
+/** How the Sun and Earth move in the destination's sky. */
+export interface SkyModel {
+  /** `lunar`: real lunar geometry with horizon masks. `diurnal`: a rotating planet with seasons. */
+  model: 'lunar' | 'diurnal';
+  /** Heliocentric ecliptic longitude of the planet at its northern spring equinox, degrees. */
+  equinoxLongitudeDeg: number;
+  /** Local solar time of touchdown, hours. */
+  landingLocalHour: number;
+  /** Earth closer to the Sun than this in the sky cannot be heard through the solar noise, degrees. */
+  conjunctionElongationDeg: number;
+}
+
+/** Atmospheric entry in place of a braking burn into orbit. */
+export interface EntrySystem {
+  /** Aeroshell, parachute and cruise stage as a share of the fuelled lander's mass. */
+  massFraction: number;
+  /** Fastest entry the heat shield survives, m/s. */
+  maxEntrySpeedMS: number;
+  /** Altitude of the entry interface, m. */
+  interfaceAltitudeM: number;
+}
+
+/** A ballistic transfer between two planets, with the dates left to the player. */
+export interface InterplanetaryRoute {
+  from: PlanetId;
+  to: PlanetId;
+  name: string;
+  /** ISO dates (UTC) between which the launch may be scheduled. */
+  departureWindow: { startDate: string; endDate: string };
+  correctionDeltaVMS: number;
+  summary: string;
 }
 
 export interface Scenario {
@@ -120,7 +193,12 @@ export interface Scenario {
   launchAdapterMassKg: number;
   /** ISO dates (UTC) between which the landing may be scheduled. */
   landingWindow: { startDate: string; endDate: string };
+  /** Fixed routes to choose from; empty when `route` lets the player pick the dates instead. */
   transfers: TransferOption[];
+  route: InterplanetaryRoute | null;
+  entry: EntrySystem | null;
+  sky: SkyModel;
+  terms: ScenarioTerms;
   descent: {
     /** Orbit to touchdown, m/s. */
     deltaVMS: number;
@@ -154,11 +232,16 @@ export interface Scenario {
     site: string;
     /** ISO date (UTC) of the landing. */
     landingDate: string;
+    /** ISO date (UTC) of the launch, for scenarios with a `route`; empty otherwise. */
+    departureDate: string;
   };
   nasaReference: { mission: string; summary: string; url: string };
 }
 
-export const SCENARIOS: readonly Scenario[] = [camelize<Scenario>(lunarIceProspector)];
+export const SCENARIOS: readonly Scenario[] = [
+  camelize<Scenario>(lunarIceProspector),
+  camelize<Scenario>(marsJezeroSurvey),
+];
 
 const BY_ID = indexById(SCENARIOS, 'scenario');
 

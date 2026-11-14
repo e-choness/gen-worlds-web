@@ -14,6 +14,7 @@
 import { G0 } from '@/astro/constants';
 import { hashCombine, hashString, Rng } from '@/core/random';
 import { MISSION_CONSTANTS } from '@/data/mission-constants';
+import type { ScenarioTerms } from '@/data/scenarios';
 import { installedParts, type MissionDesign } from '@/mission/design';
 import { type DesignEvaluation, evaluateDesign } from '@/mission/evaluate-design';
 import { rollEvents } from '@/mission/event-roll';
@@ -191,7 +192,7 @@ export function simulateMission(
       seed,
       flownDesign: flown,
       lostIn,
-      headline: surface ? surfaceHeadline(score, surface) : headline,
+      headline: surface ? surfaceHeadline(score, surface, scenario.terms) : headline,
       metrics,
       objectives,
       score,
@@ -266,7 +267,7 @@ export function simulateMission(
         tone: 'bad',
         mitigated: false,
         title: 'Hardware failure',
-        detail: `${headline} The spacecraft cannot reach the Moon without it. Its failure rate is ${percent(item.failureRatePerYear)} per year${resolved.design.redundant.includes(item.slot as never) ? ', even with a backup unit' : '; a backup unit would cut that tenfold'}.`,
+        detail: `${headline} The spacecraft cannot reach ${scenario.terms.destination} without it. Its failure rate is ${percent(item.failureRatePerYear)} per year${resolved.design.redundant.includes(item.slot as never) ? ', even with a backup unit' : '; a backup unit would cut that tenfold'}.`,
         slot: item.slot,
       });
       return finish('cruise', headline, null);
@@ -391,11 +392,11 @@ function contextMeasures(evaluation: DesignEvaluation, surface: SurfaceOutcome):
   return context.size;
 }
 
-function surfaceHeadline(score: ScoreBreakdown, surface: SurfaceOutcome): string {
+function surfaceHeadline(score: ScoreBreakdown, surface: SurfaceOutcome, terms: ScenarioTerms): string {
   const ice =
     surface.iceSamples > 0
-      ? `confirmed water ice in ${num(surface.iceSamples, 0)} sample${surface.iceSamples === 1 ? '' : 's'}`
-      : 'found no ice';
+      ? `${terms.foundIn} ${num(surface.iceSamples, 0)} sample${surface.iceSamples === 1 ? '' : 's'}`
+      : terms.noFind;
   const ending =
     surface.end.kind === 'completed'
       ? 'and was still working at the end of the mission'
@@ -406,5 +407,5 @@ function surfaceHeadline(score: ScoreBreakdown, surface: SurfaceOutcome): string
       : score.outcome === 'partial'
         ? 'Partial success'
         : 'Mission failed';
-  return `${verdict}: the prospector drove ${num(surface.traverseKm)} km, ${ice} and returned ${num(surface.dataReturnedGb)} Gb ${ending}.`;
+  return `${verdict}: the ${terms.vehicle} drove ${num(surface.traverseKm)} km, ${ice} and returned ${num(surface.dataReturnedGb)} Gb ${ending}.`;
 }

@@ -71,7 +71,7 @@ export const TEXT = {
   },
   trajectory: {
     vehicle: 'Launch vehicle',
-    transfer: 'Route to the Moon',
+    transfer: 'Route to',
     site: 'Landing site',
     date: 'Landing date',
     choose: 'Choose',
@@ -82,10 +82,7 @@ export const TEXT = {
     duration: 'Duration',
     days: 'days',
     energy: 'Launch energy',
-    braking: 'Braking at the Moon',
-    ice: 'Ice richness',
-    toIce: 'Drive to the ice',
-    inIce: 'on the ice',
+    braking: 'Braking on arrival',
     hazard: 'Landing risk',
     slope: 'Slopes',
     sun: 'Sunlight',
@@ -94,6 +91,11 @@ export const TEXT = {
     landing: 'Landing',
     launch: 'launch',
     dateHint: 'Move the slider to choose the landing date.',
+    launchDate: 'Launch date',
+    arrivalDate: 'Arrival date',
+    entrySpeed: 'atmospheric entry at',
+    porkchopHint: 'Click the plot, or move the sliders, to choose a launch date and an arrival date.',
+    noTransfer: 'No coasting arc joins these two dates. Choose an arrival later after the launch.',
     siteFirst: 'Choose a landing site to see its sunlight and Earth visibility through the year.',
     calendarLabel: 'Daily sunlight and Earth visibility at the landing site across the landing window',
     calendarCaption:
@@ -141,6 +143,15 @@ export const TEXT = {
     debrief: 'Open the debrief',
     fastSimNote:
       'This is the fast simulation: the same mission model that drives the 3D flight, played back as a log.',
+  },
+  porkchop: {
+    label: 'Launch energy for every pair of launch and arrival dates',
+    launchAxis: 'Launch date',
+    arrivalAxis: 'Arrival date',
+    legendUnit: 'km²/s² of launch energy',
+    tooFast: 'arrives too fast for the heat shield',
+    caption:
+      'A porkchop plot, the chart NASA uses to pick every Mars launch. Bright means the rocket needs little energy, so it can lift more; dark means it needs a lot. The bright islands are the launch window: outside it the planets are in the wrong places. Grey dates reach Mars, but too fast to survive entry.',
   },
   dashboard: {
     label: 'Surface operations hour by hour: sunlight, Earth in view, activity, battery charge and data',

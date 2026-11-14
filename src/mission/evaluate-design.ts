@@ -51,6 +51,8 @@ export function evaluateDesign(design: MissionDesign): DesignEvaluation {
           scenario.surfaceDurationDays,
           scenario.operations.minSunClearanceDeg,
           scenario.operations.minEarthClearanceDeg,
+          scenario.sky,
+          scenario.targetBody,
         )
       : null;
   const power = computePowerModel(resolved, mass);

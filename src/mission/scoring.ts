@@ -20,10 +20,13 @@ export interface ObjectiveResult {
   why: string;
 }
 
-const METRIC_PHRASES: Record<ObjectiveMetric, (value: number, target: number) => string> = {
+const METRIC_PHRASES: Record<
+  ObjectiveMetric,
+  (value: number, target: number, resolved: ResolvedDesign) => string
+> = {
   traverse_km: (value, target) => `${num(value)} km driven with the sensor running, target ${num(target)} km`,
-  ice_samples: (value, target) =>
-    `${num(value, 0)} sample${value === 1 ? '' : 's'} with ice confirmed, target ${num(target, 0)}`,
+  ice_samples: (value, target, resolved) =>
+    `${num(value, 0)} sample${value === 1 ? '' : 's'} ${resolved.scenario.terms.sampleCount}, target ${num(target, 0)}`,
   data_returned_gb: (value, target) => `${num(value)} Gb received on Earth, target ${num(target)} Gb`,
   context_measures: (value, target) =>
     `${num(value, 0)} kind${value === 1 ? '' : 's'} of context measurement returned, target ${num(target, 0)}`,
@@ -42,7 +45,7 @@ export function scoreObjectives(resolved: ResolvedDesign, metrics: MissionMetric
         why: `Not attempted: no instrument provided ${missing.map(measureName).join(' and ')}.`,
       };
     }
-    const phrase = METRIC_PHRASES[objective.metric](value, objective.target);
+    const phrase = METRIC_PHRASES[objective.metric](value, objective.target, resolved);
     if (value < objective.threshold) {
       return {
         objective,

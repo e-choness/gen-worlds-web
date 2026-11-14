@@ -31,6 +31,10 @@ export interface ReportInput {
   extraDriveKm: number;
 }
 
+function capitalise(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
 function endFinding(input: ReportInput, surface: SurfaceOutcome): Finding | null {
   const { evaluation, landingDay } = input;
   const { resolved, power, budgets } = evaluation;
@@ -79,6 +83,8 @@ function objectiveFinding(
   if (result.achieved >= 0.999) return null;
   const { resolved, power, data } = input.evaluation;
   const { site, mobility } = resolved;
+  const terms = resolved.scenario.terms;
+  const shadowed = resolved.scenario.operations.targetInShadow;
   const title = `${result.objective.name}: ${percent(result.achieved)}`;
   const endedEarly = surface.end.kind !== 'completed';
   const totalHours = input.evaluation.visibility?.sunVisible.length ?? 1;
@@ -125,7 +131,7 @@ function objectiveFinding(
         return {
           tone: 'bad',
           title,
-          detail: `${result.why} The ice at ${site.name} lies ${num(site.shadowDistanceKm)} km away down ${num(site.slopeDeg, 0)}° slopes, and the vehicle could not get there.`,
+          detail: `${result.why} ${capitalise(terms.targetShort)} at ${site.name} lies ${num(site.shadowDistanceKm)} km away over ${num(site.slopeDeg, 0)}° slopes, and the vehicle could not get there.`,
           slot: 'mobility',
         };
       }
@@ -133,11 +139,11 @@ function objectiveFinding(
         return {
           tone: 'bad',
           title,
-          detail: `${result.why} The rover never reached the shadowed ground.${input.extraDriveKm > 0.3 ? ` The landing came down ${num(input.extraDriveKm)} km off target, which the rover then had to drive.` : ''}${early}`,
+          detail: `${result.why} The rover never reached ${terms.targetGround}.${input.extraDriveKm > 0.3 ? ` The landing came down ${num(input.extraDriveKm)} km off target, which the rover then had to drive.` : ''}${early}`,
           slot: input.extraDriveKm > 0.3 ? 'landing' : 'mobility',
         };
       }
-      if (surface.sortiesStarted === 0 && site && site.shadowDistanceKm > 0) {
+      if (shadowed && surface.sortiesStarted === 0 && site && site.shadowDistanceKm > 0) {
         return {
           tone: 'bad',
           title,
@@ -145,7 +151,7 @@ function objectiveFinding(
           slot: 'battery',
         };
       }
-      if (surface.sortiesAborted > 0 && surface.sortiesAborted >= surface.sortiesStarted / 2) {
+      if (shadowed && surface.sortiesAborted > 0 && surface.sortiesAborted >= surface.sortiesStarted / 2) {
         return {
           tone: 'bad',
           title,
@@ -157,14 +163,16 @@ function objectiveFinding(
         return {
           tone: 'bad',
           title,
-          detail: `${result.why} The drill took ${num(surface.samplesTaken, 0)} samples and ${num(surface.samplesTaken - surface.iceSamples, 0)} came up dry. A richer site or a deeper drill finds ice more often.`,
+          detail: `${result.why} The drill took ${num(surface.samplesTaken, 0)} samples and ${num(surface.samplesTaken - surface.iceSamples, 0)} ${terms.emptySample}. ${terms.findAdvice}`,
           slot: 'trajectory',
         };
       }
       return {
         tone: 'bad',
         title,
-        detail: `${result.why}${early} There was time for only ${num(surface.sortiesStarted, 0)} trips into shadow between recharges and nights.`,
+        detail: shadowed
+          ? `${result.why}${early} There was time for only ${num(surface.sortiesStarted, 0)} trips into shadow between recharges and nights.`
+          : `${result.why}${early} The drill took ${num(surface.samplesTaken, 0)} samples in the working hours it had: more daylight power, or power that does not need the Sun, gives it more.`,
         slot: 'power',
       };
     }

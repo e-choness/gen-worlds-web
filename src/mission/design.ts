@@ -3,7 +3,9 @@
  * (ids and numbers only), so it can be saved, shared as a mission code and synced between players.
  * `resolveDesign` looks the ids up in the catalogs for the budget and simulation code.
  */
+import { planTransfer } from '@/astro/interplanetary';
 import { jdFromUnixMs } from '@/astro/time';
+import { getBody } from '@/data/bodies';
 import { getLaunchVehicle, type LaunchVehicle } from '@/data/launch-vehicles';
 import { getTier, MISSION_CONSTANTS, type Tier, type TierId, tierAllows } from '@/data/mission-constants';
 import {
@@ -31,6 +33,8 @@ export interface TrajectoryChoice {
   siteId: string | null;
   /** Julian date of touchdown, or null until the team picks one. */
   landingJd: number | null;
+  /** Julian date of launch for scenarios whose route is flown between chosen dates; null otherwise. */
+  departureJd?: number | null;
 }
 
 export interface MissionDesign {
@@ -72,6 +76,7 @@ export function createReferenceDesign(scenario: Scenario, tier: TierId): Mission
       transferId: reference.transfer,
       siteId: reference.site,
       landingJd: jdFromUnixMs(Date.parse(reference.landingDate)),
+      departureJd: reference.departureDate ? jdFromUnixMs(Date.parse(reference.departureDate)) : null,
     },
   };
 }
@@ -95,6 +100,8 @@ export interface ResolvedDesign {
   vehicle?: LaunchVehicle;
   transfer?: TransferOption;
   site?: LandingSite;
+  /** Arrival at a planet with an atmosphere: how fast the vehicle meets it. */
+  arrival?: { vInfinityMS: number; entrySpeedMS: number };
   /** Every measurement tag the chosen instruments provide. */
   measures: ReadonlySet<string>;
 }
@@ -110,6 +117,40 @@ function partInSlot<C extends SlotId>(
   return part?.category === slot ? (part as Extract<Part, { category: C }>) : undefined;
 }
 
+/**
+ * The transfer of a scenario whose route is flown between two chosen dates: a Lambert arc whose
+ * launch energy and arrival speed follow from the dates. Undefined until both dates are set, or
+ * when no arc joins them.
+ */
+function routeTransfer(
+  scenario: Scenario,
+  design: MissionDesign,
+): { transfer: TransferOption; arrival: ResolvedDesign['arrival'] } | undefined {
+  const { route, entry } = scenario;
+  const { departureJd, landingJd } = design.trajectory;
+  if (!route || departureJd == null || landingJd === null) return undefined;
+  const arc = planTransfer(route.from, route.to, departureJd, landingJd);
+  if (!arc) return undefined;
+  const body = getBody(scenario.targetBody);
+  const interfaceRadius = body.equatorialRadiusM + (entry?.interfaceAltitudeM ?? 0);
+  return {
+    transfer: {
+      id: 'route',
+      name: route.name,
+      durationDays: landingJd - departureJd,
+      c3Km2S2: arc.c3 / 1e6,
+      correctionDeltaVMS: route.correctionDeltaVMS,
+      // Direct entry: the atmosphere does the braking.
+      orbitInsertionDeltaVMS: 0,
+      summary: route.summary,
+    },
+    arrival: {
+      vInfinityMS: arc.vInfinityArrival,
+      entrySpeedMS: Math.sqrt(arc.vInfinityArrival ** 2 + (2 * body.mu) / interfaceRadius),
+    },
+  };
+}
+
 export function resolveDesign(design: MissionDesign): ResolvedDesign {
   const scenario = getScenario(design.scenarioId);
   const instruments: InstrumentPart[] = [];
@@ -118,6 +159,7 @@ export function resolveDesign(design: MissionDesign): ResolvedDesign {
     if (part?.category === 'instrument' && !instruments.includes(part)) instruments.push(part);
   }
   const { launchVehicleId, transferId, siteId } = design.trajectory;
+  const flown = routeTransfer(scenario, design);
   return {
     design,
     scenario,
@@ -137,7 +179,8 @@ export function resolveDesign(design: MissionDesign): ResolvedDesign {
       launchVehicleId && scenario.launchVehicles.includes(launchVehicleId)
         ? getLaunchVehicle(launchVehicleId)
         : undefined,
-    transfer: scenario.transfers.find((transfer) => transfer.id === transferId),
+    transfer: flown?.transfer ?? scenario.transfers.find((transfer) => transfer.id === transferId),
+    arrival: flown?.arrival,
     site: scenario.sites.find((site) => site.id === siteId),
     measures: new Set(instruments.flatMap((instrument) => instrument.measures)),
   };

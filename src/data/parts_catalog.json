@@ -1,5 +1,5 @@
 {
-  "source": "Anchored to public NASA figures where a real unit exists: VIPER rover fact sheet and instrument pages (NSS, NIRVSS, MSolo, TRIDENT; 430 kg rover, 450 W peak solar, 0.72 km/h), the MMRTG fact sheet (about 110 W electric and 2,000 W thermal at launch, 45 kg, plutonium-238 half-life 87.7 years), the NASA Small Spacecraft Technology State-of-the-Art report (solar cell efficiency, battery specific energy, radios, avionics) and NASA flight computer descriptions (RAD750, HPSC). Masses, powers and costs of generic parts are representative values for their class, rounded for gameplay.",
+  "source": "Anchored to public NASA figures where a real unit exists: VIPER rover fact sheet and instrument pages (NSS, NIRVSS, MSolo, TRIDENT; 430 kg rover, 450 W peak solar, 0.72 km/h), the MMRTG fact sheet (about 110 W electric and 2,000 W thermal at launch, 45 kg, plutonium-238 half-life 87.7 years), the NASA Small Spacecraft Technology State-of-the-Art report (solar cell efficiency, battery specific energy, radios, avionics) and NASA flight computer descriptions (RAD750, HPSC). Masses, powers and costs of generic parts are representative values for their class, rounded for gameplay. Mars instruments follow the Perseverance payload (NASA Mars 2020 instrument pages: the coring drill of the Sampling and Caching System, SHERLOC, PIXL, SuperCam, MEDA) and its Electra-Lite UHF relay radio (up to 2 Mbit/s to an orbiter).",
   "units": "mass_kg dry mass; power_w electrical draw while the part is on; cost_musd millions of US dollars; trl NASA technology readiness level 1-9; failure_rate_per_year chance of a disabling fault per year of operation; data_rate_mbps megabits per second averaged over the time the instrument operates (compressed products, not the raw detector rate); max_rate_mbps the ceiling of the radio hardware. speed_m_per_h is the ground a rover covers per hour of driving on average, including the stops to image, plan and check its footing (top speed is far higher: VIPER can do 720 m/h).",
   "parts": [
     {
@@ -335,6 +335,23 @@
       "summary": "Pays for passes of a relay satellite in lunar orbit: contact even where Earth is below the horizon, for the price of a subscription."
     },
     {
+      "id": "comms_mars_relay",
+      "name": "UHF relay radio",
+      "category": "comms",
+      "mass_kg": 3,
+      "power_w": 65,
+      "cost_musd": 5,
+      "trl": 9,
+      "failure_rate_per_year": 0.01,
+      "min_tier": "cadet",
+      "tx_power_w": 8,
+      "antenna_diameter_m": 0.1,
+      "max_rate_mbps": 2,
+      "needs_pointing_class": 0,
+      "relay": true,
+      "summary": "Talks to the orbiters that pass overhead a few times a day; their big dishes carry the data to Earth. Megabits instead of kilobits, but only during the passes."
+    },
+    {
       "id": "thermal_passive",
       "name": "Blankets and radiators",
       "category": "thermal",
@@ -584,6 +601,91 @@
       "needs_pointing_class": 0,
       "drill_depth_m": 0,
       "summary": "Maps ground temperature to find the cold traps where ice can last for billions of years."
+    },
+    {
+      "id": "inst_core_drill",
+      "name": "Rock coring drill",
+      "category": "instrument",
+      "mass_kg": 25,
+      "power_w": 120,
+      "cost_musd": 22,
+      "trl": 8,
+      "failure_rate_per_year": 0.04,
+      "min_tier": "cadet",
+      "data_rate_mbps": 0.002,
+      "science_value": 22,
+      "measures": ["rock_coring"],
+      "needs_pointing_class": 0,
+      "drill_depth_m": 0.06,
+      "summary": "Cuts a chalk-sized core out of solid rock and seals it in a tube, as Perseverance does. The cores are the mission: everything else decides which rocks deserve one."
+    },
+    {
+      "id": "inst_raman_spectrometer",
+      "name": "Ultraviolet Raman spectrometer",
+      "category": "instrument",
+      "mass_kg": 4.7,
+      "power_w": 49,
+      "cost_musd": 14,
+      "trl": 7,
+      "failure_rate_per_year": 0.04,
+      "min_tier": "cadet",
+      "data_rate_mbps": 0.01,
+      "science_value": 24,
+      "measures": ["organics_detection"],
+      "needs_pointing_class": 0,
+      "drill_depth_m": 0,
+      "summary": "Shines an ultraviolet laser on a rock from a few centimetres away and maps organic molecules and the minerals water left behind."
+    },
+    {
+      "id": "inst_xray_spectrometer",
+      "name": "X-ray chemistry mapper",
+      "category": "instrument",
+      "mass_kg": 7,
+      "power_w": 25,
+      "cost_musd": 11,
+      "trl": 8,
+      "failure_rate_per_year": 0.02,
+      "min_tier": "engineer",
+      "data_rate_mbps": 0.004,
+      "science_value": 16,
+      "measures": ["elemental_chemistry"],
+      "needs_pointing_class": 0,
+      "drill_depth_m": 0,
+      "summary": "Maps the chemical elements across a postage stamp of rock, grain by grain: the texture that tells a lake bed from a lava flow."
+    },
+    {
+      "id": "inst_laser_spectrometer",
+      "name": "Laser spectrometer on the mast",
+      "category": "instrument",
+      "mass_kg": 10.6,
+      "power_w": 18,
+      "cost_musd": 18,
+      "trl": 8,
+      "failure_rate_per_year": 0.02,
+      "min_tier": "engineer",
+      "data_rate_mbps": 0.02,
+      "science_value": 18,
+      "measures": ["remote_chemistry"],
+      "needs_pointing_class": 0,
+      "drill_depth_m": 0,
+      "summary": "Vaporises a pinhead of rock up to seven metres away and reads the flash. It surveys dozens of targets a day without the rover moving."
+    },
+    {
+      "id": "inst_weather_station",
+      "name": "Weather station",
+      "category": "instrument",
+      "mass_kg": 5.5,
+      "power_w": 17,
+      "cost_musd": 5,
+      "trl": 9,
+      "failure_rate_per_year": 0.01,
+      "min_tier": "cadet",
+      "data_rate_mbps": 0.002,
+      "science_value": 8,
+      "measures": ["weather"],
+      "needs_pointing_class": 0,
+      "drill_depth_m": 0,
+      "summary": "Wind, pressure, temperature and dust, day and night: the record future crews will plan around."
     }
   ]
 }

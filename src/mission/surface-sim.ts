@@ -121,7 +121,9 @@ export function simulateSurface(input: SurfaceInput): SurfaceOutcome {
 
   const hours = visibility.sunVisible.length;
   const usable = power.usableBatteryWh;
-  const inIce = site.shadowDistanceKm === 0;
+  const terms = scenario.terms;
+  // Landed inside permanent shadow: no sunlight and no direct view of Earth, ever.
+  const inIce = ops.targetInShadow && site.shadowDistanceKm === 0;
   const canReachIce = inIce || (!!mobility && mobility.maxSlopeDeg >= site.slopeDeg);
   const speedKmPerHour = mobility ? (mobility.speedMPerH / 1000) * ops.driveFraction * efficiency : 0;
   const passLimit = Math.min(1, ops.groundPassHoursPerDay / 24 / ops.commsFraction);
@@ -195,7 +197,7 @@ export function simulateSurface(input: SurfaceInput): SurfaceOutcome {
   const iceChance = (): number => {
     const depth = drillDepth();
     let factor = 0;
-    for (const entry of sim.iceFindByDepth)
+    for (const entry of ops.sampleFindByDepth)
       if (depth >= entry.depthM) factor = Math.max(factor, entry.factor);
     return site.iceQuality * factor;
   };
@@ -337,11 +339,15 @@ export function simulateSurface(input: SurfaceInput): SurfaceOutcome {
             note(
               hour,
               'good',
-              'Reached the shadowed ground',
-              `After ${num(traverseKm)} km the rover stands at the edge of permanently shadowed, ice-bearing ground.`,
+              `Reached ${terms.targetShort}`,
+              `After ${num(traverseKm)} km the rover stands at ${terms.targetGround}.`,
               'mobility',
             );
           }
+        } else if (distanceToIceKm <= 0 && canReachIce && drillDepth() > 0 && !ops.targetInShadow) {
+          // The target is in daylight: sample on the spot and keep exploring between holes.
+          drillHours += ops.scienceFraction * efficiency;
+          traverseKm += speedKmPerHour * 0.5;
         } else if (distanceToIceKm <= 0 && canReachIce && drillDepth() > 0) {
           const charged = battery >= sim.rechargeFraction * usable;
           // A sortie must leave time to work before the battery hits the reserve.
@@ -372,8 +378,8 @@ export function simulateSurface(input: SurfaceInput): SurfaceOutcome {
           note(
             hour,
             'good',
-            'Water ice confirmed',
-            `The first sample with water ice came up from ${num(drillDepth(), 0)} m below ${site.name}.`,
+            terms.findTitle,
+            `The first sample ${terms.findDetail} at ${site.name}.`,
             'instrument',
           );
         }

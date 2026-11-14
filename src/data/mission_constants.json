@@ -21,16 +21,6 @@
     "battery_reserve_fraction": 0.2,
     "recharge_fraction": 0.9,
     "shadow_transit_fraction": 0.3,
-    "ice_find_by_depth": [
-      {
-        "depth_m": 1,
-        "factor": 0.75
-      },
-      {
-        "depth_m": 2,
-        "factor": 1
-      }
-    ],
     "scripted_pilot": {
       "descent_delta_v_factor": 1,
       "operations_efficiency": 0.8

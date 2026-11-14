@@ -1,6 +1,6 @@
 {
   "source": "Modelled on NASA's VIPER mission and the Commercial Lunar Payload Services programme (NASA VIPER fact sheet and mission pages: 100-day mission at Mons Mouton, one-metre drill, direct-to-Earth communications; NASA Artemis III candidate landing region descriptions for the Shackleton connecting ridge and Haworth). Transfer and descent velocity changes are typical published values for a 100 km polar lunar orbit (Apollo and LRO-era mission design). Site coordinates are real; horizon masks, ice quality and hazard factors are simplified for gameplay.",
-  "units": "delta_v in m/s; c3 in km^2/s^2; angles in degrees (longitude east positive); horizon_mask_deg has 12 values, one per 30-degree sector of azimuth starting at north and going east, giving the elevation of the local horizon in that direction (negative where the site stands above its surroundings: from the top of a 6 km mountain the horizon dips almost 5 degrees). reference_design is a complete starting design players can load: slot/part pairs, instruments and trajectory choices, with landing_date as an ISO date. descent: terminal_delta_v_m_s is the share of the descent the scripted pilot spends below hand-over; start_* give the state at which a human pilot takes over (height above ground, descent rate, ground speed, distance to the target); max_touchdown_* are the vertical speed and sideways drift a landing survives.",
+  "units": "delta_v in m/s; c3 in km^2/s^2; angles in degrees (longitude east positive); horizon_mask_deg has 12 values, one per 30-degree sector of azimuth starting at north and going east, giving the elevation of the local horizon in that direction (negative where the site stands above its surroundings: from the top of a 6 km mountain the horizon dips almost 5 degrees). reference_design is a complete starting design players can load: slot/part pairs, instruments and trajectory choices, with landing_date as an ISO date. descent: terminal_delta_v_m_s is the share of the descent the scripted pilot spends below hand-over; start_* give the state at which a human pilot takes over (height above ground, descent rate, ground speed, distance to the target); max_touchdown_* are the vertical speed and sideways drift a landing survives. operations.sample_find_by_depth: chance factor of a sample holding ice for a drill reaching at least depth_m. sky: how the Sun and Earth move (lunar = real lunar geometry; the other fields are only used by planets). route and entry are null here: the Moon has fixed transfers and no atmosphere.",
   "id": "lunar_ice_prospector",
   "number": 2,
   "name": "Lunar south pole ice prospector",
@@ -91,6 +91,31 @@
       "summary": "A three-month loop far past the Moon lets the Sun's gravity do part of the braking. It saves about 175 m/s of propellant and costs months of operations and exposure."
     }
   ],
+  "route": null,
+  "entry": null,
+  "sky": {
+    "model": "lunar",
+    "equinox_longitude_deg": 0,
+    "landing_local_hour": 12,
+    "conjunction_elongation_deg": 0
+  },
+  "terms": {
+    "destination": "the Moon",
+    "vehicle": "prospector",
+    "local_weight": "lunar weight",
+    "target_ground": "the shadowed, ice-bearing ground",
+    "target_short": "the ice",
+    "find_title": "Water ice confirmed",
+    "find_detail": "with water ice came up",
+    "sample_count": "with ice confirmed",
+    "found_in": "confirmed water ice in",
+    "no_find": "found no ice",
+    "empty_sample": "came up dry",
+    "find_advice": "A richer site or a deeper drill finds ice more often.",
+    "quality_label": "Ice richness",
+    "drive_label": "Drive to the ice",
+    "at_target": "on the ice"
+  },
   "descent": {
     "delta_v_m_s": 1900,
     "min_thrust_to_weight": 1.3,
@@ -137,7 +162,18 @@
     "min_earth_clearance_deg": 2,
     "relay_coverage_fraction": 0.55,
     "ground_station": "dsn_34m",
-    "ground_pass_hours_per_day": 10
+    "ground_pass_hours_per_day": 10,
+    "target_in_shadow": true,
+    "sample_find_by_depth": [
+      {
+        "depth_m": 1,
+        "factor": 0.75
+      },
+      {
+        "depth_m": 2,
+        "factor": 1
+      }
+    ]
   },
   "sites": [
     {
@@ -285,7 +321,8 @@
     "launch_vehicle": "falcon9",
     "transfer": "direct",
     "site": "mons_mouton",
-    "landing_date": "2027-09-01"
+    "landing_date": "2027-09-01",
+    "departure_date": ""
   },
   "nasa_reference": {
     "mission": "VIPER (Volatiles Investigating Polar Exploration Rover)",

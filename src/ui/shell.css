@@ -870,6 +870,61 @@ button.card:hover {
 .sky-calendar .mission-span text {
   fill: var(--ui-fg);
 }
+.porkchop svg {
+  cursor: crosshair;
+  touch-action: none;
+}
+.porkchop .axis-label {
+  fill: var(--ui-fg);
+  font: 11px var(--ui-font);
+}
+.porkchop .tick line {
+  stroke: rgba(255, 255, 255, 0.14);
+}
+.porkchop .pick line {
+  stroke: #fff;
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+}
+.porkchop .pick circle {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2;
+}
+.porkchop-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  font: 0.75rem var(--ui-mono);
+  color: var(--ui-dim);
+}
+.porkchop-legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.porkchop-legend .swatch {
+  width: 0.9rem;
+  height: 0.9rem;
+  border: 1px solid var(--ui-line);
+}
+.porkchop-legend .swatch.grey {
+  background: #55585f;
+}
+.date-sliders {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+}
+.date-sliders input {
+  display: block;
+  width: 100%;
+}
 .mission-dashboard {
   margin: 1rem 0;
 }

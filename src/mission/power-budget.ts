@@ -197,14 +197,15 @@ export function thermalLine(
     };
   }
 
-  const needsSorties = site.shadowDistanceKm > 0;
+  const needsSorties = ops.targetInShadow && site.shadowDistanceKm > 0;
   const sortieOk = !needsSorties || model.sortieEnduranceHours >= ops.shadowSortieHours;
   if (survives && sortieOk) {
     return {
       ...base,
       status: 'ok',
-      why:
-        longestDark === 0
+      why: !ops.targetInShadow
+        ? `Night at ${site.name} lasts up to ${duration(longestDark)}. Hibernating with its heaters on, the vehicle lasts ${duration(model.nightSurvivalHours)} on the battery.`
+        : longestDark === 0
           ? `The Sun stays above the horizon at ${site.name} for the whole mission, and the battery covers ${duration(model.sortieEnduranceHours)} of work in shadowed craters.`
           : `The longest darkness at ${site.name} in this period is ${duration(longestDark)}. Hibernating, the vehicle lasts ${duration(model.nightSurvivalHours)}, and it can work ${duration(model.sortieEnduranceHours)} in shadow on one charge.`,
     };

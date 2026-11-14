@@ -76,8 +76,6 @@ export interface MissionConstants {
     shadowTransitFraction: number;
     /** Multiplies sortie planning time for a computer that can plan on its own. */
     autonomousPlanningFactor: number;
-    /** Chance factor of reaching ice with a drill of that depth. */
-    iceFindByDepth: { depthM: number; factor: number }[];
     /** Inputs the fast simulation uses in place of a human crew. */
     scriptedPilot: { descentDeltaVFactor: number; operationsEfficiency: number };
   };

@@ -1,5 +1,7 @@
 import { useMemo } from 'preact/hooks';
-import { isoDateFromJd } from '@/astro/time';
+import { computePorkchop } from '@/astro/interplanetary';
+import { isoDateFromJd, jdFromUnixMs } from '@/astro/time';
+import { getBody } from '@/data/bodies';
 import { capacityAt, getLaunchVehicle } from '@/data/launch-vehicles';
 import { tierAllows } from '@/data/mission-constants';
 import type { MissionDesign, TrajectoryChoice } from '@/mission/design';
@@ -10,6 +12,7 @@ import { computeSiteCalendar } from '@/mission/site-calendar';
 import { landingWindowJd } from '@/mission/validation';
 import { BudgetPanel } from '@/ui/budget-panel';
 import { CapacityChart } from '@/ui/charts/capacity-chart';
+import { PorkchopChart } from '@/ui/charts/porkchop-chart';
 import { SkyCalendar } from '@/ui/charts/sky-calendar';
 import { ChoiceCard, type ChoiceStat } from '@/ui/choice-card';
 import { TEXT } from '@/ui/text';
@@ -20,6 +23,9 @@ export interface TrajectoryScreenProps {
   onNext: () => void;
   onBack: () => void;
 }
+
+const PORKCHOP_COLUMNS = 96;
+const PORKCHOP_ROWS = 80;
 
 /** How to get there and when: rocket, route, landing site and landing date, each with its effect. */
 export function TrajectoryScreen({ evaluation, onChange, onNext, onBack }: TrajectoryScreenProps) {
@@ -44,9 +50,34 @@ export function TrajectoryScreen({ evaluation, onChange, onNext, onBack }: Traje
     }),
     [evaluation],
   );
+  const { route, entry } = scenario;
+  const porkchop = useMemo(
+    () =>
+      route
+        ? computePorkchop({
+            from: route.from,
+            to: route.to,
+            departureJdStart: jdFromUnixMs(Date.parse(route.departureWindow.startDate)),
+            departureJdEnd: jdFromUnixMs(Date.parse(route.departureWindow.endDate)),
+            columns: PORKCHOP_COLUMNS,
+            arrivalJdStart: window.start,
+            arrivalJdEnd: window.end,
+            rows: PORKCHOP_ROWS,
+          })
+        : null,
+    [route, window.start, window.end],
+  );
+  // The arrival speed at which the atmosphere is met at the heat shield's limit.
+  const maxArrivalKmS = useMemo(() => {
+    if (!entry) return null;
+    const body = getBody(scenario.targetBody);
+    const escapeSquared = (2 * body.mu) / (body.equatorialRadiusM + entry.interfaceAltitudeM);
+    return Math.sqrt(Math.max(0, entry.maxEntrySpeedMS ** 2 - escapeSquared)) / 1000;
+  }, [entry, scenario.targetBody]);
+  const departureJd = design.trajectory.departureJd ?? null;
   const calendar = useMemo(
     () =>
-      site
+      site && scenario.sky.model === 'lunar'
         ? computeSiteCalendar(
             site,
             window.start,
@@ -104,7 +135,64 @@ export function TrajectoryScreen({ evaluation, onChange, onNext, onBack }: Traje
           />
         </div>
 
-        <h2>{t.transfer}</h2>
+        <h2>
+          {t.transfer} {scenario.terms.destination}
+        </h2>
+        {porkchop && (
+          <div class="date-picker">
+            <PorkchopChart
+              grid={porkchop}
+              maxArrivalKmS={maxArrivalKmS}
+              departureJd={departureJd}
+              arrivalJd={landingJd}
+              onPick={(departure, arrival) => onChange({ departureJd: departure, landingJd: arrival })}
+            />
+            <div class="date-sliders">
+              <label>
+                {t.launchDate}
+                <input
+                  type="range"
+                  min={porkchop.departureJdStart}
+                  max={porkchop.departureJdEnd}
+                  step={1}
+                  value={departureJd ?? porkchop.departureJdStart}
+                  onInput={(event) => onChange({ departureJd: Number(event.currentTarget.value) })}
+                />
+              </label>
+              <label>
+                {t.arrivalDate}
+                <input
+                  type="range"
+                  min={window.start}
+                  max={window.end}
+                  step={1}
+                  value={landingJd ?? window.start}
+                  onInput={(event) => onChange({ landingJd: Number(event.currentTarget.value) })}
+                />
+              </label>
+            </div>
+            <p class="date-readout">
+              {departureJd === null || landingJd === null ? (
+                <span class="dim">{t.porkchopHint}</span>
+              ) : !transfer ? (
+                <span class="dim">{t.noTransfer}</span>
+              ) : (
+                <>
+                  <strong>
+                    {t.launch} {isoDateFromJd(departureJd)} → {t.landing.toLowerCase()}{' '}
+                    {isoDateFromJd(landingJd)}
+                  </strong>
+                  <span class="dim">
+                    {' '}
+                    · {num(transfer.durationDays)} {t.days} · {t.energy} {num(transfer.c3Km2S2, 1)} km²/s²
+                    {resolved.arrival &&
+                      ` · ${t.entrySpeed} ${num(resolved.arrival.entrySpeedMS / 1000, 1)} km/s`}
+                  </span>
+                </>
+              )}
+            </p>
+          </div>
+        )}
         <ul class="part-list two">
           {scenario.transfers.map((option) => (
             <li key={option.id}>
@@ -133,13 +221,16 @@ export function TrajectoryScreen({ evaluation, onChange, onNext, onBack }: Traje
             <li key={option.id}>
               <ChoiceCard
                 title={option.name}
-                eyebrow={`${num(Math.abs(option.latitudeDeg), 2)}° S`}
+                eyebrow={`${num(Math.abs(option.latitudeDeg), 2)}° ${option.latitudeDeg < 0 ? 'S' : 'N'}`}
                 summary={option.summary}
                 stats={[
-                  { label: t.ice, value: percent(option.iceQuality) },
+                  { label: scenario.terms.qualityLabel, value: percent(option.iceQuality) },
                   {
-                    label: t.toIce,
-                    value: option.shadowDistanceKm > 0 ? `${num(option.shadowDistanceKm)} km` : t.inIce,
+                    label: scenario.terms.driveLabel,
+                    value:
+                      option.shadowDistanceKm > 0
+                        ? `${num(option.shadowDistanceKm)} km`
+                        : scenario.terms.atTarget,
                   },
                   { label: t.hazard, value: `× ${num(option.landingHazardFactor, 1)}` },
                   { label: t.slope, value: `${num(option.slopeDeg)}°` },
@@ -152,8 +243,8 @@ export function TrajectoryScreen({ evaluation, onChange, onNext, onBack }: Traje
           ))}
         </ul>
 
-        <h2>{t.date}</h2>
-        {calendar ? (
+        {!route && <h2>{t.date}</h2>}
+        {route ? null : calendar ? (
           <div class="date-picker">
             <SkyCalendar
               calendar={calendar}

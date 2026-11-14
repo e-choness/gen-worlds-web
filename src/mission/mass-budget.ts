@@ -124,7 +124,7 @@ export function deltaVLine(resolved: ResolvedDesign, chain: MassChain | null): B
     { label: 'Orbit insertion', value: chain.insertionDeltaV, unit: 'm/s' },
     { label: 'Reserve', value: chain.reserveDeltaV, unit: 'm/s' },
     { label: 'Course corrections', value: chain.correctionDeltaV, unit: 'm/s' },
-  ];
+  ].filter((entry) => entry.value > 0);
   const base = {
     id: 'delta_v' as const,
     label: 'Propellant',
@@ -157,7 +157,7 @@ export function deltaVLine(resolved: ResolvedDesign, chain: MassChain | null): B
       limit: null,
       margin: chain.descentThrustToWeight / required - 1,
       status: 'fail',
-      why: `At the start of the descent the vehicle weighs ${num(chain.descentStartMassKg)} kg and the engine lifts only ${num(chain.descentThrustToWeight, 2)} times its lunar weight; a controlled landing needs ${num(required, 1)}. Cut mass or choose an engine with more thrust.`,
+      why: `At the start of the descent the vehicle weighs ${num(chain.descentStartMassKg)} kg and the engine lifts only ${num(chain.descentThrustToWeight, 2)} times its ${scenario.terms.localWeight}; a controlled landing needs ${num(required, 1)}. Cut mass or choose an engine with more thrust.`,
     };
   }
   const ratio = chain.propellantKg / chain.equipmentMassKg;
@@ -182,13 +182,17 @@ export function launchLine(resolved: ResolvedDesign, chain: MassChain | null): B
     );
   }
   const capacity = capacityAt(vehicle.c3Capacity, transfer.c3Km2S2);
-  const needed = chain.feasible ? chain.wetMassKg + scenario.launchAdapterMassKg : Number.POSITIVE_INFINITY;
+  const entryMassKg = chain.feasible ? chain.wetMassKg * (scenario.entry?.massFraction ?? 0) : 0;
+  const needed = chain.feasible
+    ? chain.wetMassKg + entryMassKg + scenario.launchAdapterMassKg
+    : Number.POSITIVE_INFINITY;
   const details = [
     { label: 'Propellant', value: chain.propellantKg, unit: 'kg' },
     { label: 'Equipment', value: chain.equipmentMassKg, unit: 'kg' },
     { label: 'Tanks', value: chain.tankMassKg, unit: 'kg' },
     { label: 'Launch adapter', value: scenario.launchAdapterMassKg, unit: 'kg' },
-  ];
+    { label: 'Heat shield, parachute and cruise stage', value: entryMassKg, unit: 'kg' },
+  ].filter((entry) => entry.value > 0);
   const base = {
     id: 'launch' as const,
     label: 'Launch',
@@ -209,7 +213,7 @@ export function launchLine(resolved: ResolvedDesign, chain: MassChain | null): B
   const status = statusFromMargin(margin, MISSION_CONSTANTS.massMargin);
   let why: string;
   if (status === 'fail') {
-    why = `${vehicle.name} sends ${num(capacity)} kg onto the ${transfer.name.toLowerCase()} and the fuelled spacecraft weighs ${num(needed)} kg, ${num(needed - capacity)} kg too much. ${num(chain.propellantKg)} kg of that is propellant: a lighter design or a more efficient engine shrinks it fast.`;
+    why = `${vehicle.name} sends ${num(capacity)} kg onto the ${transfer.name.toLowerCase()} and the fuelled spacecraft weighs ${num(needed)} kg, ${num(needed - capacity)} kg too much. ${num(chain.propellantKg)} kg of that is propellant: A lighter design or a more efficient engine shrinks it fast${entryMassKg > 0 ? `, and every kilogram landed needs ${num(scenario.entry?.massFraction ?? 0, 1)} kg more of heat shield, parachute and cruise stage` : ''}.`;
   } else if (status === 'warning') {
     why = `${vehicle.name} lifts ${num(capacity)} kg and you need ${num(needed)} kg: only ${percent(margin)} spare. Any mass growth during the build would mean a bigger rocket.`;
   } else {

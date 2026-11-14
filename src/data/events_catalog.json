@@ -136,7 +136,7 @@
         "magnitude": 1,
         "slot": "mobility"
       },
-      "description": "Abrasive lunar dust works its way into a drive motor.",
+      "description": "Abrasive dust works its way into a drive motor.",
       "unmitigated_why": "A drive motor seized and the rover could not move again. Everything it had not yet reached stayed out of reach.",
       "mitigations": [
         {
@@ -175,7 +175,7 @@
         "magnitude": 3,
         "slot": "instrument"
       },
-      "description": "The bit binds in ice-cemented ground as hard as concrete.",
+      "description": "The bit binds in ground as hard as concrete.",
       "unmitigated_why": "The drill jammed. Freeing it by commands from Earth, one careful step at a time, took three days.",
       "mitigations": [
         {
@@ -216,6 +216,17 @@
           "probability_factor": 0,
           "magnitude_factor": 0,
           "why": "Your data goes through the commercial relay, which the Deep Space Network schedule does not touch."
+        },
+        {
+          "condition": {
+            "kind": "has_part",
+            "slot": "comms",
+            "property": "comms_mars_relay",
+            "value": 0
+          },
+          "probability_factor": 0.3,
+          "magnitude_factor": 1,
+          "why": "Relay passes are booked on the orbiters months ahead, so an emergency elsewhere rarely touches them."
         },
         {
           "condition": {
@@ -305,6 +316,84 @@
           "probability_factor": 0.3,
           "magnitude_factor": 1,
           "why": "The mast holds the array high above the dust the wheels throw up."
+        }
+      ]
+    },
+    {
+      "id": "regional_dust_storm",
+      "name": "Regional dust storm",
+      "phase": "surface",
+      "role": "engineer",
+      "probability": 0.3,
+      "rate_per_day": 0,
+      "effect": {
+        "kind": "power_loss_fraction",
+        "magnitude": 0.35,
+        "slot": "power"
+      },
+      "description": "A dust storm the size of a continent dims the Sun for weeks and leaves a coat of dust behind.",
+      "unmitigated_why": "The storm and the dust it left on the panels cut solar power by 35 % for the rest of the mission. Opportunity was lost to a storm like this in 2018.",
+      "mitigations": [
+        {
+          "condition": {
+            "slot": "power",
+            "property": "rtg",
+            "value": 0,
+            "kind": "has_power_kind"
+          },
+          "probability_factor": 1,
+          "magnitude_factor": 0,
+          "why": "A radioisotope generator does not care how dark the sky gets: Curiosity worked straight through the 2018 global storm."
+        },
+        {
+          "condition": {
+            "slot": "power",
+            "property": "solar_mast",
+            "value": 0,
+            "kind": "has_part"
+          },
+          "probability_factor": 1,
+          "magnitude_factor": 0.5,
+          "why": "The tilting mast shook most of the dust off its array once the storm had passed."
+        }
+      ]
+    },
+    {
+      "id": "thin_air_on_entry",
+      "name": "Thin air on entry day",
+      "phase": "landing",
+      "role": "engineer",
+      "probability": 0.2,
+      "rate_per_day": 0,
+      "effect": {
+        "kind": "landing_risk_factor",
+        "magnitude": 1.8,
+        "slot": "landing"
+      },
+      "description": "Dust in the atmosphere has warmed and thinned it since the forecast was made.",
+      "unmitigated_why": "The parachute opened lower and faster than planned, leaving seconds less to find a safe spot: the chance of a bad touchdown nearly doubled.",
+      "mitigations": [
+        {
+          "condition": {
+            "slot": "landing",
+            "property": "landing_hazard_lidar",
+            "value": 0,
+            "kind": "has_part"
+          },
+          "probability_factor": 1,
+          "magnitude_factor": 0,
+          "why": "The hazard lidar needs only a few seconds to pick a clear spot, and it had them."
+        },
+        {
+          "condition": {
+            "slot": "landing",
+            "property": "landing_trn",
+            "value": 0,
+            "kind": "has_part"
+          },
+          "probability_factor": 1,
+          "magnitude_factor": 0.5,
+          "why": "Terrain-relative navigation knew where the lander was the moment the heat shield dropped, and steered to its pre-mapped safe zone with the time it had."
         }
       ]
     }

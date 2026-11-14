@@ -174,7 +174,7 @@ describe('data catalogs', () => {
       expect(Date.parse(scenario.landingWindow.endDate), scenario.id).toBeGreaterThan(
         Date.parse(scenario.landingWindow.startDate),
       );
-      expect(scenario.transfers.length, scenario.id).toBeGreaterThan(0);
+      expect(scenario.transfers.length + (scenario.route ? 1 : 0), scenario.id).toBeGreaterThan(0);
       for (const site of scenario.sites) {
         expect(site.horizonMaskDeg, site.id).toHaveLength(12);
         expect(Math.abs(site.latitudeDeg), site.id).toBeLessThanOrEqual(90);

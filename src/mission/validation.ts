@@ -72,9 +72,9 @@ export function validateDesign(resolved: ResolvedDesign): DesignIssue[] {
   if (!vehicle || !transfer || !site || design.trajectory.landingJd === null) {
     const missing = [
       !vehicle && 'a launch vehicle',
-      !transfer && 'a transfer',
+      !transfer && (scenario.route ? 'a launch date and a landing date' : 'a transfer'),
       !site && 'a landing site',
-      design.trajectory.landingJd === null && 'a landing date',
+      design.trajectory.landingJd === null && !scenario.route && 'a landing date',
     ].filter(Boolean);
     issues.push({
       severity: 'error',
@@ -98,6 +98,29 @@ export function validateDesign(resolved: ResolvedDesign): DesignIssue[] {
         code: 'landing_outside_window',
         slot: 'trajectory',
         message: `The landing date must fall between ${scenario.landingWindow.startDate} and ${scenario.landingWindow.endDate}.`,
+      });
+    }
+    const { route, entry } = scenario;
+    const departureJd = design.trajectory.departureJd;
+    if (route && departureJd != null) {
+      const start = jdFromUnixMs(Date.parse(route.departureWindow.startDate));
+      const end = jdFromUnixMs(Date.parse(route.departureWindow.endDate));
+      if (departureJd < start || departureJd > end) {
+        issues.push({
+          severity: 'error',
+          code: 'launch_outside_window',
+          slot: 'trajectory',
+          message: `The launch date must fall between ${route.departureWindow.startDate} and ${route.departureWindow.endDate}.`,
+        });
+      }
+    }
+    const arrival = resolved.arrival;
+    if (entry && arrival && arrival.entrySpeedMS > entry.maxEntrySpeedMS) {
+      issues.push({
+        severity: 'error',
+        code: 'entry_too_fast',
+        slot: 'trajectory',
+        message: `On these dates the spacecraft meets ${scenario.terms.destination} at ${num(arrival.vInfinityMS / 1000, 1)} km/s and hits the atmosphere at ${num(arrival.entrySpeedMS / 1000, 1)} km/s. The heat shield survives ${num(entry.maxEntrySpeedMS / 1000, 1)} km/s: choose dates with a slower arrival.`,
       });
     }
   }
@@ -133,14 +156,14 @@ export function validateDesign(resolved: ResolvedDesign): DesignIssue[] {
         severity: 'warning',
         code: 'no_mobility',
         slot: 'mobility',
-        message: `Without wheels the vehicle stays where it lands, and the ice at ${site.name} is ${num(site.shadowDistanceKm)} km away in shadow. It can only sample the sunlit ground under it.`,
+        message: `Without wheels the vehicle stays where it lands, and ${scenario.terms.targetShort} at ${site.name} is ${num(site.shadowDistanceKm)} km away. It can only sample the ground under it.`,
       });
     } else if (mobility.maxSlopeDeg < site.slopeDeg) {
       issues.push({
         severity: 'warning',
         code: 'slope_too_steep',
         slot: 'mobility',
-        message: `The way to the ice at ${site.name} has slopes of ${num(site.slopeDeg, 0)}° and the ${mobility.name.toLowerCase()} climbs ${num(mobility.maxSlopeDeg, 0)}°. The rover cannot get down to the shadowed ground.`,
+        message: `The way to ${scenario.terms.targetShort} at ${site.name} has slopes of ${num(site.slopeDeg, 0)}° and the ${mobility.name.toLowerCase()} climbs ${num(mobility.maxSlopeDeg, 0)}°. The rover cannot get to ${scenario.terms.targetGround}.`,
       });
     }
   }
