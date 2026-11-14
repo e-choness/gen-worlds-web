@@ -40,8 +40,35 @@ export type SurfaceEnd =
   | { kind: 'battery_flat'; hour: number }
   | { kind: 'hardware'; hour: number; item: InstalledPart };
 
+/** What the vehicle was doing in one hour, as stored in `SurfaceTelemetry.mode`. */
+export const SURFACE_MODES = ['working', 'hibernating', 'safe_mode', 'in_shadow'] as const;
+export type SurfaceMode = (typeof SURFACE_MODES)[number];
+
+/**
+ * Hour-by-hour state of the vehicle on the surface, for the mission dashboard. Every array has one
+ * entry per hour and `hours` valid entries; index 0 is the hour of touchdown.
+ */
+export interface SurfaceTelemetry {
+  hours: number;
+  /** Charge as a fraction of the usable battery, 0–1, at the end of the hour. */
+  batteryFraction: Float32Array;
+  /** Data waiting on board, Gb. */
+  bufferGb: Float32Array;
+  /** Data received on Earth so far, Gb. */
+  returnedGb: Float32Array;
+  /** Distance driven so far, km. */
+  traverseKm: Float32Array;
+  /** Index into `SURFACE_MODES`. */
+  mode: Uint8Array;
+  /** 1 when the Sun is above the local horizon at the landing site. */
+  sunVisible: Uint8Array;
+  /** 1 when Earth is above the local horizon at the landing site. */
+  earthVisible: Uint8Array;
+}
+
 export interface SurfaceOutcome {
   end: SurfaceEnd;
+  telemetry: SurfaceTelemetry;
   hoursOperated: number;
   traverseKm: number;
   /** Drill samples taken, and those in which ice was confirmed. */
@@ -116,6 +143,16 @@ export function simulateSurface(input: SurfaceInput): SurfaceOutcome {
   const planningHours =
     ops.sortiePlanningHours * ((resolved.computer?.autonomy ?? 1) >= 2 ? sim.autonomousPlanningFactor : 1);
   let planningLeft = 0;
+  const telemetry: SurfaceTelemetry = {
+    hours: 0,
+    batteryFraction: new Float32Array(hours),
+    bufferGb: new Float32Array(hours),
+    returnedGb: new Float32Array(hours),
+    traverseKm: new Float32Array(hours),
+    mode: new Uint8Array(hours),
+    sunVisible: visibility.sunVisible,
+    earthVisible: visibility.earthVisible,
+  };
 
   let battery = usable;
   let buffer = 0;
@@ -248,16 +285,19 @@ export function simulateSurface(input: SurfaceInput): SurfaceOutcome {
     let working = false;
     let awake = true;
     let hibernating = false;
+    let mode: SurfaceMode = 'working';
 
     if (safeModeHours > 0) {
       safeModeHours--;
       hoursSafeMode++;
+      mode = 'safe_mode';
       inSortie = false;
       const sunlit = lit && !inIce;
       if (sunlit) generation += solar;
       load = power.baseLoadW + (sunlit ? 0 : heater);
     } else if (inSortie) {
       working = true;
+      mode = 'in_shadow';
       load = power.averageLoadW + heater;
       drillHours += (1 - sim.shadowTransitFraction) * efficiency;
       if (mobilityWorking) traverseKm += speedKmPerHour;
@@ -273,12 +313,14 @@ export function simulateSurface(input: SurfaceInput): SurfaceOutcome {
       }
     } else if (inIce) {
       working = true;
+      mode = 'in_shadow';
       load = power.averageLoadW + heater;
       drillHours += ops.scienceFraction * efficiency;
       if (mobilityWorking) traverseKm += speedKmPerHour;
     } else if (!lit && !selfSufficient) {
       awake = false;
       hibernating = true;
+      mode = 'hibernating';
       hoursHibernating++;
       load = env.hibernationLoadW + survivalHeater;
     } else {
@@ -359,6 +401,12 @@ export function simulateSurface(input: SurfaceInput): SurfaceOutcome {
 
     // --- energy
     battery = Math.min(usable, battery + generation - load);
+    telemetry.batteryFraction[hour] = Math.max(0, battery / usable);
+    telemetry.bufferGb[hour] = buffer;
+    telemetry.returnedGb[hour] = returned;
+    telemetry.traverseKm[hour] = traverseKm;
+    telemetry.mode[hour] = SURFACE_MODES.indexOf(mode);
+    telemetry.hours = hour + 1;
     if (lit) {
       if (darkRun > 24) {
         nightsSurvived++;
@@ -381,6 +429,7 @@ export function simulateSurface(input: SurfaceInput): SurfaceOutcome {
 
   return {
     end,
+    telemetry,
     hoursOperated,
     traverseKm,
     samplesTaken,

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { num } from '@/mission/format';
 import type { MissionResult } from '@/mission/simulate-mission';
 import type { TimelineEntry } from '@/mission/timeline';
+import { MissionDashboard } from '@/ui/charts/mission-dashboard';
 import { TEXT } from '@/ui/text';
 
 export interface FlightScreenProps {
@@ -27,6 +28,9 @@ export function FlightScreen({ result, notice, onDebrief }: FlightScreenProps) {
   const [shown, setShown] = useState(() => (prefersReducedMotion() ? total : 0));
   const done = shown >= total;
   const t = TEXT.flight;
+  const landingDay = result.timeline.find((entry) => entry.phase === 'landing')?.day ?? 0;
+  // The dashboard follows the log: it has played up to the next entry still to be revealed.
+  const playheadDay = done ? null : (result.timeline[shown]?.day ?? null);
 
   useEffect(() => {
     if (done) return;
@@ -57,6 +61,13 @@ export function FlightScreen({ result, notice, onDebrief }: FlightScreenProps) {
           </li>
         ))}
       </ol>
+      {result.surface && (done || (playheadDay !== null && playheadDay > landingDay)) && (
+        <MissionDashboard
+          telemetry={result.surface.telemetry}
+          landingDay={landingDay}
+          playheadDay={playheadDay}
+        />
+      )}
       {done && (
         <p class="flight-headline" role="status">
           {result.headline}

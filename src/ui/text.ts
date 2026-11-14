@@ -142,6 +142,31 @@ export const TEXT = {
     fastSimNote:
       'This is the fast simulation: the same mission model that drives the 3D flight, played back as a log.',
   },
+  dashboard: {
+    label: 'Surface operations hour by hour: sunlight, Earth in view, activity, battery charge and data',
+    caption:
+      'The mission dashboard, straight from the simulation. Days count from touchdown. The battery falls whenever the Sun is down or the rover works in shadow; data only reaches Earth while Earth is above the horizon (or through a relay).',
+    surfaceDay: 'Surface day',
+    activity: 'Activity',
+    battery: 'Battery',
+    sun: 'Sun',
+    earth: 'Earth',
+    data: 'Data',
+    up: 'Up',
+    down: 'Down',
+    inView: 'In view',
+    outOfView: 'Out of view',
+    returned: 'Received on Earth',
+    onBoard: 'Waiting on board',
+    driven: 'Driven',
+    ended: 'Contact lost',
+    modes: {
+      working: 'Working in sunlight',
+      in_shadow: 'Working in shadow',
+      hibernating: 'Hibernating',
+      safe_mode: 'Safe mode',
+    },
+  },
   arrival: {
     heading: 'On final approach to',
     summary:
