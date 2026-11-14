@@ -163,7 +163,7 @@ function Shell({ store }: ShellProps) {
             // A new flight restarts the playback.
             key={result.seed}
             result={result}
-            notice={TEXT.flight.fastSimNote}
+            notice={store.handFlown.value ? null : TEXT.flight.fastSimNote}
             onDebrief={() => store.navigate('debrief')}
           />
         )}

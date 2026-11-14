@@ -97,6 +97,8 @@ export class GameStore implements Disposable {
   readonly forecast = signal<ForecastState>({ status: 'idle' });
   /** The mission just flown, or null before the first launch of this session. */
   readonly result = signal<MissionResult | null>(null);
+  /** True when the landing of the current result was flown by hand in 3D. */
+  readonly handFlown = signal(false);
   /** Past runs, newest first. */
   readonly history: Signal<MissionRun[]>;
   /**
@@ -242,6 +244,7 @@ export class GameStore implements Disposable {
     const scripted = simulateMission(design, seed);
     const plan = planDescent(evaluation);
     this.result.value = null;
+    this.handFlown.value = false;
     if (scripted.lostIn === 'launch' || scripted.lostIn === 'cruise' || !plan) {
       this.arrival.value = null;
       this.finish(design, seed, scripted);
@@ -269,6 +272,7 @@ export class GameStore implements Disposable {
     if (!arrival || !design || !evaluation) return;
     const landing = landingInputFromDescent(arrival.plan, evaluation, outcome);
     this.arrival.value = null;
+    this.handFlown.value = true;
     this.finish(
       design,
       arrival.seed,
