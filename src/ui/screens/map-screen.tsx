@@ -10,6 +10,7 @@ import { useCallback, useMemo, useState } from 'preact/hooks';
 import { jdFromUnixMs } from '@/astro/time';
 import { encodeWorld } from '@/data/world';
 import { num } from '@/mission/format';
+import { artUrl } from '@/ui/art';
 import { type MapPoint, type MapRing, type MapScene, SpaceMap3d } from '@/ui/charts/space-map-3d';
 import { prefersReducedMotion } from '@/ui/dom';
 import { TEXT } from '@/ui/text';
@@ -19,6 +20,9 @@ import { createSolarSystem, solarBodyId, solarBodyPosition } from '@/universe/so
 import { generateSystem } from '@/universe/system';
 import type { BodyDesc, StarDesc, SystemDesc, Vec3Tuple } from '@/universe/types';
 import { HOME_SECTOR, isLandable, worldParamsOf } from '@/universe/world-params';
+
+/** Shown only if a world's portrait cannot be drawn. */
+const WORLD_STOCK_ART = 'art/stage_moon.jpg';
 
 export interface MapScreenProps {
   /** Scenario ids of the catalog missions, by the solar-system body they fly to. */
@@ -433,6 +437,8 @@ export function MapScreen({ catalogMissions, onPlan, onFly, onBack, initial, fly
             <>
               <span class="chip">{t.kinds[body.kind]}</span>
               <h1>{body.name}</h1>
+              {/* Decorative: the world drawn from its own terrain and colours. */}
+              {worldId && <img class="map-portrait" src={artUrl(WORLD_STOCK_ART, worldId)} alt="" />}
               <p class="map-verdict" data-ok={landable || catalogId ? 'true' : 'false'}>
                 {catalogId ? t.catalogMission : landable ? t.landable : t.notLandable}
               </p>

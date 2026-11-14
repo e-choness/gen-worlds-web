@@ -2509,3 +2509,14 @@ dialog.glossary dd {
 .map-overlay .screen {
   max-width: none;
 }
+
+/* The selected world's portrait in the map's info panel. */
+.map-portrait {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  margin: 0.25rem 0 0.75rem;
+  border: 1px solid var(--ui-line);
+  object-fit: cover;
+  background: #05080d;
+}
