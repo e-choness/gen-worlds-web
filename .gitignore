@@ -19,3 +19,8 @@ docs/
 ### Build output and dependencies
 node_modules/
 dist/
+.vite/
+*.log
+
+### Capture output
+shots/

@@ -1,0 +1,62 @@
+:root {
+  --ui-fg: #dfe9f5;
+  --ui-dim: #8fa3b8;
+  --ui-accent: #6fd3ff;
+  --ui-warn: #ffb454;
+  --ui-panel: rgba(8, 14, 22, 0.62);
+  --ui-line: rgba(140, 190, 230, 0.22);
+  --ui-font: "Segoe UI", "Inter", system-ui, sans-serif;
+  --ui-mono: "Cascadia Mono", "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  color: var(--ui-fg);
+  font-family: var(--ui-font);
+}
+
+#viewport {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  outline: none;
+}
+
+#ui-root {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.debug-hud {
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  margin: 0;
+  font: 12px / 1.5 var(--ui-mono);
+  color: var(--ui-dim);
+  text-shadow: 0 1px 2px #000;
+}
+
+.fatal {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 10vw;
+  text-align: center;
+  font-size: 18px;
+  line-height: 1.5;
+  background: radial-gradient(circle at 50% 40%, #101a28, #020408);
+  pointer-events: auto;
+}

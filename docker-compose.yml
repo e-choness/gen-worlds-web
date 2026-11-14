@@ -1,0 +1,42 @@
+# All package installation, builds and checks run inside these containers; nothing is installed on
+# the host. Sources, node_modules and caches live in the bind-mounted project folder on D:.
+x-node: &node
+  image: node:26-slim
+  working_dir: /app
+  environment:
+    npm_config_cache: /app/.cache/npm
+    XDG_CACHE_HOME: /app/.cache
+  volumes:
+    - .:/app
+
+services:
+  # Vite dev server: http://127.0.0.1:5173
+  web:
+    <<: *node
+    ports:
+      - "127.0.0.1:5173:5173"
+    command: sh -c "npm install --no-audit --no-fund && npm run dev"
+
+  # One-off toolchain commands:  docker compose run --rm tools npm run typecheck
+  tools:
+    <<: *node
+    profiles: ["tools"]
+
+  # Headless Chromium with WebGPU for automated captures:
+  #   docker compose run --rm capture node tools/capture.mjs "?kind=terra&alt=2000" shots/terra.png
+  capture:
+    image: mcr.microsoft.com/playwright:v1.65.1-noble
+    profiles: ["tools"]
+    working_dir: /app
+    ipc: host
+    # Share the dev server network namespace: the page is then http://localhost, a secure context,
+    # which WebGPU requires.
+    network_mode: "service:web"
+    gpus: all
+    environment:
+      CAPTURE_BASE_URL: http://localhost:5173
+      XDG_CACHE_HOME: /app/.cache
+    volumes:
+      - .:/app
+    depends_on:
+      - web
