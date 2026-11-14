@@ -1822,3 +1822,8 @@ dialog.glossary dd {
   /* Pulls back most of the header gap so the two controls read as a pair. */
   margin-left: -1.5rem;
 }
+
+/* The hidden attribute must win over layout rules such as `.actions { display: flex }`: the id gives this rule the weight. */
+#shell-root [hidden] {
+  display: none;
+}

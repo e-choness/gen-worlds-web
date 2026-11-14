@@ -152,7 +152,14 @@ export function FlightScreen({
             {t.skip}
           </button>
         )}
-        <button type="button" class="button primary" data-autofocus onClick={onDebrief}>
+        <button
+          type="button"
+          class="button primary"
+          data-autofocus
+          // A crew answers every event first: the answers are part of the score the debrief shows.
+          disabled={!!crew && !done}
+          onClick={onDebrief}
+        >
           {t.debrief}
         </button>
       </div>
