@@ -31,6 +31,33 @@ const PITCH_LIMIT = 0.985;
 
 export type FlightMode = 'flight' | 'surface';
 
+/** Sideways thruster acceleration as a share of the main engine's, and its ceiling in m/s². */
+const TRANSLATE_SHARE = 0.3;
+const TRANSLATE_LIMIT = 2.2;
+
+/**
+ * A powered descent flown by hand: real gravity, an engine of fixed acceleration and a Δv budget.
+ * Space fires the main engine straight up; W A S D translate with the side thrusters.
+ */
+export interface DescentFlight {
+  /** Local gravity and main engine acceleration, m/s². */
+  gravity: number;
+  thrustAcceleration: number;
+  /** Δv in the tanks at hand-over and spent so far, m/s. */
+  availableDeltaV: number;
+  deltaVUsed: number;
+  /** Vertical speed and sideways drift a touchdown survives, m/s. */
+  maxTouchdownSpeed: number;
+  maxTouchdownDrift: number;
+  /** Current vertical speed (up positive) and ground speed, m/s. */
+  verticalSpeed: number;
+  groundSpeed: number;
+  /** Null while flying. `dry`: the tanks emptied and the craft fell. */
+  outcome: 'landed' | 'crashed' | 'dry' | null;
+  /** Speed at ground contact, m/s. */
+  touchdownSpeed: number;
+}
+
 export interface FlightTelemetry {
   /** Altitude above the terrain / ocean of the nearest body, metres. */
   altitude: number;
@@ -85,6 +112,8 @@ export class FlightController {
   autopilot: { target: THREE.Vector3; standoff: number; name: string } | null = null;
   /** False while a menu is open: look and thrust inputs are ignored, physics continues. */
   controlsEnabled = true;
+  /** Set while a hand-flown landing is in progress or just ended (see `beginDescent`). */
+  descent: DescentFlight | null = null;
 
   private readonly tmp = new THREE.Vector3();
   private readonly up = new THREE.Vector3();
@@ -191,7 +220,9 @@ export class FlightController {
     if (lock > 0) this.levelToHorizon(dt, this.mode === 'surface' ? 1 : lock);
     this.orientation.normalize();
 
-    if (this.mode === 'surface') this.updateSurface(dt, nearest as BodyState, enabled);
+    if (this.descent && !this.descent.outcome && nearest) this.updateDescent(dt, nearest, enabled);
+    else if (this.descent?.outcome && this.descent.outcome !== 'landed') this.velocity.set(0, 0, 0);
+    else if (this.mode === 'surface') this.updateSurface(dt, nearest as BodyState, enabled);
     else this.updateFlight(dt, nearest, altitude, enabled);
 
     this.writeTelemetry(nearest, lock);
@@ -238,6 +269,81 @@ export class FlightController {
 
     if (nearest) this.collide(nearest);
     this.bodyOrientation.copy(this.orientation);
+  }
+
+  /** Starts a hand-flown descent from the current position with the given velocity (system space). */
+  beginDescent(
+    params: Pick<
+      DescentFlight,
+      'gravity' | 'thrustAcceleration' | 'availableDeltaV' | 'maxTouchdownSpeed' | 'maxTouchdownDrift'
+    >,
+    velocity: THREE.Vector3,
+  ): void {
+    this.mode = 'flight';
+    this.landing = false;
+    this.autopilot = null;
+    this.velocity.copy(velocity);
+    this.descent = {
+      ...params,
+      deltaVUsed: 0,
+      verticalSpeed: 0,
+      groundSpeed: 0,
+      outcome: null,
+      touchdownSpeed: 0,
+    };
+  }
+
+  private updateDescent(dt: number, body: BodyState, enabled: boolean): void {
+    const d = this.descent as DescentFlight;
+    const input = this.input;
+    const up = this.up;
+    // Heading frame on the ground plane, so "forward" is where the pilot looks, not up or down.
+    const forward = this.forward.set(0, 0, -1).applyQuaternion(this.orientation);
+    forward.addScaledVector(up, -forward.dot(up)).normalize();
+    const right = this.right.crossVectors(forward, up);
+
+    const dry = d.deltaVUsed >= d.availableDeltaV;
+    const main = enabled && !dry && input.down('Space') ? 1 : 0;
+    const move = this.move.set(0, 0, 0);
+    if (enabled && !dry) {
+      move
+        .addScaledVector(forward, input.axis('KeyW', 'KeyS'))
+        .addScaledVector(right, input.axis('KeyD', 'KeyA'));
+      if (move.lengthSq() > 1) move.normalize();
+    }
+    const translate = Math.min(d.thrustAcceleration * TRANSLATE_SHARE, TRANSLATE_LIMIT);
+    const sideways = move.length();
+    this.velocity
+      .addScaledVector(up, (main * d.thrustAcceleration - d.gravity) * dt)
+      .addScaledVector(move, translate * dt);
+    d.deltaVUsed += (main * d.thrustAcceleration + sideways * translate) * dt;
+    this.position.addScaledVector(this.velocity, dt);
+
+    // Ground contact decides the landing.
+    up.subVectors(this.position, body.position);
+    const r = up.length();
+    up.divideScalar(r);
+    const surface = body.view ? body.view.surfaceHeightAt(up) : 0;
+    const restR = body.desc.radius + surface + MIN_CLEARANCE;
+    const vertical = this.velocity.dot(up);
+    const drift = this.tmp.copy(this.velocity).addScaledVector(up, -vertical).length();
+    d.verticalSpeed = vertical;
+    d.groundSpeed = drift;
+    if (r <= restR) {
+      d.touchdownSpeed = this.velocity.length();
+      const gentle = -vertical <= d.maxTouchdownSpeed && drift <= d.maxTouchdownDrift;
+      d.outcome = gentle ? 'landed' : dry ? 'dry' : 'crashed';
+      this.position.copy(body.position).addScaledVector(up, restR);
+      this.velocity.set(0, 0, 0);
+      this.verticalSpeed = 0;
+      this.mode = 'surface';
+    }
+
+    this.thrust += (Math.max(main, sideways * 0.5) - this.thrust) * (1 - Math.exp(-dt * 10));
+    this.lift += (main - this.lift) * (1 - Math.exp(-dt * 10));
+    // The hull stays level and faces the heading; only the view pitches.
+    this.lookMatrix.lookAt(this.origin, forward, up);
+    this.bodyOrientation.setFromRotationMatrix(this.lookMatrix);
   }
 
   private updateSurface(dt: number, body: BodyState, enabled: boolean): void {

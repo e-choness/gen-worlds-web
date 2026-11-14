@@ -142,6 +142,23 @@ export const TEXT = {
     fastSimNote:
       'This is the fast simulation: the same mission model that drives the 3D flight, played back as a log.',
   },
+  arrival: {
+    heading: 'On final approach to',
+    summary:
+      'The guidance computer has flown the braking burn from orbit. The last two kilometres are yours if you want them: fly it better than the computer and you land with propellant to spare and closer to the ice.',
+    handover: 'Hand-over',
+    down: 'down',
+    across: 'across',
+    propellant: 'Propellant for the landing',
+    nominal: 'the computer uses about',
+    engine: 'Engine thrust',
+    lunarWeight: 'lunar weight',
+    limits: 'Touchdown limits',
+    byHand: 'Fly the landing yourself (3D)',
+    automatic: 'Let the guidance computer land',
+    starting: 'Starting the 3D flight…',
+    failed: 'The 3D flight could not start.',
+  },
   debrief: {
     outcomes: { success: 'Mission success', partial: 'Partial success', failure: 'Mission failed' },
     points: 'points',

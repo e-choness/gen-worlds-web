@@ -11,6 +11,7 @@ import { createEmptyDesign, createReferenceDesign } from '@/mission/design';
 import type { MissionPhase } from '@/mission/phases';
 import { PhaseStepper } from '@/ui/phase-stepper';
 import { isMissionPhase } from '@/ui/screen-id';
+import { ArrivalScreen } from '@/ui/screens/arrival-screen';
 import { BriefingScreen } from '@/ui/screens/briefing-screen';
 import { DebriefScreen } from '@/ui/screens/debrief-screen';
 import { DesignScreen } from '@/ui/screens/design-screen';
@@ -40,24 +41,30 @@ function Shell({ store }: ShellProps) {
     main.current?.scrollTo(0, 0);
   }, [screen]);
 
-  if (screen === 'sandbox') {
+  if (screen === 'sandbox' || screen === 'descent') {
     const error = store.engineError.value;
     // The engine's own HUD and menus take over once it runs; until then show progress or the error.
-    if (webgpu !== 'unavailable' && !error) return <p class="shell-status">{TEXT.webgpu.sandboxStarting}</p>;
+    if (webgpu !== 'unavailable' && !error) {
+      return (
+        <p class="shell-status">
+          {screen === 'descent' ? TEXT.arrival.starting : TEXT.webgpu.sandboxStarting}
+        </p>
+      );
+    }
     return (
       <div class="shell">
         <main ref={main}>
           <section class="screen">
-            <h1>{TEXT.webgpu.sandboxFailed}</h1>
+            <h1>{screen === 'descent' ? TEXT.arrival.failed : TEXT.webgpu.sandboxFailed}</h1>
             <p class="lede">{error ?? TEXT.webgpu.unavailable}</p>
             <div class="actions">
               <button
                 type="button"
                 class="button primary"
                 data-autofocus
-                onClick={() => store.navigate('title')}
+                onClick={() => store.navigate(screen === 'descent' ? 'flight' : 'title')}
               >
-                {TEXT.nav.home}
+                {screen === 'descent' ? TEXT.nav.back : TEXT.nav.home}
               </button>
             </div>
           </section>
@@ -138,6 +145,17 @@ function Shell({ store }: ShellProps) {
             onForecast={() => store.requestForecast()}
             onLaunch={() => store.launch()}
             onBack={() => store.navigate('trajectory')}
+          />
+        )}
+        {phase === 'flight' && !result && store.arrival.value && (
+          <ArrivalScreen
+            timeline={store.arrival.value.approach.timeline.filter(
+              (entry) => entry.phase !== 'landing' && entry.phase !== 'surface',
+            )}
+            plan={store.arrival.value.plan}
+            canFlyByHand={webgpu === 'available'}
+            onFlyByHand={() => store.navigate('descent')}
+            onAutomatic={() => store.landAutomatically()}
           />
         )}
         {phase === 'flight' && result && (

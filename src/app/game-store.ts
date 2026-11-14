@@ -7,8 +7,15 @@ import type { Disposable } from '@/core/disposable';
 import { ROLE_IDS, type RoleId, type TierId } from '@/data/mission-constants';
 import { findPart, type SlotId } from '@/data/parts';
 import { SCENARIOS } from '@/data/scenarios';
+import {
+  type DescentOutcome,
+  type DescentPlan,
+  landingInputFromDescent,
+  planDescent,
+} from '@/mission/descent-plan';
 import { createEmptyDesign, type MissionDesign, type TrajectoryChoice } from '@/mission/design';
 import { type DesignEvaluation, evaluateDesign } from '@/mission/evaluate-design';
+import { SCRIPTED_INPUT_LOG } from '@/mission/input-log';
 import type { MonteCarloSummary } from '@/mission/monte-carlo';
 import { emptyVotes, type PollVotes, pollOutcome, type RoleVote } from '@/mission/poll';
 import type { MissionOutcome } from '@/mission/scoring';
@@ -92,6 +99,11 @@ export class GameStore implements Disposable {
   readonly result = signal<MissionResult | null>(null);
   /** Past runs, newest first. */
   readonly history: Signal<MissionRun[]>;
+  /**
+   * A launched mission that has reached its destination and waits for the landing: the seed, the
+   * story so far and the descent the player may fly. Null before launch and once the result is in.
+   */
+  readonly arrival = signal<{ seed: number; approach: MissionResult; plan: DescentPlan } | null>(null);
 
   private readonly stopPersisting: () => void;
   private readonly onHashChange = (): void => {
@@ -119,7 +131,9 @@ export class GameStore implements Disposable {
   /** Screens that need something that does not exist yet fall back to where it gets made. */
   private guard(screen: ScreenId): ScreenId {
     if (isMissionPhase(screen) && !this.design.value) return 'scenarios';
-    if ((screen === 'flight' || screen === 'debrief') && !this.result.value) return 'poll';
+    if (screen === 'flight' && !this.result.value && !this.arrival.value) return 'poll';
+    if (screen === 'debrief' && !this.result.value) return 'poll';
+    if (screen === 'descent' && !this.arrival.value) return 'title';
     return screen;
   }
 
@@ -217,14 +231,53 @@ export class GameStore implements Disposable {
   }
 
   /**
-   * Flies the mission with a fresh seed and opens the flight screen. Does nothing unless the poll
-   * has passed. Pass a seed to replay a known run.
+   * Launches with a fresh seed and opens the flight screen. Does nothing unless the poll has passed.
+   * A mission that survives to arrival stops there for the landing to be flown by hand or handed to
+   * the guidance computer; one lost earlier goes straight to its result. Pass a seed to replay a run.
    */
   launch(seed: number = newSeed()): void {
     const design = this.design.value;
     const evaluation = this.evaluation.value;
     if (!design || !evaluation || !pollOutcome(this.votes.value, evaluation).canLaunch) return;
-    const result = simulateMission(design, seed);
+    const scripted = simulateMission(design, seed);
+    const plan = planDescent(evaluation);
+    this.result.value = null;
+    if (scripted.lostIn === 'launch' || scripted.lostIn === 'cruise' || !plan) {
+      this.arrival.value = null;
+      this.finish(design, seed, scripted);
+    } else {
+      this.arrival.value = { seed, approach: scripted, plan };
+    }
+    this.navigate('flight');
+  }
+
+  /** The guidance computer lands: the scripted result stands. */
+  landAutomatically(): void {
+    const arrival = this.arrival.value;
+    const design = this.design.value;
+    if (!arrival || !design) return;
+    this.arrival.value = null;
+    this.finish(design, arrival.seed, simulateMission(design, arrival.seed));
+    this.navigate('flight');
+  }
+
+  /** Takes the outcome of a hand-flown landing and lets the simulation decide the rest. */
+  completeDescent(outcome: DescentOutcome): void {
+    const arrival = this.arrival.value;
+    const design = this.design.value;
+    const evaluation = this.evaluation.value;
+    if (!arrival || !design || !evaluation) return;
+    const landing = landingInputFromDescent(arrival.plan, evaluation, outcome);
+    this.arrival.value = null;
+    this.finish(
+      design,
+      arrival.seed,
+      simulateMission(design, arrival.seed, { ...SCRIPTED_INPUT_LOG, landing }),
+    );
+    this.navigate('flight');
+  }
+
+  private finish(design: MissionDesign, seed: number, result: MissionResult): void {
     this.result.value = result;
     const run: MissionRun = {
       id: (this.history.value[0]?.id ?? 0) + 1,
@@ -236,7 +289,6 @@ export class GameStore implements Disposable {
       headline: result.headline,
     };
     this.history.value = [run, ...this.history.value].slice(0, MAX_RUNS);
-    this.navigate('flight');
   }
 
   dispose(): void {

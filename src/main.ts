@@ -34,11 +34,35 @@ function main(): void {
   });
 
   let sandbox: 'idle' | 'starting' | 'running' = 'idle';
+  let descending = false;
   effect(() => {
     const screen = store.screen.value;
     const webgpu = store.webgpu.value;
+
+    if (screen === 'descent') {
+      const arrival = store.arrival.peek();
+      if (webgpu !== 'available' || descending || !arrival) return;
+      descending = true;
+      store.engineError.value = null;
+      import('@/app/descent')
+        .then((module) => {
+          shellRoot.hidden = true;
+          return module.runDescent(canvas, uiRoot, arrival.plan);
+        })
+        .then((outcome) => store.completeDescent(outcome))
+        .catch((error: unknown) => {
+          console.error(error);
+          store.engineError.value = error instanceof Error ? error.message : String(error);
+        })
+        .finally(() => {
+          descending = false;
+          shellRoot.hidden = false;
+        });
+      return;
+    }
+
     if (screen !== 'sandbox') {
-      // The engine has no warm restart yet: leaving the sandbox reloads into the 2D shell.
+      // The sandbox has no warm restart yet: leaving it reloads into the 2D shell.
       if (sandbox !== 'idle') location.reload();
       else window.__status = 'running';
       return;

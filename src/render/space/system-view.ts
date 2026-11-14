@@ -30,6 +30,11 @@ export interface BodyState {
   /** Direction to the star and light arriving from it. */
   readonly sunDir: THREE.Vector3;
   readonly sunColor: THREE.Vector3;
+  /**
+   * When set, the light direction on this body, replacing the one from its position. A mission
+   * sets it from the site sky of the simulation, so the 3D view shows the lighting the mission has.
+   */
+  sunOverride: THREE.Vector3 | null;
   view: PlanetView | null;
   marker: THREE.Sprite;
   /** Distance from the camera to the body centre, updated every frame. */
@@ -90,6 +95,7 @@ export class SystemView implements Disposable {
       position,
       sunDir: position.clone().normalize().negate(),
       sunColor,
+      sunOverride: null,
       view: null,
       marker,
       distance: Number.POSITIVE_INFINITY,
@@ -109,7 +115,8 @@ export class SystemView implements Disposable {
       const id = solarBodyId(body.desc);
       if (!id || !solarBodyPosition(id, jd, p)) continue;
       body.position.set(p[0], p[1], p[2]);
-      body.sunDir.copy(body.position).normalize().negate();
+      if (body.sunOverride) body.sunDir.copy(body.sunOverride);
+      else body.sunDir.copy(body.position).normalize().negate();
     }
   }
 

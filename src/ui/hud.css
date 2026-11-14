@@ -452,3 +452,85 @@ kbd {
     display: none;
   }
 }
+
+/* ---- landing instruments (hand-flown descent) */
+.descent-hud {
+  position: absolute;
+  left: 28px;
+  bottom: 28px;
+  width: min(430px, calc(100vw - 56px));
+  padding: 14px 18px 12px;
+  border: 1px solid var(--ui-line);
+  border-radius: 6px;
+  background: var(--ui-panel);
+  backdrop-filter: blur(8px);
+  color: var(--ui-fg);
+  font: 13px var(--ui-font);
+}
+.descent-title {
+  margin-bottom: 10px;
+  color: var(--ui-accent);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.descent-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.descent-cell span,
+.descent-fuel span {
+  display: block;
+  color: var(--ui-dim);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.descent-cell strong,
+.descent-fuel strong {
+  font: 500 17px var(--ui-mono);
+  font-variant-numeric: tabular-nums;
+}
+.descent-cell strong[data-state="fast"] {
+  color: var(--status-fail);
+}
+.descent-cell strong[data-state="fast"]::after {
+  content: " ▲";
+  font-size: 11px;
+}
+.descent-fuel {
+  margin-top: 10px;
+}
+.descent-fuel .bar {
+  height: 5px;
+  margin-top: 4px;
+  background: rgba(140, 190, 230, 0.18);
+}
+.descent-fuel .bar div {
+  min-height: 5px;
+  height: 100%;
+  background: var(--status-ok);
+}
+.descent-fuel .bar div[data-state="low"] {
+  background: var(--status-fail);
+}
+.descent-status {
+  margin: 10px 0 4px;
+  min-height: 2.6em;
+  line-height: 1.3;
+}
+.descent-status[data-tone="good"] {
+  color: var(--status-ok);
+  font-weight: 600;
+}
+.descent-status[data-tone="bad"] {
+  color: var(--status-fail);
+  font-weight: 600;
+}
+.descent-keys {
+  margin: 0;
+  color: var(--ui-dim);
+  font-size: 11px;
+}

@@ -8,6 +8,7 @@
  * UI → render.
  */
 import * as THREE from 'three/webgpu';
+import { bearingToSubPoint, elevationAtSite, subSolarPoint } from '@/astro/lunar-geometry';
 import { isoDateFromJd, jdFromUnixMs } from '@/astro/time';
 import { AudioEngine } from '@/audio/audio-engine';
 import { DisposableStore } from '@/core/disposable';
@@ -18,6 +19,7 @@ import { Engine } from '@/engine/engine';
 import { createDetailTexture } from '@/engine/noise-texture';
 import { SceneLights } from '@/engine/scene-lights';
 import { TerrainTextures } from '@/engine/terrain-textures';
+import type { DescentOutcome, DescentPlan } from '@/mission/descent-plan';
 import type { Beacon } from '@/player/beacon';
 import { FlightController } from '@/player/flight-controller';
 import { Input } from '@/player/input';
@@ -29,6 +31,7 @@ import { TerrainWorkerPool } from '@/render/planet/terrain-worker-pool';
 import { GalaxyBackdrop } from '@/render/space/galaxy-backdrop';
 import { Starfield } from '@/render/space/starfield';
 import { type BodyState, SystemView } from '@/render/space/system-view';
+import type { DescentReadout } from '@/ui/descent-hud';
 import { LIGHT_YEAR } from '@/universe/constants';
 import { Galaxy } from '@/universe/galaxy';
 import { createSolarSystem, solarBodyId } from '@/universe/solar-system';
@@ -65,6 +68,13 @@ export interface StartOptions {
   /** Julian date the solar system starts at; defaults to now. */
   dateJd?: number;
 }
+
+/**
+ * Lowest Sun elevation shown during a hand-flown landing, radians. The polar Sun can sit on the
+ * horizon or just below it; the view lifts it this far so the pilot can read the ground. The
+ * simulation keeps the true lighting.
+ */
+const MIN_PILOT_SUN_ELEVATION = THREE.MathUtils.degToRad(5);
 
 /** Simulated seconds per real second, stepped through with the bracket keys in the solar system. */
 const TIME_WARPS = [1, 60, 3600, 86400, 604800];
@@ -196,6 +206,157 @@ export class App {
     app.placeAtStart(options.start ?? {});
     engine.renderer.setAnimationLoop(() => app.frame());
     return app;
+  }
+
+  /**
+   * Runs a hand-flown landing: waits for the terrain under the site, hands the craft to the pilot
+   * at the plan's start state and resolves once it has touched down (softly or not).
+   * @param onReadout called every frame with the instrument values.
+   * @param holdSeconds how long the result stays on screen before the promise resolves.
+   */
+  flyDescent(
+    plan: DescentPlan,
+    onReadout: (dt: number, readout: DescentReadout) => void,
+    holdSeconds: number,
+  ): Promise<DescentOutcome> {
+    const body = this.system.bodies.find((candidate) => solarBodyId(candidate.desc) === plan.bodyId);
+    if (!body) return Promise.reject(new Error(`The landing body "${plan.bodyId}" is not in this system.`));
+    // Site direction in system space: body longitude is measured from the map's prime meridian.
+    const meridian = this.surfaceMaps?.get(body.desc)?.heightmap.meridian ?? 0;
+    const latitude = THREE.MathUtils.degToRad(plan.latitudeDeg);
+    const angle = THREE.MathUtils.degToRad(plan.longitudeDeg) + meridian;
+    const target = new THREE.Vector3(
+      Math.cos(latitude) * Math.cos(angle),
+      Math.sin(latitude),
+      -Math.cos(latitude) * Math.sin(angle),
+    );
+    // Light the site as the mission's sky model has it: Sun elevation and compass bearing at the site.
+    const subSolar = subSolarPoint(plan.landingJd);
+    const siteLongitude = THREE.MathUtils.degToRad(plan.longitudeDeg);
+    const elevation = Math.max(elevationAtSite(subSolar, latitude, siteLongitude), MIN_PILOT_SUN_ELEVATION);
+    const bearing = bearingToSubPoint(subSolar, latitude, siteLongitude);
+    const north = new THREE.Vector3(0, 1, 0).addScaledVector(target, -target.y).normalize();
+    const east = new THREE.Vector3().crossVectors(north, target);
+    body.sunOverride = target
+      .clone()
+      .multiplyScalar(Math.sin(elevation))
+      .addScaledVector(north, Math.cos(bearing) * Math.cos(elevation))
+      .addScaledVector(east, Math.sin(bearing) * Math.cos(elevation))
+      .normalize();
+    this.lamp = true;
+    // Approach along a fixed horizontal direction, starting `startRangeM` short of the target.
+    const reference = Math.abs(target.x) < 0.9 ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 0, 1);
+    const approach = reference.addScaledVector(target, -reference.dot(target)).normalize();
+    const start = target
+      .clone()
+      .addScaledVector(approach, -plan.startRangeM / body.desc.radius)
+      .normalize();
+    this.flight.placeAbove(body, start, plan.startAltitudeM + 4000);
+    this.flight.lookAlong(approach.clone().addScaledVector(start, -0.35).normalize(), start);
+    this.setControlsEnabled(false);
+    this.timeWarp = 1;
+    this.beacons.push({
+      id: ++this.beaconSerial,
+      label: plan.siteName,
+      body,
+      local: target.clone().multiplyScalar(body.desc.radius),
+    });
+
+    return new Promise((resolve) => {
+      let armed = false;
+      let held = 0;
+      const up = new THREE.Vector3();
+      this.onFrame((dt) => {
+        const descent = this.flight.descent;
+        up.subVectors(this.flight.position, body.position).normalize();
+        const range = Math.acos(THREE.MathUtils.clamp(up.dot(target), -1, 1)) * body.desc.radius;
+        if (!armed) {
+          // Hold until the ground under the craft exists, then start from a true height above it.
+          if (body.view?.terrain.ready) {
+            armed = true;
+            this.flight.placeAbove(body, start, plan.startAltitudeM);
+            this.flight.lookAlong(approach.clone().addScaledVector(start, -0.35).normalize(), start);
+            const velocity = approach
+              .clone()
+              .multiplyScalar(plan.startGroundSpeedMS)
+              .addScaledVector(start, -plan.startDescentRateMS);
+            this.flight.beginDescent(
+              {
+                gravity: plan.gravity,
+                thrustAcceleration: plan.thrustAcceleration,
+                availableDeltaV: plan.availableDeltaV,
+                maxTouchdownSpeed: plan.maxTouchdownSpeedMS,
+                maxTouchdownDrift: plan.maxTouchdownDriftMS,
+              },
+              velocity,
+            );
+            this.setControlsEnabled(true);
+          }
+          onReadout(dt, {
+            altitude: plan.startAltitudeM,
+            verticalSpeed: -plan.startDescentRateMS,
+            groundSpeed: plan.startGroundSpeedMS,
+            deltaVLeft: plan.availableDeltaV,
+            deltaVTotal: plan.availableDeltaV,
+            range,
+            safeSpeed: plan.maxTouchdownSpeedMS,
+            safeDrift: plan.maxTouchdownDriftMS,
+            status: 'Acquiring the terrain below. Stand by to take control.',
+            tone: 'info',
+          });
+          return;
+        }
+        if (!descent) return;
+        const left = descent.availableDeltaV - descent.deltaVUsed;
+        let status = 'You have control. Kill the drift, then slow the descent before the ground.';
+        let tone: DescentReadout['tone'] = 'info';
+        if (descent.outcome === 'landed') {
+          status = `Touchdown at ${descent.touchdownSpeed.toFixed(1)} m/s, ${range.toFixed(0)} m from the target.`;
+          tone = 'good';
+        } else if (descent.outcome) {
+          status =
+            descent.outcome === 'dry'
+              ? `Tanks empty. Impact at ${descent.touchdownSpeed.toFixed(1)} m/s.`
+              : `Impact at ${descent.touchdownSpeed.toFixed(1)} m/s: too fast for the legs.`;
+          tone = 'bad';
+        } else if (left <= 0) {
+          status = 'Tanks empty.';
+          tone = 'bad';
+        } else if (
+          this.flight.telemetry.altitude < 150 &&
+          -descent.verticalSpeed > plan.maxTouchdownSpeedMS * 3
+        ) {
+          status = 'Sinking too fast: fire the main engine.';
+          tone = 'bad';
+        }
+        onReadout(dt, {
+          altitude: this.flight.telemetry.altitude,
+          verticalSpeed: descent.verticalSpeed,
+          groundSpeed: descent.groundSpeed,
+          deltaVLeft: left,
+          deltaVTotal: descent.availableDeltaV,
+          range,
+          safeSpeed: plan.maxTouchdownSpeedMS,
+          safeDrift: plan.maxTouchdownDriftMS,
+          status,
+          tone,
+        });
+        if (descent.outcome) {
+          if (held === 0) this.setControlsEnabled(false);
+          held += dt;
+          if (held >= holdSeconds) {
+            resolve({
+              result: descent.outcome,
+              deltaVUsed: descent.deltaVUsed,
+              accuracyM: range,
+              touchdownSpeedMS: descent.touchdownSpeed,
+            });
+            // Resolve once only: the frame listener stays registered until the app is disposed.
+            held = Number.NEGATIVE_INFINITY;
+          }
+        }
+      });
+    });
   }
 
   /** Registers a per-frame callback (UI refresh etc.). Runs after simulation, before rendering. */
