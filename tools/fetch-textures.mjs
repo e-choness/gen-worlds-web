@@ -1,4 +1,5 @@
-// Downloads the CC0 ground textures (Poly Haven) used by the terrain material into public/textures.
+// Downloads the CC0 ground textures (Poly Haven, listed in CREDITS.md) used by the terrain material into
+// public/textures.
 // Run in the tools container:  docker compose run --rm tools node tools/fetch-textures.mjs
 import { mkdir, writeFile } from 'node:fs/promises';
 
@@ -13,7 +14,6 @@ const RESOLUTION = '1k';
 const OUT = new URL('../public/textures/', import.meta.url);
 
 await mkdir(OUT, { recursive: true });
-const credits = ['# Texture credits', '', 'All textures are CC0 from https://polyhaven.com (1k JPG).', ''];
 for (const [layer, asset] of Object.entries(LAYERS)) {
   const files = await (await fetch(`https://api.polyhaven.com/files/${asset}`)).json();
   const maps = { albedo: files.Diffuse ?? files.diff, normal: files.nor_gl };
@@ -24,6 +24,4 @@ for (const [layer, asset] of Object.entries(LAYERS)) {
     await writeFile(new URL(`${layer}_${kind}.jpg`, OUT), data);
     console.log(`${layer}_${kind}.jpg  ${(data.length / 1024).toFixed(0)} KB  ← ${asset}`);
   }
-  credits.push(`- \`${layer}_*.jpg\` — ${asset} (https://polyhaven.com/a/${asset})`);
 }
-await writeFile(new URL('CREDITS.md', OUT), `${credits.join('\n')}\n`);

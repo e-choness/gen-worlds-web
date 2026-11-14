@@ -1,5 +1,5 @@
 /**
- * Shared ground textures (CC0, Poly Haven — see public/textures/CREDITS.md, fetched by
+ * Shared ground textures (CC0, Poly Haven — see CREDITS.md, fetched by
  * tools/fetch-textures.mjs). One set for the whole app: planets differ by palette, and the terrain
  * shader uses the textures for *relative* detail (texture ÷ its mean colour), so the same rock
  * photograph serves a red desert world and a grey moon.
