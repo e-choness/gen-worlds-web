@@ -5,6 +5,7 @@
   "number": 1,
   "name": "Earth observation small satellite",
   "art": "art/scenario_earth.jpg",
+  "stage_art": "art/stage_earth.jpg",
   "tagline": "Watch the world’s farmland from orbit, on a university budget.",
   "briefing": "A food-security agency wants fresh pictures of the world’s croplands every few days, sharp enough to tell one field from the next, for a year. You have the budget of a small satellite, not a flagship. Choose a frame, a camera and a radio, find a cheap ride to orbit, and decide how high to fly: low orbits see more detail and fall out of the sky sooner; high orbits last for decades, which is a problem of its own. This is the place to learn how mass, power, data and money pull against each other.",
   "trajectory_mode": "earth_orbit",

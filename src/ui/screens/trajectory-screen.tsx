@@ -107,6 +107,13 @@ export function TrajectoryScreen({ evaluation, crew, onChange, onNext, onBack }:
   return (
     <section class="screen wide trajectory">
       <div class="trajectory-main">
+        <figure class="trajectory-stage">
+          <img src={import.meta.env.BASE_URL + scenario.stageArt} alt={TEXT.flight.stageAlt} />
+          <figcaption>
+            <strong>{site?.name ?? resolved.orbit?.name ?? scenario.terms.destination}</strong>
+            <span>{scenario.tagline}</span>
+          </figcaption>
+        </figure>
         <h2>{t.vehicle}</h2>
         {!routeMine && <p class="banner owned">{ownedBy(crew, 'comms')}</p>}
         <div class="split">

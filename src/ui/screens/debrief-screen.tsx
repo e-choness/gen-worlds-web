@@ -8,6 +8,7 @@ import type { MissionResult } from '@/mission/simulate-mission';
 import { SLOT_NAMES } from '@/mission/slot-names';
 import { Leaderboard, type LeaderboardProps } from '@/ui/leaderboard';
 import { StatusBadge } from '@/ui/status-badge';
+import { SystemIcon } from '@/ui/system-icon';
 import { TEXT } from '@/ui/text';
 
 /** A past run as the debrief needs it (mirrors the store's record without importing the app layer). */
@@ -30,6 +31,9 @@ export interface DebriefScreenProps {
   onFlyAgain: () => void;
   onNewMission: () => void;
 }
+
+/** Circumference of the score ring (radius 74): the ring fills with the share of the science achieved. */
+const RING_LENGTH = 2 * Math.PI * 74;
 
 const OUTCOME_STATUS = { success: 'ok', partial: 'warning', failure: 'fail' } as const;
 
@@ -62,16 +66,30 @@ export function DebriefScreen({
   return (
     <section class="screen debrief">
       <div class="debrief-head" data-outcome={score.outcome}>
-        <div>
+        {/* Decorative: where the mission flew. */}
+        <img class="debrief-art" src={import.meta.env.BASE_URL + scenario.stageArt} alt="" />
+        <div class="score-ring" role="img" aria-label={`${num(score.total, 0)} ${t.points}`}>
+          <svg aria-hidden="true" viewBox="0 0 168 168" fill="none">
+            <circle class="ring-track" cx="84" cy="84" r="74" stroke-width="12" />
+            <circle
+              class="ring-fill"
+              cx="84"
+              cy="84"
+              r="74"
+              stroke-width="12"
+              stroke-dasharray={`${RING_LENGTH * score.scienceFraction} ${RING_LENGTH}`}
+              transform="rotate(-90 84 84)"
+            />
+          </svg>
+          <span class="score-value">{num(score.total, 0)}</span>
+          <span class="dim">{t.points}</span>
+        </div>
+        <div class="debrief-summary">
           <div class="outcome">
             <StatusBadge status={OUTCOME_STATUS[score.outcome]} compact />
             {t.outcomes[score.outcome]}
           </div>
           <h1>{result.headline}</h1>
-        </div>
-        <div class="score">
-          <span class="score-value">{num(score.total, 0)}</span>
-          <span class="dim">{t.points}</span>
         </div>
       </div>
 
@@ -85,6 +103,7 @@ export function DebriefScreen({
               return (
                 <li key={finding.title + finding.detail} data-tone={finding.tone}>
                   <StatusBadge status={finding.tone === 'good' ? 'ok' : 'fail'} compact />
+                  {finding.slot && <SystemIcon system={finding.slot} size={30} />}
                   <div>
                     <strong>{finding.title}</strong>
                     <p>{finding.detail}</p>

@@ -5,6 +5,7 @@
   "number": 3,
   "name": "Jezero crater sample survey",
   "art": "art/scenario_mars.jpg",
+  "stage_art": "art/stage_mars.jpg",
   "tagline": "Core the rocks of a vanished Martian lake.",
   "briefing": "Three and a half billion years ago a river filled Jezero crater and built a delta on its floor. If Mars ever had life, mud like that is where its traces would be kept. Send a rover across 200 million kilometres, land it beside the delta, and core the rocks that record the water. Mars is only in reach every 26 months: pick your launch and arrival dates from the porkchop plot, bring power that survives dust and cold nights, and remember that every command takes many minutes to arrive.",
   "trajectory_mode": "interplanetary",

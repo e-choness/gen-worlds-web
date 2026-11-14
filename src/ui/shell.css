@@ -1827,3 +1827,388 @@ dialog.glossary dd {
 #shell-root [hidden] {
   display: none;
 }
+
+/* ==== Picture-first redesign (see the "Gen Worlds UI redesign" canvas) ==== */
+
+/* Title: one primary action, four tiles that say what they are, and the game in four numbers. */
+.title-menu {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  max-width: 34rem;
+}
+.title-primary {
+  display: flex;
+  grid-column: span 2;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 4rem;
+  padding: 0 1.5rem;
+  border: 0;
+  background: var(--ui-accent);
+  color: #06121c;
+  font: 600 1.15rem var(--ui-font);
+  cursor: pointer;
+}
+.title-primary:hover {
+  filter: brightness(1.1);
+}
+.title-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: flex-start;
+  min-height: 4.75rem;
+  padding: 0.85rem 1.1rem;
+  border: 1px solid var(--ui-line);
+  background: rgba(8, 14, 22, 0.82);
+  color: var(--ui-fg);
+  font: 500 1rem var(--ui-font);
+  text-align: left;
+  cursor: pointer;
+}
+.title-tile:hover:not(:disabled) {
+  border-color: var(--ui-accent);
+  background: rgba(111, 211, 255, 0.1);
+}
+.title-tile:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.title-tile .dim {
+  font-size: 0.82rem;
+  font-weight: 400;
+}
+.title-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 2rem;
+  max-width: 34rem;
+  margin: 1.75rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ui-line);
+}
+.title-facts div {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0.1rem;
+}
+.title-facts dt {
+  color: var(--ui-dim);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.title-facts dd {
+  margin: 0;
+  font: 500 1.35rem var(--ui-mono, ui-monospace, monospace);
+}
+@media (max-width: 520px) {
+  .title-menu {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .title-primary {
+    grid-column: auto;
+  }
+}
+
+/* Hangar: an icon per system, the verdict at the end of the row, and the vehicle's vital numbers. */
+.system-icon {
+  flex-shrink: 0;
+  color: var(--ui-accent);
+}
+.slot {
+  grid-template-columns: 1.6rem 1fr auto;
+  align-items: center;
+}
+.slot .system-icon {
+  grid-row: 1 / 3;
+}
+.slot .slot-name,
+.slot .slot-choice {
+  grid-column: 2;
+}
+.slot .status-badge {
+  grid-row: 1 / 3;
+  grid-column: 3;
+}
+.vitals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  gap: 1px;
+  margin: 0 0 1rem;
+  border: 1px solid var(--ui-line);
+  border-top: 0;
+  background: var(--ui-line);
+}
+.vitals div {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0.15rem;
+  padding: 0.6rem 0.8rem;
+  background: rgba(6, 11, 18, 0.95);
+  border-bottom: 2px solid var(--status-ok);
+}
+.vitals div[data-status="warning"] {
+  border-bottom-color: var(--status-warning);
+}
+.vitals div[data-status="fail"],
+.vitals div[data-status="incomplete"] {
+  border-bottom-color: var(--status-fail);
+}
+.vitals dt {
+  color: var(--ui-dim);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.vitals dd {
+  margin: 0;
+  font: 500 1.05rem var(--ui-mono, ui-monospace, monospace);
+}
+.screen h2.part-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+  color: var(--ui-fg);
+  font-size: 1.15rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* Budgets: a healthy line folds its reason away. */
+.budget-more summary {
+  width: fit-content;
+  padding: 0.15rem 0;
+  color: var(--ui-dim);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.budget-more summary:hover {
+  color: var(--ui-accent);
+}
+.budget-more[open] summary {
+  margin-bottom: 0.2rem;
+}
+
+/* Flight: the place on the left with the latest event over it, the log on the right. */
+.flight-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+.flight-main {
+  flex: 999 1 34rem;
+  min-width: 0;
+}
+.flight-log {
+  flex: 1 1 20rem;
+  max-width: 30rem;
+  order: 2;
+}
+.flight-log h2 {
+  margin-top: 0;
+}
+.phase-rail {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 4px;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  list-style: none;
+}
+.phase-rail li {
+  padding-top: 0.45rem;
+  border-top: 4px solid var(--ui-line);
+  color: var(--ui-dim);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.phase-rail li[data-state="done"] {
+  border-top-color: var(--status-ok);
+  color: var(--ui-fg);
+}
+.phase-rail li[data-state="now"] {
+  border-top-color: var(--ui-accent);
+  color: var(--ui-fg);
+}
+.flight-stage {
+  position: relative;
+  margin-bottom: 1rem;
+  border: 1px solid var(--ui-line);
+  background: #05080d;
+}
+.flight-stage img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 8;
+  object-fit: cover;
+}
+.stage-event {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  left: 1rem;
+  padding: 0.85rem 1.1rem;
+  border: 1px solid var(--ui-line);
+  border-left: 4px solid var(--ui-dim);
+  background: rgba(6, 11, 18, 0.93);
+}
+.stage-event[data-tone="good"] {
+  border-left-color: var(--status-ok);
+}
+.stage-event[data-tone="bad"] {
+  border-left-color: var(--status-fail);
+}
+.stage-event strong {
+  display: block;
+  margin: 0.15rem 0 0.25rem;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+.stage-event p {
+  margin: 0;
+  color: var(--ui-fg);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+/* Debrief: the place behind the verdict, and the score as a ring filled by the science achieved. */
+.debrief-head {
+  position: relative;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: hidden;
+  padding: 1.5rem;
+  border: 1px solid var(--ui-line);
+  background: #05080d;
+}
+.debrief-art {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 60%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.5;
+  mask-image: linear-gradient(90deg, transparent, #000 60%);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 60%);
+}
+.debrief-summary,
+.score-ring {
+  position: relative;
+}
+.score-ring {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 10.5rem;
+  height: 10.5rem;
+}
+.score-ring svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.ring-track {
+  stroke: var(--ui-line);
+}
+.ring-fill {
+  stroke: var(--status-ok);
+}
+.debrief-head[data-outcome="partial"] .ring-fill {
+  stroke: var(--status-warning);
+}
+.debrief-head[data-outcome="failure"] .ring-fill {
+  stroke: var(--status-fail);
+}
+.score-ring .score-value {
+  font-size: 2.6rem;
+  line-height: 1;
+}
+.finding-list li {
+  grid-template-columns: 1.2rem 2rem 1fr;
+  align-items: start;
+}
+.finding-list li > div {
+  grid-column: 3;
+}
+/* The vitals sit flush under the vehicle, four across (two on a narrow screen). */
+.part-column .vehicle-3d,
+.part-column .vehicle-diagram {
+  margin-bottom: 0;
+}
+.vitals {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.vitals dd {
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+@media (max-width: 720px) {
+  .vitals {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+/* Flight: the decision (acknowledge, debrief) stays next to the stage; the charts follow. */
+.flight-main {
+  display: flex;
+  flex-direction: column;
+}
+.flight-main .mission-dashboard {
+  order: 10;
+  margin-top: 1rem;
+}
+/* The log is a side column here: the day sits above each entry, and a long flight scrolls in place. */
+.flight-log .mission-log {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+.flight-log .mission-log li {
+  grid-template-columns: 1.3rem minmax(0, 1fr);
+  gap: 0.1rem 0.4rem;
+  font-size: 0.92rem;
+}
+.flight-log .mission-log .log-day {
+  grid-column: 1 / -1;
+}
+
+/* Trajectory: the destination heads the page, named after the site or orbit chosen so far. */
+.trajectory-stage {
+  position: relative;
+  margin: 0 0 1rem;
+  border: 1px solid var(--ui-line);
+  background: #05080d;
+}
+.trajectory-stage img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 5;
+  object-fit: cover;
+}
+.trajectory-stage figcaption {
+  position: absolute;
+  bottom: 0.9rem;
+  left: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.5rem 0.8rem;
+  background: rgba(6, 11, 18, 0.85);
+}
+.trajectory-stage strong {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+.trajectory-stage span {
+  color: var(--ui-dim);
+  font-size: 0.85rem;
+}

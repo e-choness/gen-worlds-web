@@ -12,7 +12,8 @@ export interface BudgetPanelProps {
   critical: readonly ResourceId[];
 }
 
-function amount(line: BudgetLine): string {
+/** "284 / 560 kg": what a line uses against what it has. */
+export function budgetAmount(line: BudgetLine): string {
   if (line.status === 'incomplete') return '—';
   if (line.unit === '$M') return `${money(line.value)} / ${money(line.limit ?? 0)}`;
   const value = Number.isFinite(line.value) ? num(line.value) : '∞';
@@ -41,7 +42,7 @@ export function BudgetPanel({ budgets, issues, critical }: BudgetPanelProps) {
                   {line.label}
                   {critical.includes(line.id) && <span class="chip">{TEXT.design.critical}</span>}
                 </span>
-                <span class="budget-amount">{amount(line)}</span>
+                <span class="budget-amount">{budgetAmount(line)}</span>
                 <StatusBadge status={line.status} />
               </div>
               {share !== null && (
@@ -49,7 +50,15 @@ export function BudgetPanel({ budgets, issues, critical }: BudgetPanelProps) {
                   <div style={{ width: `${share * 100}%` }} />
                 </div>
               )}
-              <p class="budget-why">{line.why}</p>
+              {line.status === 'ok' ? (
+                // A healthy line keeps its reason one click away; a line in trouble shows it.
+                <details class="budget-more">
+                  <summary>{TEXT.design.why}</summary>
+                  <p class="budget-why">{line.why}</p>
+                </details>
+              ) : (
+                <p class="budget-why">{line.why}</p>
+              )}
             </li>
           );
         })}

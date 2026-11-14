@@ -5,6 +5,7 @@
   "number": 2,
   "name": "Lunar south pole ice prospector",
   "art": "art/scenario_moon.jpg",
+  "stage_art": "art/stage_moon.jpg",
   "tagline": "Find the water that could supply a Moon base.",
   "briefing": "Orbiters have seen hydrogen in the permanently shadowed craters of the Moon's south pole. Nobody has touched it. Land a robotic prospector, drive into the cold, drill, and prove how much water ice is there and how deep. At the pole the Sun crawls along the horizon and the Earth dips below it every month: power and warmth decide whether you come back with an answer.",
   "trajectory_mode": "lunar",

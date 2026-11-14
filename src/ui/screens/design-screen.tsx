@@ -5,11 +5,12 @@ import { type DesignEvaluation, evaluateDesign } from '@/mission/evaluate-design
 import { type BudgetChange, previewChanges } from '@/mission/preview';
 import { roleForSlot } from '@/mission/roles';
 import { SLOT_NAMES } from '@/mission/slot-names';
-import { BudgetPanel } from '@/ui/budget-panel';
+import { BudgetPanel, budgetAmount } from '@/ui/budget-panel';
 import { changeText } from '@/ui/choice-card';
 import { type CrewView, mayAct, ownedBy } from '@/ui/crew-view';
 import { partStats } from '@/ui/part-stats';
 import { StatusBadge } from '@/ui/status-badge';
+import { SystemIcon } from '@/ui/system-icon';
 import { TEXT } from '@/ui/text';
 import { Vehicle3d } from '@/ui/vehicle-3d';
 import { VehicleDiagram } from '@/ui/vehicle-diagram';
@@ -89,6 +90,9 @@ export function DesignScreen(props: DesignScreenProps) {
     if (resolved[entry]) return 'ok';
     return scenario.requiredSlots.includes(entry) ? 'incomplete' : 'ok';
   };
+  // The four numbers under the vehicle: what it weighs and costs, and what this mission lives or dies by.
+  const vitalIds = [...new Set(['mass', ...scenario.criticalResources, 'cost', 'power'])].slice(0, 4);
+  const vitals = vitalIds.flatMap((id) => evaluation.budgets.filter((line) => line.id === id));
   const isInstrument = category === 'instrument';
   const currentSlot = isInstrument ? null : category;
   const owner = roleForSlot(category);
@@ -109,7 +113,7 @@ export function DesignScreen(props: DesignScreenProps) {
                 data-autofocus={index === 0 ? true : undefined}
                 onClick={() => setCategory(entry)}
               >
-                <StatusBadge status={slotStatus(entry)} compact />
+                <SystemIcon system={entry} />
                 <span class="slot-name">
                   {SLOT_NAMES[entry]}
                   {entry !== 'instrument' && scenario.optionalSlots.includes(entry) && (
@@ -117,6 +121,7 @@ export function DesignScreen(props: DesignScreenProps) {
                   )}
                 </span>
                 <span class="slot-choice">{chosenName(entry)}</span>
+                <StatusBadge status={slotStatus(entry)} compact />
               </button>
             </li>
           ))}
@@ -137,7 +142,18 @@ export function DesignScreen(props: DesignScreenProps) {
         ) : (
           <VehicleDiagram resolved={resolved} propellantKg={evaluation.mass?.propellantKg ?? null} />
         )}
-        <h2>{SLOT_NAMES[category]}</h2>
+        <dl class="vitals">
+          {vitals.map((line) => (
+            <div key={line.id} data-status={line.status}>
+              <dt>{line.label}</dt>
+              <dd>{budgetAmount(line)}</dd>
+            </div>
+          ))}
+        </dl>
+        <h2 class="part-heading">
+          <SystemIcon system={category} size={28} />
+          {SLOT_NAMES[category]}
+        </h2>
         {!editable && <p class="banner owned">{ownedBy(props.crew, owner)}</p>}
         <ul class="part-list">
           {options.map((option) => {

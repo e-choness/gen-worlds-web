@@ -21,7 +21,7 @@ something enters the repo.
 | `public/maps/mars_albedo_4k.jpg`, `public/maps/mars_height_2880x1440.i16` | USGS Astrogeology Science Center: [Viking MDIM 2.1 colour mosaic](https://astrogeology.usgs.gov/search/map/mars_viking_colorized_global_mosaic_232m) (NASA Viking Orbiters) and [MGS MOLA elevation mosaic](https://astrogeology.usgs.gov/search/map/mars_mgs_mola_dem_463m) (NASA Mars Global Surveyor) | Public domain (NASA / USGS) | Mars's real colour and terrain |
 | `public/maps/earth_albedo_4k.jpg` | NASA [Blue Marble Next Generation](https://earthobservatory.nasa.gov/features/BlueMarble), cloud-free, served by [NASA GIBS](https://gibs.earthdata.nasa.gov) | Public domain (NASA) | The Earth's real colour |
 | `public/maps/earth_height_2880x1440.i16` | NOAA NCEI [ETOPO 2022](https://www.ncei.noaa.gov/products/etopo-global-relief-model) 60 arc-second global relief, doi:10.25921/fd45-gt74 | Public domain (NOAA) | The Earth's real terrain and sea floor |
-| `public/art/scenario_*.jpg`, `public/art/title_earth.jpg` | Rendered by this game's engine from the maps above | Own work from public-domain data | Mission card and title pictures |
+| `public/art/*.jpg` | Rendered by this game's engine from the maps above | Own work from public-domain data | Mission card, title, trajectory, flight and debrief pictures |
 | `src/data/events_catalog.json` | Event types from real mission experience; probabilities are game balance values | Own work | Random events |
 
 ## Textures

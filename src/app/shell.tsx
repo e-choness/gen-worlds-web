@@ -203,6 +203,10 @@ function Shell({ store, sound }: ShellProps) {
               store.navigate('briefing');
             }}
             onSandbox={() => store.navigate('sandbox')}
+            onTour={() => {
+              // The tour runs the 3D engine on its own page load, like the sandbox's exit.
+              location.href = `${location.pathname}?demo`;
+            }}
           />
         )}
         {screen === 'crew' && (
@@ -307,6 +311,7 @@ function Shell({ store, sound }: ShellProps) {
             onAcknowledge={(key, seconds) => store.acknowledge(key, seconds)}
             onDebrief={() => store.navigate('debrief')}
             onCue={sound?.onCue}
+            stageArt={getScenario(result.flownDesign.scenarioId).stageArt}
           />
         )}
         {phase === 'debrief' && result && scenario && (

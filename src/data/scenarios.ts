@@ -220,6 +220,8 @@ export interface Scenario {
   tagline: string;
   /** Picture of the destination for the mission card, relative to the site root. */
   art: string;
+  /** Wide picture of where the mission works, behind the flight and debrief screens. */
+  stageArt: string;
   briefing: string;
   trajectoryMode: TrajectoryMode;
   targetBody: string;
