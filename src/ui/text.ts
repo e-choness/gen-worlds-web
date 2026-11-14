@@ -2,6 +2,7 @@
  * All user-facing copy of the 2D screens lives here, so wording, tone and a later translation are
  * one file. Consequence explanations ("why" strings) come from the mission layer, not from here.
  */
+import type { ResourceId } from '@/data/scenarios';
 import type { MissionPhase } from '@/mission/phases';
 
 export const TEXT = {
@@ -19,6 +20,24 @@ export const TEXT = {
     heading: 'Choose a mission',
     summary: 'Each scenario has its own objective, budget cap and critical resources.',
     next: 'Open the briefing',
+    tier: 'Difficulty',
+    mission: 'Mission',
+    critical: 'Critical:',
+  },
+  briefing: {
+    objectives: 'Science objectives',
+    weightTitle: 'Share of the science score',
+    constraints: 'Constraints',
+    budget: 'Budget cap',
+    budgetNote: 'spacecraft, launch and operations',
+    duration: 'Surface mission',
+    days: 'days',
+    window: 'Landing window',
+    critical: 'Critical resources',
+    sites: 'Candidate sites',
+    nasa: 'How NASA approached it',
+    readMore: 'Read about the mission at nasa.gov',
+    next: 'Start the design',
   },
   nav: {
     back: 'Back',
@@ -81,4 +100,17 @@ export const PHASE_TEXT: Record<MissionPhase, PhaseText> = {
     summary: 'Score, timeline and the cause of every outcome, traced back to your design decisions.',
     next: 'Change the design and rerun',
   },
+};
+
+/** Names of the resources the budget panel tracks. */
+export const RESOURCE_NAMES: Record<ResourceId, string> = {
+  mass: 'Mass',
+  delta_v: 'Propellant',
+  launch: 'Launch',
+  power: 'Power',
+  thermal: 'Shadow and night',
+  data: 'Data',
+  cost: 'Budget',
+  schedule: 'Schedule',
+  risk: 'Risk',
 };

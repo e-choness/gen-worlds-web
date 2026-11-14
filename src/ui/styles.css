@@ -60,3 +60,12 @@ body {
   background: radial-gradient(circle at 50% 40%, #101a28, #020408);
   pointer-events: auto;
 }
+
+/* Status colours (Okabe–Ito, lightened for a dark background). Status is never colour alone:
+   every use pairs the colour with an icon and a word. */
+:root {
+  --status-ok: #3ddbb0;
+  --status-warning: #ffb454;
+  --status-fail: #ff7a59;
+  --status-incomplete: #8fa3b8;
+}

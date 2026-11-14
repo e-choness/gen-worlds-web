@@ -5,9 +5,13 @@
 import { render } from 'preact';
 import { useEffect, useRef } from 'preact/hooks';
 import type { GameStore } from '@/app/game-store';
+import { getTier, MISSION_CONSTANTS } from '@/data/mission-constants';
+import { getScenario, SCENARIOS } from '@/data/scenarios';
 import { type MissionPhase, nextPhase, previousPhase } from '@/mission/phases';
 import { PhaseStepper } from '@/ui/phase-stepper';
 import { isMissionPhase } from '@/ui/screen-id';
+import { BriefingScreen } from '@/ui/screens/briefing-screen';
+import { ScenarioScreen } from '@/ui/screens/scenario-screen';
 import { StubScreen } from '@/ui/screens/stub-screen';
 import { TitleScreen } from '@/ui/screens/title-screen';
 import { PHASE_TEXT, TEXT } from '@/ui/text';
@@ -19,11 +23,14 @@ interface ShellProps {
 function Shell({ store }: ShellProps) {
   const screen = store.screen.value;
   const webgpu = store.webgpu.value;
+  const design = store.design.value;
   const main = useRef<HTMLElement>(null);
 
   // Keyboard and gamepad users land on the screen's main action after every screen change.
   useEffect(() => {
+    if (!screen) return;
     main.current?.querySelector<HTMLElement>('[data-autofocus]')?.focus({ preventScroll: true });
+    main.current?.scrollTo(0, 0);
   }, [screen]);
 
   if (screen === 'sandbox') {
@@ -53,6 +60,7 @@ function Shell({ store }: ShellProps) {
   }
 
   const phase = isMissionPhase(screen) ? screen : null;
+  const scenario = design ? getScenario(design.scenarioId) : null;
   return (
     <div class="shell" data-screen={screen}>
       <header class="shell-header">
@@ -73,15 +81,27 @@ function Shell({ store }: ShellProps) {
           />
         )}
         {screen === 'scenarios' && (
-          <StubScreen
-            heading={TEXT.scenarios.heading}
-            summary={TEXT.scenarios.summary}
-            nextLabel={TEXT.scenarios.next}
-            onNext={() => store.navigate('briefing')}
+          <ScenarioScreen
+            scenarios={SCENARIOS}
+            tiers={MISSION_CONSTANTS.tiers}
+            tier={store.tier.value}
+            onTier={(tier) => store.setTier(tier)}
+            onChoose={(scenarioId) => {
+              store.selectScenario(scenarioId);
+              store.navigate('briefing');
+            }}
             onBack={() => store.navigate('title')}
           />
         )}
-        {phase && (
+        {phase === 'briefing' && scenario && design && (
+          <BriefingScreen
+            scenario={scenario}
+            tier={getTier(design.tier)}
+            onNext={() => store.navigate('design')}
+            onBack={() => store.navigate('scenarios')}
+          />
+        )}
+        {phase && phase !== 'briefing' && (
           <StubScreen
             heading={PHASE_TEXT[phase].heading}
             summary={PHASE_TEXT[phase].summary}
