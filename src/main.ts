@@ -10,6 +10,7 @@ import { onlineAdapterFactory, scoreBoardFactory } from '@/app/online';
 import { mountShell } from '@/app/shell';
 import { hasWebgpu } from '@/app/webgpu-support';
 import { screenFromHash } from '@/ui/screen-id';
+import { vehicleSpecFromDesign } from '@/ui/vehicle-spec-from-design';
 
 declare global {
   interface Window {
@@ -59,7 +60,11 @@ function main(): void {
       import('@/app/descent')
         .then((module) => {
           shellRoot.hidden = true;
-          return module.runDescent(canvas, uiRoot, arrival.plan);
+          const evaluation = store.evaluation.peek();
+          const vehicle = evaluation
+            ? vehicleSpecFromDesign(evaluation.resolved, evaluation.mass?.propellantKg ?? null)
+            : null;
+          return module.runDescent(canvas, uiRoot, arrival.plan, vehicle);
         })
         .then((outcome) => store.completeDescent(outcome))
         .catch((error: unknown) => {

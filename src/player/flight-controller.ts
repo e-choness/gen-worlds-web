@@ -19,7 +19,7 @@ import type { Input } from './input';
 
 const MOUSE_RATE = 0.0016;
 /** Hover height of the hull centre above the ground, metres. */
-const MIN_CLEARANCE = 1.6;
+export const MIN_CLEARANCE = 1.6;
 /** Landing is offered below this altitude, metres. */
 export const LANDING_ALTITUDE = 400;
 /** Above this altitude a landed robot is flying again. */

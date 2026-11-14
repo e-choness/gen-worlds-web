@@ -132,6 +132,8 @@ export class App {
   private readonly backdrop: GalaxyBackdrop;
   private readonly starfield: Starfield;
   private readonly robot: RobotModel;
+  /** Stands in for the survey craft when set: the vehicle the crew designed, during its landing. */
+  private craftModel: THREE.Object3D | null = null;
   private readonly lights: SceneLights;
   private readonly effects: Effects;
   private readonly previousCamera = new THREE.Vector3();
@@ -393,6 +395,16 @@ export class App {
     return fallback;
   }
 
+  /**
+   * Draws `model` in place of the survey craft, or the survey craft again when null. The model's
+   * origin is the craft's centre, its +Y up and −Z forward; the caller keeps ownership of it.
+   */
+  setCraftModel(model: THREE.Object3D | null): void {
+    if (this.craftModel) this.engine.scene.remove(this.craftModel);
+    this.craftModel = model;
+    if (model) this.engine.scene.add(model);
+  }
+
   enterSystem(system: SystemDesc): void {
     this.flight.cancelAutopilot();
     this.system?.dispose();
@@ -586,7 +598,12 @@ export class App {
     this.robotQuat.slerp(this.flight.bodyOrientation, 1 - Math.exp(-dt * 9));
     this.robot.group.quaternion.copy(this.robotQuat);
     this.robot.group.position.copy(this.offsetWorld).negate();
-    this.robot.group.visible = !this.cockpit;
+    this.robot.group.visible = !this.cockpit && !this.craftModel;
+    if (this.craftModel) {
+      this.craftModel.quaternion.copy(this.robotQuat);
+      this.craftModel.position.copy(this.robot.group.position);
+      this.craftModel.visible = !this.cockpit;
+    }
   }
 
   /**
