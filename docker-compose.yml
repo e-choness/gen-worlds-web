@@ -50,3 +50,16 @@ services:
       XDG_CACHE_HOME: /app/.cache
     volumes:
       - .:/app
+
+  # Firebase CLI (one-off, needs the project owner's Google login, stored under .cache/):
+  #   docker compose run --rm firebase login --no-localhost
+  #   docker compose run --rm firebase firestore:databases:create "(default)" --location nam5
+  #   docker compose run --rm firebase deploy --only firestore:rules
+  firebase:
+    <<: *node
+    profiles: ["tools"]
+    environment:
+      npm_config_cache: /app/.cache/npm
+      XDG_CACHE_HOME: /app/.cache
+      XDG_CONFIG_HOME: /app/.cache/config
+    entrypoint: ["npx", "--yes", "firebase-tools"]
