@@ -6,7 +6,9 @@ something enters the repo.
 
 ## NASA and other open data
 
-_None shipped yet. Entries are added with the data files in `src/data/`._
+| Data | Source | Licence | Used for |
+| --- | --- | --- | --- |
+| `src/data/ephemeris_planets.json` | NASA JPL Solar System Dynamics, [Approximate Positions of the Planets](https://ssd.jpl.nasa.gov/planets/approx_pos.html), Table 1 (E. M. Standish) | Public domain (NASA/JPL) | Planet positions, launch windows, porkchop plots |
 
 ## Textures
 
@@ -38,6 +40,9 @@ _None shipped yet. Entries are added with the data files in `src/data/`._
 
 | Technique | Source | Licence | Used for |
 | --- | --- | --- | --- |
+| Lambert solver | D. Izzo, "Revisiting Lambert's problem", Celestial Mechanics and Dynamical Astronomy 121 (2015) | Published algorithm, own implementation | Interplanetary transfers |
+| Universal-variable Kepler propagation | D. Vallado, "Fundamentals of Astrodynamics and Applications" | Published algorithm, own implementation | Cruise trajectories |
+| Lunar position and libration series | J. Meeus, "Astronomical Algorithms", 2nd ed., chapters 47 and 53 | Published algorithm, own implementation | Moon position, polar lighting and Earth visibility |
 | Galaxy density model | [dgreenheck/webgpu-galaxy](https://github.com/dgreenheck/webgpu-galaxy) | MIT | Galaxy backdrop and star distribution |
 
 ## AI use
