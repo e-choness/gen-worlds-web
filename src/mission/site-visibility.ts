@@ -29,7 +29,8 @@ export interface SiteVisibility {
   hoursToFirstLongNight: number;
 }
 
-function clearsHorizon(sub: SubPoint, site: LandingSite, clearanceDeg: number): boolean {
+/** True when a body with sub-point `sub` stands at least `clearanceDeg` above the site's local horizon. */
+export function clearsHorizon(sub: SubPoint, site: LandingSite, clearanceDeg: number): boolean {
   const latitude = site.latitudeDeg * DEG;
   const longitude = site.longitudeDeg * DEG;
   const elevationDeg = elevationAtSite(sub, latitude, longitude) / DEG;

@@ -16,6 +16,7 @@ import { DesignScreen } from '@/ui/screens/design-screen';
 import { ScenarioScreen } from '@/ui/screens/scenario-screen';
 import { StubScreen } from '@/ui/screens/stub-screen';
 import { TitleScreen } from '@/ui/screens/title-screen';
+import { TrajectoryScreen } from '@/ui/screens/trajectory-screen';
 import { PHASE_TEXT, TEXT } from '@/ui/text';
 
 interface ShellProps {
@@ -116,7 +117,15 @@ function Shell({ store }: ShellProps) {
             onBack={() => store.navigate('briefing')}
           />
         )}
-        {phase && phase !== 'briefing' && phase !== 'design' && (
+        {phase === 'trajectory' && evaluation && (
+          <TrajectoryScreen
+            evaluation={evaluation}
+            onChange={(change) => store.setTrajectory(change)}
+            onNext={() => store.navigate('poll')}
+            onBack={() => store.navigate('design')}
+          />
+        )}
+        {phase && phase !== 'briefing' && phase !== 'design' && phase !== 'trajectory' && (
           <StubScreen
             heading={PHASE_TEXT[phase].heading}
             summary={PHASE_TEXT[phase].summary}

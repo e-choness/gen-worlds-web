@@ -754,3 +754,129 @@ button.card:hover {
   font-size: 0.88rem;
   line-height: 1.5;
 }
+
+/* ---- trajectory screen */
+.trajectory {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(20rem, 26rem);
+  gap: 1.75rem;
+  align-items: start;
+}
+@media (max-width: 70rem) {
+  .trajectory {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.trajectory-main > h2:first-child,
+.trajectory .budget-panel h2:first-child {
+  margin-top: 0;
+}
+.split {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+.part-list.two {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+}
+.part-list.three {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+}
+.part-card .eyebrow {
+  display: block;
+  margin-bottom: 0.15rem;
+  color: var(--ui-dim);
+  font-size: 0.66rem;
+}
+.part-card .part-head .card-title {
+  display: block;
+}
+
+/* ---- charts */
+.chart {
+  margin: 0;
+  padding: 0.75rem;
+  border: 1px solid var(--ui-line);
+  border-radius: 2px;
+  background: rgba(8, 14, 22, 0.5);
+}
+.chart svg {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+.chart figcaption {
+  margin-top: 0.5rem;
+  color: var(--ui-dim);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+.chart text {
+  fill: var(--ui-dim);
+  font: 10px var(--ui-mono);
+}
+.chart .tick line {
+  stroke: var(--ui-line);
+  stroke-width: 1;
+}
+.capacity-chart .curve path {
+  fill: none;
+  stroke: var(--ui-dim);
+  stroke-width: 1.5;
+}
+.capacity-chart .curve.selected path {
+  stroke: var(--ui-accent);
+  stroke-width: 2.5;
+}
+.capacity-chart .curve.selected text {
+  fill: var(--ui-accent);
+  font-weight: 600;
+}
+.capacity-chart .marker {
+  stroke: var(--ui-fg);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+}
+.capacity-chart .needed line {
+  stroke: var(--ui-warn);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+}
+.capacity-chart .needed text {
+  fill: var(--ui-warn);
+}
+.capacity-chart .crossing {
+  fill: var(--ui-fg);
+}
+.sky-calendar .row-label {
+  fill: var(--ui-fg);
+  font: 11px var(--ui-font);
+}
+.sky-calendar .sun rect {
+  fill: #ffd27a;
+}
+.sky-calendar .earth rect {
+  fill: #6fb8ff;
+}
+.sky-calendar .closed {
+  fill: rgba(2, 4, 10, 0.6);
+}
+.sky-calendar .mission-span path {
+  fill: none;
+  stroke: var(--ui-fg);
+  stroke-width: 1.5;
+}
+.sky-calendar .mission-span text {
+  fill: var(--ui-fg);
+}
+.calendar-control input {
+  display: block;
+  width: 100%;
+  margin: 0.35rem 0 0;
+  accent-color: var(--ui-accent);
+}
+.date-readout {
+  margin: 0.4rem 0 0;
+  font-size: 1rem;
+}

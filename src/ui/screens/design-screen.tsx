@@ -2,10 +2,10 @@ import { useMemo, useState } from 'preact/hooks';
 import { type Part, type PartCategory, SLOT_IDS, type SlotId } from '@/data/parts';
 import { availableParts, type MissionDesign } from '@/mission/design';
 import { type DesignEvaluation, evaluateDesign } from '@/mission/evaluate-design';
-import { money, num } from '@/mission/format';
 import { type BudgetChange, previewChanges } from '@/mission/preview';
 import { SLOT_NAMES } from '@/mission/slot-names';
 import { BudgetPanel } from '@/ui/budget-panel';
+import { changeText } from '@/ui/choice-card';
 import { partStats } from '@/ui/part-stats';
 import { StatusBadge } from '@/ui/status-badge';
 import { TEXT } from '@/ui/text';
@@ -27,16 +27,6 @@ interface Option {
   part: Part | null;
   selected: boolean;
   changes: BudgetChange[];
-}
-
-function changeText(change: BudgetChange): string {
-  const sign = change.delta > 0 ? '+' : '−';
-  const size = Math.abs(change.delta);
-  const amount = change.unit === '$M' ? `${sign}${money(size)}` : `${sign}${num(size)} ${change.unit}`;
-  const shown = size > 0 ? ` ${amount}` : '';
-  return change.from === change.to
-    ? `${change.label}${shown}`
-    : `${change.label}${shown} → ${TEXT.status[change.to]}`;
 }
 
 /** The hangar: choose a part for every system and watch each choice move the budgets. */
