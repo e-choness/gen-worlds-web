@@ -1,4 +1,4 @@
-# Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+# Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 # All package installation, builds and checks run inside these containers; nothing is installed on
 # the host. Sources, node_modules and caches live in the bind-mounted project folder on D:.
 x-node: &node

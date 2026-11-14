@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /**
  * What the chosen orbit means for a satellite: how long each eclipse lasts, how much of the day a
  * ground station is in view, how fast the air drags it down and what it costs to hold the orbit and

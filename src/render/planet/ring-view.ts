@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /**
  * Planetary rings: a flat annulus in the planet's equatorial plane with a procedural radial
  * structure (ringlets, gaps), lit by the star, shadowed by the planet, and brighter in forward

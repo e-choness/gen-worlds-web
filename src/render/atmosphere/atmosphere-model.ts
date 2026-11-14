@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 import { sampler, texture, uniform, uv } from 'three/tsl';
 import * as THREE from 'three/webgpu';
 import type { Disposable } from '@/core/disposable';

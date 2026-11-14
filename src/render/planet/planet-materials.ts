@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /**
  * Terrain and ocean materials. One instance pair per planet; chunks share them and differ only
  * through per-object uniforms (chunk centre and wrapped detail offset).

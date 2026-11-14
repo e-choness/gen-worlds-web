@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /** Mission scenarios (source and units in each `scenario_*.json`). */
 import { camelize, indexById } from '@/data/camelize';
 import type { SlotId, SolarMounting } from '@/data/parts';

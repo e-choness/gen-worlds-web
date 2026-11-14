@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /** Which real bodies have measured colour and elevation maps (source and format in the JSON). */
 import { camelize } from '@/data/camelize';
 import raw from '@/data/surface_maps.json';

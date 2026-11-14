@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /**
  * The rocket-equation chain: equipment mass → propellant for the mission's manoeuvres → wet mass →
  * what the launcher must lift. Three budget lines come out of it (mass, Δv, launch) because each

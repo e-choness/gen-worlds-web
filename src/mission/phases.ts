@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /** The mission loop in play order. Screens, co-op prompts and the debrief timeline all follow it. */
 export const MISSION_PHASES = ['briefing', 'design', 'trajectory', 'poll', 'flight', 'debrief'] as const;
 

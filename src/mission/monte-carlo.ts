@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /**
  * Runs the same design against many seeds: how often it succeeds, what score to expect and what
  * usually goes wrong. Heavy enough (hundreds of full missions) to belong in a worker.

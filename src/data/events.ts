@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /** Random mission events (source, units and effect kinds in `events_catalog.json`). */
 import { camelize, indexById } from '@/data/camelize';
 import raw from '@/data/events_catalog.json';

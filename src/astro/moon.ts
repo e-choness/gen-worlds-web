@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /**
  * Position of the Moon from the largest terms of the ELP series as tabulated by J. Meeus,
  * "Astronomical Algorithms" (2nd ed.), chapter 47. Accuracy is about 0.1° and a few hundred km,

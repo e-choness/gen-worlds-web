@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /**
  * The mission design: everything the team decides before launch. It is plain serialisable data
  * (ids and numbers only), so it can be saved, shared as a mission code and synced between players.

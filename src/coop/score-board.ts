@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /**
  * The global leaderboard, behind an interface like the rest of the network. An entry carries the
  * mission code of the flight, so every client re-simulates it and trusts only what it computes.

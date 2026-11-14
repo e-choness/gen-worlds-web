@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 // Dev helper: loads the app in the capture container and prints the result of an expression
 // evaluated against window.__app at a few points in time.
 //   node tools/debug-eval.mjs "<query>" "<js expression using app>" [seconds...]

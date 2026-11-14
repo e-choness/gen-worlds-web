@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /**
  * Random designs through the whole mission model: whatever the player assembles, the budgets must
  * come back finite and explained, and a launchable design must fly to a finite, repeatable result.

@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /**
  * The only things hands-on play feeds into the simulation. Everything else (battery, propellant,
  * data, events) is computed by the simulation, so a flown mission and a fast-simulated one cannot

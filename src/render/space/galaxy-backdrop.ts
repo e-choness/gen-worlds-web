@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /**
  * The galaxy as seen from inside it: an equirectangular HDR panorama produced by ray-marching the
  * same analytic density model that places the stars (`universe/galaxy.ts`), with dust extinction.

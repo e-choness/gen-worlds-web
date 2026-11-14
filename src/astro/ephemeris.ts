@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /**
  * Planet positions from the JPL approximate Keplerian elements (valid 1800–2050, errors of
  * arc-minutes: plenty for launch windows and for placing planets in the renderer).

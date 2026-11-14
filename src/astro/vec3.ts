@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /**
  * Minimal immutable float64 vectors for the pure layers (no three.js there). These allocate, which
  * is fine for planning maths and workers; per-frame render code uses its own scratch vectors.

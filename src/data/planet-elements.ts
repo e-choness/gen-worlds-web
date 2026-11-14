@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /**
  * Typed access to the JPL Keplerian elements (`ephemeris_planets.json` holds the source, frame and
  * units). The JSON uses snake_case keys; this loader is the one place that maps them.

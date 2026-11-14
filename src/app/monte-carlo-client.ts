@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /**
  * Runs Monte Carlo forecasts in a worker so hundreds of simulated missions never block the UI.
  * Owns the worker; only the latest request's answer is delivered.

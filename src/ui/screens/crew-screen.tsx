@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 import { useState } from 'preact/hooks';
 import type { RoleId } from '@/data/mission-constants';
 import type { CrewView } from '@/ui/crew-view';

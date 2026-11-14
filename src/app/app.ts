@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /**
  * Composition root: builds the engine and the long-lived services, owns the frame loop and the
  * current star system. Subsystems never reach for each other through globals; they receive what

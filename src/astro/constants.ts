@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /** Physical constants (SI). Body-specific numbers live in the data catalogs, not here. */
 
 /** Astronomical unit, m (IAU 2012, exact). */

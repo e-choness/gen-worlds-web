@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /**
  * Everything co-op needs from a network, behind one interface. The in-memory adapter serves a crew
  * on one shared screen and any device without a connection; the Firebase adapter serves a crew on

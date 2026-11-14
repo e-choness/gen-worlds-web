@@ -1,4 +1,4 @@
-/* Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md. */
+/* Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md. */
 /* The 2D game shell (Preact screens). Tokens (--ui-*) are defined in styles.css. Sizes are in rem so
    the text-scale setting can scale every screen from the root font size. */
 #shell-root {

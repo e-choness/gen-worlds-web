@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /**
  * Sound for the 2D mission screens: a quiet music bed and short cues for what the screens report.
  * Screens never call this directly; the app layer turns store changes and reported cues into

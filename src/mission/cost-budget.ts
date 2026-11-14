@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /** Cost against the budget cap, and the schedule risk that unproven hardware brings. */
 import { MISSION_CONSTANTS } from '@/data/mission-constants';
 import type { BudgetLine } from '@/mission/budget-line';

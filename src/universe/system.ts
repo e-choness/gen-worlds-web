@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /**
  * Star system generation: orbits, planet classes, physical properties, atmospheres, surface
  * palettes, life and resources. Deterministic from the star's seed.

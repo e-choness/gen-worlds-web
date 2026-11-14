@@ -133,6 +133,6 @@ sound effects were generated with a locally run audio model. Details are in
 
 ## Licence
 
-Gen Worlds is open source, © 2026 Echo Yin, under your choice of the
-[Apache License 2.0](LICENSE-APACHE) or the [MIT License](LICENSE-MIT); see [`LICENSE.md`](LICENSE.md).
+Gen Worlds is open source, © 2026 Echo Yin, under the
+[Apache License 2.0](LICENSE-APACHE); see [`LICENSE.md`](LICENSE.md).
 Third-party maps and textures keep their own terms, listed in [`CREDITS.md`](CREDITS.md).

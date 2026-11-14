@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /**
  * Deterministic randomness. All procedural content derives from 32-bit integer seeds so that any
  * object in the galaxy can be regenerated from (galaxy seed, address) alone — nothing is stored.

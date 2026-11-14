@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /**
  * Turns what the mission achieved into objective results and a score. Several designs can win:
  * science dominates, and an unspent budget, healthy margins and survival add to it.

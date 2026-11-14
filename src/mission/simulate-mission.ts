@@ -1,4 +1,4 @@
-// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0 or MIT: see LICENSE.md.
+// Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /**
  * The mission simulation: `(design, seed, input log) → result`, deterministic and worker-safe.
  * The fast simulation, the Monte Carlo runs, the 3D flight's dashboard and the leaderboard's
