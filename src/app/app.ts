@@ -8,6 +8,7 @@
  * UI → render.
  */
 import * as THREE from 'three/webgpu';
+import { isoDateFromJd, jdFromUnixMs } from '@/astro/time';
 import { AudioEngine } from '@/audio/audio-engine';
 import { DisposableStore } from '@/core/disposable';
 import { Emitter } from '@/core/events';
@@ -29,6 +30,7 @@ import { Starfield } from '@/render/space/starfield';
 import { type BodyState, SystemView } from '@/render/space/system-view';
 import { LIGHT_YEAR } from '@/universe/constants';
 import { Galaxy } from '@/universe/galaxy';
+import { createSolarSystem, solarBodyId } from '@/universe/solar-system';
 import { generateSystem } from '@/universe/system';
 import { TerrainField } from '@/universe/terrain-field';
 import type { StarDesc, SystemDesc } from '@/universe/types';
@@ -55,7 +57,16 @@ export interface StartOptions {
   cockpit?: boolean;
   /** Start landed (surface mode). */
   landed?: boolean;
+  /** Start in the real solar system instead of a generated one. */
+  solarSystem?: boolean;
+  /** Catalog id of the solar-system body to start at ("moon", "mars"…). */
+  at?: string;
+  /** Julian date the solar system starts at; defaults to now. */
+  dateJd?: number;
 }
+
+/** Simulated seconds per real second, stepped through with the bracket keys in the solar system. */
+const TIME_WARPS = [1, 60, 3600, 86400, 604800];
 
 /** Camera offset from the craft in the craft's frame: chase view sits behind and above. */
 const CHASE_OFFSET = new THREE.Vector3(0, 2.2, 7.4);
@@ -90,6 +101,10 @@ export class App {
   readonly cameraPosition = new THREE.Vector3();
   /** Simulation time in seconds. */
   time = 0;
+  /** Date of the simulated solar system (Julian date); only advances in the real system. */
+  simJd = jdFromUnixMs(Date.now());
+  /** Simulated seconds per real second for `simJd`. */
+  timeWarp = 1;
   /** Smoothed frames per second, for the HUD. */
   fps = 0;
   cockpit = false;
@@ -169,7 +184,12 @@ export class App {
   static async create(options: AppOptions): Promise<App> {
     const engine = await Engine.create(options.canvas);
     const app = new App(engine, options);
-    app.enterSystem(app.findHomeSystem(options.start?.kind, options.start?.rings));
+    if (options.start?.dateJd !== undefined) app.simJd = options.start.dateJd;
+    app.enterSystem(
+      options.start?.solarSystem
+        ? createSolarSystem()
+        : app.findHomeSystem(options.start?.kind, options.start?.rings),
+    );
     app.placeAtStart(options.start ?? {});
     engine.renderer.setAnimationLoop(() => app.frame());
     return app;
@@ -220,11 +240,13 @@ export class App {
       detailTexture: this.detailTexture,
       terrainTextures: this.terrainTextures,
     });
+    this.system.setEpoch(this.simJd);
   }
 
   private placeAtStart(start: StartOptions): void {
     const bodies = this.system.bodies;
     let body: BodyState | undefined = start.body !== undefined ? bodies[start.body] : undefined;
+    if (start.at) body ??= bodies.find((b) => solarBodyId(b.desc) === start.at);
     body ??=
       bodies.find((b) => b.desc.kind === (start.kind ?? 'terra') && (!start.rings || b.desc.rings)) ??
       bodies[0];
@@ -246,6 +268,13 @@ export class App {
     this.time += dt;
 
     const nearest = this.system.nearestBody(this.flight.position);
+    if (this.system.system.real) {
+      this.simJd += (dt * this.timeWarp) / 86400;
+      if (nearest) this.scratch.copy(nearest.position);
+      this.system.setEpoch(this.simJd);
+      // Ride along with the nearest body, or its orbital motion (30 km/s for Earth) leaves the craft behind.
+      if (nearest) this.flight.position.add(this.scratch2.subVectors(nearest.position, this.scratch));
+    }
     this.handleKeys();
     this.flight.update(dt, nearest);
     this.audio.update(dt);
@@ -270,6 +299,15 @@ export class App {
     if (input.justPressed('KeyM')) {
       this.settings.set('muted', !this.settings.values.muted);
       this.events.emit('notice', this.settings.values.muted ? 'Audio muted' : 'Audio on');
+    }
+    if (this.system.system.real && (input.justPressed('BracketRight') || input.justPressed('BracketLeft'))) {
+      const step = input.justPressed('BracketRight') ? 1 : -1;
+      const index = Math.max(0, Math.min(TIME_WARPS.length - 1, TIME_WARPS.indexOf(this.timeWarp) + step));
+      this.timeWarp = TIME_WARPS[index];
+      this.events.emit(
+        'notice',
+        `Time × ${this.timeWarp.toLocaleString('en')} · ${isoDateFromJd(this.simJd)}`,
+      );
     }
     if (input.justPressed('KeyL')) this.toggleLanding();
     if (input.justPressed('KeyT')) {
@@ -645,7 +683,10 @@ function isMainSequence(star: StarDesc): boolean {
   return star.class === 'G' || star.class === 'F' || star.class === 'K';
 }
 
-/** Reads start overrides from the query string: ?body=2&alt=1500&sun=70&kind=desert&land&rings&cockpit */
+/**
+ * Reads start overrides from the query string: ?body=2&alt=1500&sun=70&kind=desert&land&rings&cockpit,
+ * or for the real solar system ?sol&at=moon&date=2027-09-01.
+ */
 export function parseStartOptions(search: string): StartOptions {
   const params = new URLSearchParams(search);
   const num = (key: string): number | undefined => {
@@ -663,5 +704,10 @@ export function parseStartOptions(search: string): StartOptions {
     rings: params.has('rings'),
     cockpit: params.has('cockpit'),
     landed: params.has('landed'),
+    solarSystem: params.has('sol'),
+    at: params.get('at') ?? undefined,
+    dateJd: Number.isFinite(Date.parse(params.get('date') ?? ''))
+      ? jdFromUnixMs(Date.parse(params.get('date') ?? ''))
+      : undefined,
   };
 }

@@ -193,4 +193,6 @@ export interface BodyDesc {
 export interface SystemDesc {
   star: StarDesc;
   planets: BodyDesc[];
+  /** True for the real solar system: body positions follow the ephemeris, not `orbitPhase`. */
+  real?: boolean;
 }

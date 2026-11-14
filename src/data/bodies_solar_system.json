@@ -1,53 +1,99 @@
 {
-  "source": "NASA NSSDCA Planetary Fact Sheets (Earth, Moon, Mars), https://nssdc.gsfc.nasa.gov/planetary/factsheet/, values as published; gravitational parameters from JPL SSD astrodynamic parameters. Earth atmosphere layers: U.S. Standard Atmosphere 1976 as tabulated in Wertz & Larson, Space Mission Analysis and Design (mean solar activity).",
-  "units": "SI. mu in m^3/s^2, radii in m, periods in s, gravity in m/s^2, pressure in Pa, density in kg/m^3, altitudes and scale heights in m.",
+  "source": "NASA NSSDCA Planetary Fact Sheets (all planets and the Moon), https://nssdc.gsfc.nasa.gov/planetary/factsheet/, values as published; gravitational parameters from JPL SSD astrodynamic parameters. Earth atmosphere layers: U.S. Standard Atmosphere 1976 as tabulated in Wertz & Larson, Space Mission Analysis and Design (mean solar activity).",
+  "units": "SI. mu in m^3/s^2, radii in m, periods in s, gravity in m/s^2, pressure in Pa, density in kg/m^3, altitudes and scale heights in m. render_kind is the surface class the renderer draws the body as; axial_tilt_deg is the obliquity to the orbit (for the Moon: to the ecliptic); mean_temperature_k is the mean surface (or 1 bar) temperature. For the giant planets radius, gravity and pressure are at the 1 bar level.",
   "bodies": [
     {
       "id": "earth",
       "name": "Earth",
       "parent": "sun",
-      "mu": 3.986004418e14,
+      "mu": 398600441800000,
       "equatorial_radius_m": 6378137,
       "surface_gravity_m_s2": 9.798,
       "j2": 0.00108263,
       "sidereal_rotation_s": 86164.1,
       "solar_day_s": 86400,
       "year_s": 31558150,
-      "mean_solar_distance_au": 1.0,
+      "mean_solar_distance_au": 1,
       "surface_pressure_pa": 101400,
       "atmosphere_layers": [
-        { "base_altitude_m": 150000, "base_density_kg_m3": 2.07e-9, "scale_height_m": 22500 },
-        { "base_altitude_m": 200000, "base_density_kg_m3": 2.79e-10, "scale_height_m": 37100 },
-        { "base_altitude_m": 250000, "base_density_kg_m3": 7.25e-11, "scale_height_m": 45500 },
-        { "base_altitude_m": 300000, "base_density_kg_m3": 2.42e-11, "scale_height_m": 53600 },
-        { "base_altitude_m": 400000, "base_density_kg_m3": 3.73e-12, "scale_height_m": 58500 },
-        { "base_altitude_m": 500000, "base_density_kg_m3": 6.97e-13, "scale_height_m": 63800 },
-        { "base_altitude_m": 600000, "base_density_kg_m3": 1.45e-13, "scale_height_m": 71800 },
-        { "base_altitude_m": 700000, "base_density_kg_m3": 3.61e-14, "scale_height_m": 88700 },
-        { "base_altitude_m": 800000, "base_density_kg_m3": 1.17e-14, "scale_height_m": 124000 },
-        { "base_altitude_m": 1000000, "base_density_kg_m3": 3.02e-15, "scale_height_m": 268000 }
-      ]
+        {
+          "base_altitude_m": 150000,
+          "base_density_kg_m3": 2.07e-9,
+          "scale_height_m": 22500
+        },
+        {
+          "base_altitude_m": 200000,
+          "base_density_kg_m3": 2.79e-10,
+          "scale_height_m": 37100
+        },
+        {
+          "base_altitude_m": 250000,
+          "base_density_kg_m3": 7.25e-11,
+          "scale_height_m": 45500
+        },
+        {
+          "base_altitude_m": 300000,
+          "base_density_kg_m3": 2.42e-11,
+          "scale_height_m": 53600
+        },
+        {
+          "base_altitude_m": 400000,
+          "base_density_kg_m3": 3.73e-12,
+          "scale_height_m": 58500
+        },
+        {
+          "base_altitude_m": 500000,
+          "base_density_kg_m3": 6.97e-13,
+          "scale_height_m": 63800
+        },
+        {
+          "base_altitude_m": 600000,
+          "base_density_kg_m3": 1.45e-13,
+          "scale_height_m": 71800
+        },
+        {
+          "base_altitude_m": 700000,
+          "base_density_kg_m3": 3.61e-14,
+          "scale_height_m": 88700
+        },
+        {
+          "base_altitude_m": 800000,
+          "base_density_kg_m3": 1.17e-14,
+          "scale_height_m": 124000
+        },
+        {
+          "base_altitude_m": 1000000,
+          "base_density_kg_m3": 3.02e-15,
+          "scale_height_m": 268000
+        }
+      ],
+      "render_kind": "terra",
+      "axial_tilt_deg": 23.44,
+      "mean_temperature_k": 288
     },
     {
       "id": "moon",
       "name": "Moon",
       "parent": "earth",
-      "mu": 4.9028e12,
+      "mu": 4902800000000,
       "equatorial_radius_m": 1738100,
       "surface_gravity_m_s2": 1.62,
       "j2": 0.0002027,
       "sidereal_rotation_s": 2360592,
       "solar_day_s": 2551443,
       "year_s": 31558150,
-      "mean_solar_distance_au": 1.0,
+      "mean_solar_distance_au": 1,
       "surface_pressure_pa": 0,
-      "atmosphere_layers": []
+      "atmosphere_layers": [],
+      "render_kind": "barren",
+      "axial_tilt_deg": 1.54,
+      "mean_temperature_k": 250
     },
     {
       "id": "mars",
       "name": "Mars",
       "parent": "sun",
-      "mu": 4.282837e13,
+      "mu": 42828370000000,
       "equatorial_radius_m": 3396200,
       "surface_gravity_m_s2": 3.71,
       "j2": 0.00196045,
@@ -56,7 +102,118 @@
       "year_s": 59355072,
       "mean_solar_distance_au": 1.524,
       "surface_pressure_pa": 636,
-      "atmosphere_layers": []
+      "atmosphere_layers": [],
+      "render_kind": "desert",
+      "axial_tilt_deg": 25.19,
+      "mean_temperature_k": 210
+    },
+    {
+      "id": "mercury",
+      "name": "Mercury",
+      "parent": "sun",
+      "mu": 22032000000000,
+      "equatorial_radius_m": 2440500,
+      "surface_gravity_m_s2": 3.7,
+      "j2": 0.0000503,
+      "sidereal_rotation_s": 5067360,
+      "solar_day_s": 15201360,
+      "year_s": 7600522,
+      "mean_solar_distance_au": 0.387,
+      "surface_pressure_pa": 0,
+      "atmosphere_layers": [],
+      "render_kind": "barren",
+      "axial_tilt_deg": 0.034,
+      "mean_temperature_k": 440
+    },
+    {
+      "id": "venus",
+      "name": "Venus",
+      "parent": "sun",
+      "mu": 324859000000000,
+      "equatorial_radius_m": 6051800,
+      "surface_gravity_m_s2": 8.87,
+      "j2": 0.000004458,
+      "sidereal_rotation_s": 20997360,
+      "solar_day_s": 10087200,
+      "year_s": 19414166,
+      "mean_solar_distance_au": 0.723,
+      "surface_pressure_pa": 9200000,
+      "atmosphere_layers": [],
+      "render_kind": "toxic",
+      "axial_tilt_deg": 177.4,
+      "mean_temperature_k": 737
+    },
+    {
+      "id": "jupiter",
+      "name": "Jupiter",
+      "parent": "sun",
+      "mu": 126687000000000000,
+      "equatorial_radius_m": 71492000,
+      "surface_gravity_m_s2": 24.79,
+      "j2": 0.014736,
+      "sidereal_rotation_s": 35730,
+      "solar_day_s": 35733,
+      "year_s": 374335690,
+      "mean_solar_distance_au": 5.204,
+      "surface_pressure_pa": 100000,
+      "atmosphere_layers": [],
+      "render_kind": "gasGiant",
+      "axial_tilt_deg": 3.13,
+      "mean_temperature_k": 165
+    },
+    {
+      "id": "saturn",
+      "name": "Saturn",
+      "parent": "sun",
+      "mu": 37931000000000000,
+      "equatorial_radius_m": 60268000,
+      "surface_gravity_m_s2": 10.44,
+      "j2": 0.016298,
+      "sidereal_rotation_s": 38362,
+      "solar_day_s": 38362,
+      "year_s": 929596608,
+      "mean_solar_distance_au": 9.582,
+      "surface_pressure_pa": 100000,
+      "atmosphere_layers": [],
+      "render_kind": "gasGiant",
+      "axial_tilt_deg": 26.73,
+      "mean_temperature_k": 134
+    },
+    {
+      "id": "uranus",
+      "name": "Uranus",
+      "parent": "sun",
+      "mu": 5794000000000000,
+      "equatorial_radius_m": 25559000,
+      "surface_gravity_m_s2": 8.87,
+      "j2": 0.00334343,
+      "sidereal_rotation_s": 62064,
+      "solar_day_s": 62064,
+      "year_s": 2651218560,
+      "mean_solar_distance_au": 19.201,
+      "surface_pressure_pa": 100000,
+      "atmosphere_layers": [],
+      "render_kind": "iceGiant",
+      "axial_tilt_deg": 97.77,
+      "mean_temperature_k": 76
+    },
+    {
+      "id": "neptune",
+      "name": "Neptune",
+      "parent": "sun",
+      "mu": 6835100000000000,
+      "equatorial_radius_m": 24764000,
+      "surface_gravity_m_s2": 11.15,
+      "j2": 0.003411,
+      "sidereal_rotation_s": 57996,
+      "solar_day_s": 57996,
+      "year_s": 5200329600,
+      "mean_solar_distance_au": 30.047,
+      "surface_pressure_pa": 100000,
+      "atmosphere_layers": [],
+      "render_kind": "iceGiant",
+      "axial_tilt_deg": 28.32,
+      "mean_temperature_k": 72
     }
   ]
 }

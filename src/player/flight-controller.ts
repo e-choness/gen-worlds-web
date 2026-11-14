@@ -114,7 +114,8 @@ export class FlightController {
   engageAutopilot(target: THREE.Vector3, radius: number, name: string): void {
     this.mode = 'flight';
     this.landing = false;
-    this.autopilot = { target: target.clone(), standoff: radius * 3.2, name };
+    // Keep the caller's vector: bodies of the real solar system move, and the target must follow.
+    this.autopilot = { target, standoff: radius * 3.2, name };
   }
 
   cancelAutopilot(): void {

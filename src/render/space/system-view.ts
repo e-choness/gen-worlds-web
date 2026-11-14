@@ -14,7 +14,8 @@ import type { Engine } from '@/engine/engine';
 import { SLOT_COUNT } from '@/render/atmosphere/atmosphere-pass';
 import { PlanetView, type PlanetViewDeps } from '@/render/planet/planet-view';
 import { AU } from '@/universe/constants';
-import type { BodyDesc, SystemDesc } from '@/universe/types';
+import { solarBodyId, solarBodyPosition } from '@/universe/solar-system';
+import type { BodyDesc, SystemDesc, Vec3Tuple } from '@/universe/types';
 import { StarView } from './star-view';
 
 /** Apparent angular radius (radians) at which a body gets / loses its full renderer. */
@@ -42,6 +43,7 @@ export class SystemView implements Disposable {
   private readonly markerMaterials: THREE.SpriteNodeMaterial[] = [];
   private readonly rel = new THREE.Vector3();
   private readonly camLocal = new THREE.Vector3();
+  private readonly ephemerisPosition: Vec3Tuple = [0, 0, 0];
 
   constructor(
     readonly system: SystemDesc,
@@ -94,6 +96,21 @@ export class SystemView implements Disposable {
     };
     this.bodies.push(state);
     return state;
+  }
+
+  /**
+   * Moves the bodies of the real solar system to where they are at Julian date `jd`. Does nothing
+   * for generated systems, whose bodies stay at their orbit phase.
+   */
+  setEpoch(jd: number): void {
+    if (!this.system.real) return;
+    const p = this.ephemerisPosition;
+    for (const body of this.bodies) {
+      const id = solarBodyId(body.desc);
+      if (!id || !solarBodyPosition(id, jd, p)) continue;
+      body.position.set(p[0], p[1], p[2]);
+      body.sunDir.copy(body.position).normalize().negate();
+    }
   }
 
   /** The body whose surface is closest to `position` (system space). */

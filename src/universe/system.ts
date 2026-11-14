@@ -69,7 +69,7 @@ function pickKind(rng: Rng, tempK: number, frostRatio: number): PlanetKind {
   return (['ice', 'barren'] as PlanetKind[])[rng.weighted([3, 1])];
 }
 
-interface BodyInput {
+export interface BodyInput {
   rng: Rng;
   id: string;
   name: string;
@@ -80,6 +80,23 @@ interface BodyInput {
   starMassSolar: number;
   /** Set for moons: caps the size relative to the parent. */
   maxRadius?: number;
+  /** Measured values of a real body, used in place of the generated ones. Such bodies get no generated moons. */
+  fixed?: {
+    radius: number;
+    massEarths: number;
+    gravity: number;
+    temperatureK: number;
+    /** Radians. */
+    axialTilt: number;
+    dayLengthHours: number;
+    orbitalPeriodDays: number;
+    rings: boolean;
+  };
+}
+
+/** Builds a body of a given class around measured values (see `BodyInput.fixed`). */
+export function makeCatalogBody(input: BodyInput): BodyDesc {
+  return makeBody(input);
 }
 
 function makeBody(input: BodyInput): BodyDesc {
@@ -102,7 +119,11 @@ function makeBody(input: BodyInput): BodyDesc {
     radius = input.maxRadius * rng.range(0.5, 1);
     massEarths = (radius / EARTH_RADIUS) ** (1 / 0.28);
   }
-  const gravity = (EARTH_GRAVITY * massEarths) / (radius / EARTH_RADIUS) ** 2;
+  if (input.fixed) {
+    radius = input.fixed.radius;
+    massEarths = input.fixed.massEarths;
+  }
+  const gravity = input.fixed?.gravity ?? (EARTH_GRAVITY * massEarths) / (radius / EARTH_RADIUS) ** 2;
 
   const atmosphere = makeAtmosphere(rng.fork(1), kind, input.equilibriumK, gravity, radius);
   const greenhouse = atmosphere
@@ -110,9 +131,10 @@ function makeBody(input: BodyInput): BodyDesc {
     : 0;
   // Worlds classed as habitable are, by definition, the ones whose climate settled in the liquid-water range.
   const habitable = kind === 'terra' || kind === 'ocean';
-  const temperatureK = habitable
+  const generatedTemperatureK = habitable
     ? Math.min(Math.max(input.equilibriumK + greenhouse, 268), 308)
     : input.equilibriumK + greenhouse;
+  const temperatureK = input.fixed?.temperatureK ?? generatedTemperatureK;
 
   const hue = rng.next();
   const palette = makePalette(rng.fork(2), kind, hue);
@@ -138,10 +160,17 @@ function makeBody(input: BodyInput): BodyDesc {
   // From afar a world shows the average of its regions.
   if (!giant) palette.midland = meanBiomeColor(biomes);
 
-  const orbitalPeriodDays = 365.25 * Math.sqrt((input.orbitRadius / AU) ** 3 / input.starMassSolar);
-  const rings = makeRings(rng.fork(7), kind, radius);
+  const orbitalPeriodDays =
+    input.fixed?.orbitalPeriodDays ?? 365.25 * Math.sqrt((input.orbitRadius / AU) ** 3 / input.starMassSolar);
+  let rings = makeRings(rng.fork(7), kind, radius);
+  if (input.fixed) {
+    // Real bodies have rings or not as a matter of fact: retry the roll until it agrees.
+    for (let attempt = 0; attempt < 32 && input.fixed.rings !== (rings !== null); attempt++) {
+      rings = input.fixed.rings ? makeRings(rng.fork(700 + attempt), kind, radius) : null;
+    }
+  }
   // Ringed worlds get a visible tilt, otherwise the rings would always be edge-on to the star.
-  const axialTilt = Math.max(Math.abs(rng.gaussian(0, 0.35)), rings ? 0.22 : 0);
+  const axialTilt = input.fixed?.axialTilt ?? Math.max(Math.abs(rng.gaussian(0, 0.35)), rings ? 0.22 : 0);
   const tiltAzimuth = rng.range(0, Math.PI * 2);
   const axis: Vec3Tuple = [
     Math.sin(axialTilt) * Math.cos(tiltAzimuth),
@@ -163,7 +192,7 @@ function makeBody(input: BodyInput): BodyDesc {
     orbitalPeriodDays,
     axialTilt,
     axis,
-    dayLengthHours: giant ? rng.range(9, 18) : rng.logRange(8, 200),
+    dayLengthHours: input.fixed?.dayLengthHours ?? (giant ? rng.range(9, 18) : rng.logRange(8, 200)),
     temperatureK,
     atmosphere,
     clouds: makeClouds(rng.fork(6), kind, atmosphere),
@@ -194,7 +223,7 @@ function makeBody(input: BodyInput): BodyDesc {
   };
 
   // Moons: giants collect several large ones, rocky planets occasionally one or two.
-  if (input.parentId === null) {
+  if (input.parentId === null && !input.fixed) {
     const moonCount = giant ? rng.int(1, 4) : rng.weighted([5, 3, 1]);
     let moonOrbit = radius * rng.range(giant ? 4 : 12, giant ? 7 : 30);
     for (let m = 0; m < moonCount; m++) {

@@ -25,6 +25,11 @@ export interface BodyData {
   yearS: number;
   meanSolarDistanceAu: number;
   surfacePressurePa: number;
+  /** Surface class the renderer draws the body as (a `PlanetKind` of the universe layer). */
+  renderKind: string;
+  /** Obliquity to the orbit, degrees (above 90 for retrograde spin). */
+  axialTiltDeg: number;
+  meanTemperatureK: number;
   /** Piecewise-exponential upper atmosphere for drag; empty where it is not modelled. */
   atmosphereLayers: AtmosphereLayerData[];
 }
