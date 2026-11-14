@@ -45,6 +45,8 @@ export function ScenarioScreen({ scenarios, tiers, tier, onTier, onChoose, onBac
               data-autofocus={index === 0 ? true : undefined}
               onClick={() => onChoose(scenario.id)}
             >
+              {/* Decorative: the card title names the destination. */}
+              <img class="card-art" src={import.meta.env.BASE_URL + scenario.art} alt="" loading="lazy" />
               <span class="eyebrow">
                 {TEXT.scenarios.mission} {scenario.number}
               </span>

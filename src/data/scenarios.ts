@@ -218,6 +218,8 @@ export interface Scenario {
   number: number;
   name: string;
   tagline: string;
+  /** Picture of the destination for the mission card, relative to the site root. */
+  art: string;
   briefing: string;
   trajectoryMode: TrajectoryMode;
   targetBody: string;

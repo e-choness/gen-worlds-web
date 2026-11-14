@@ -1758,3 +1758,15 @@ dialog.glossary dd {
   text-transform: uppercase;
   pointer-events: none;
 }
+
+/* Mission card art: the destination as the game's own engine renders it from NASA maps. */
+.scenario-card .card-art {
+  display: block;
+  /* Bleeds to the card's edges through its padding. */
+  width: calc(100% + 2.5rem);
+  max-width: none;
+  margin: -1.1rem -1.25rem 0.4rem;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: #05080d;
+}
