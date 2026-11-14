@@ -1,0 +1,231 @@
+{
+  "source": "Event types follow real mission experience: solar particle events upsetting flight computers, Deep Space Network scheduling conflicts, lunar lander navigation losses in engine-blown dust, wheel and drill actuator faults on Mars rovers, programme budget reductions. Probabilities and magnitudes are game balance values.",
+  "units": "probability is the chance the event happens once in its phase; rate_per_day is used instead for events that can strike at any time in a phase. Effects: lose_days (days of operations lost), lose_data_fraction (share of stored data lost), power_loss_fraction (share of generated power lost for the rest of the mission), budget_cut_fraction (share of the budget cap removed), slip_lunar_months (landing date moves by whole lunar months), disable_slot (the part in that slot stops working), mission_loss. A mitigation applies when its condition is true for the design: it multiplies the probability and the magnitude.",
+  "events": [
+    {
+      "id": "budget_cut",
+      "name": "Budget cut",
+      "phase": "development",
+      "role": "director",
+      "probability": 0.18,
+      "rate_per_day": 0,
+      "effect": { "kind": "budget_cut_fraction", "magnitude": 0.08, "slot": "" },
+      "description": "Congress trims the programme's budget before launch.",
+      "unmitigated_why": "The budget cap fell by 8 %. With little reserve left, the overrun forced a descope.",
+      "mitigations": [
+        {
+          "condition": { "kind": "cost_margin_at_least", "slot": "", "property": "", "value": 0.1 },
+          "probability_factor": 1,
+          "magnitude_factor": 0,
+          "why": "You kept at least 10 % of the budget unspent, so the cut came out of the margin and nothing had to be removed."
+        }
+      ]
+    },
+    {
+      "id": "launch_slip",
+      "name": "Late hardware",
+      "phase": "development",
+      "role": "director",
+      "probability": 0,
+      "rate_per_day": 0,
+      "effect": { "kind": "slip_lunar_months", "magnitude": 1, "slot": "" },
+      "description": "A part that had never flown is not ready in time.",
+      "unmitigated_why": "Low-readiness hardware arrived late. The landing slipped by a lunar month and the lighting you planned for moved on without you.",
+      "mitigations": []
+    },
+    {
+      "id": "solar_particle_event",
+      "name": "Solar particle event",
+      "phase": "any_flight",
+      "role": "engineer",
+      "probability": 0,
+      "rate_per_day": 0.006,
+      "effect": { "kind": "lose_days", "magnitude": 4, "slot": "computer" },
+      "description": "A solar flare sprays the spacecraft with energetic protons.",
+      "unmitigated_why": "The commercial-grade computer crashed in the radiation and spent four days in safe mode while controllers rebuilt its memory.",
+      "mitigations": [
+        {
+          "condition": {
+            "kind": "slot_property_true",
+            "slot": "computer",
+            "property": "radiation_hardened",
+            "value": 0
+          },
+          "probability_factor": 1,
+          "magnitude_factor": 0,
+          "why": "The radiation-hardened computer rode out the storm without a reset."
+        },
+        {
+          "condition": { "kind": "redundant", "slot": "computer", "property": "", "value": 0 },
+          "probability_factor": 1,
+          "magnitude_factor": 0.25,
+          "why": "The backup computer took over within hours while the primary recovered."
+        }
+      ]
+    },
+    {
+      "id": "landing_dust_blackout",
+      "name": "Dust blackout on final descent",
+      "phase": "landing",
+      "role": "engineer",
+      "probability": 0.25,
+      "rate_per_day": 0,
+      "effect": { "kind": "landing_risk_factor", "magnitude": 2, "slot": "landing" },
+      "description": "The engine plume throws up a curtain of dust in the last thirty metres.",
+      "unmitigated_why": "The altimeter lost the ground in the dust and the lander came down blind, doubling the chance of a bad touchdown.",
+      "mitigations": [
+        {
+          "condition": {
+            "kind": "has_part",
+            "slot": "landing",
+            "property": "landing_hazard_lidar",
+            "value": 0
+          },
+          "probability_factor": 1,
+          "magnitude_factor": 0,
+          "why": "The hazard lidar had already mapped the touchdown spot before the dust rose, and the lander flew the last metres on inertial guidance."
+        },
+        {
+          "condition": { "kind": "has_part", "slot": "landing", "property": "landing_trn", "value": 0 },
+          "probability_factor": 1,
+          "magnitude_factor": 0.5,
+          "why": "Terrain-relative navigation had fixed the lander's position before the dust rose, so only the last seconds were blind."
+        }
+      ]
+    },
+    {
+      "id": "wheel_actuator_fault",
+      "name": "Wheel actuator fault",
+      "phase": "surface",
+      "role": "engineer",
+      "probability": 0,
+      "rate_per_day": 0.0025,
+      "effect": { "kind": "disable_slot", "magnitude": 1, "slot": "mobility" },
+      "description": "Abrasive lunar dust works its way into a drive motor.",
+      "unmitigated_why": "A drive motor seized and the rover could not move again. Everything it had not yet reached stayed out of reach.",
+      "mitigations": [
+        {
+          "condition": { "kind": "redundant", "slot": "mobility", "property": "", "value": 0 },
+          "probability_factor": 1,
+          "magnitude_factor": 0,
+          "why": "The redundant drive train carried on with the failed motor freewheeling."
+        },
+        {
+          "condition": { "kind": "has_part", "slot": "mobility", "property": "mobility_agile", "value": 0 },
+          "probability_factor": 0.5,
+          "magnitude_factor": 1,
+          "why": "Sealed, independently driven wheels halve the chance of a seized motor."
+        }
+      ]
+    },
+    {
+      "id": "drill_jam",
+      "name": "Drill jam",
+      "phase": "surface",
+      "role": "science",
+      "probability": 0,
+      "rate_per_day": 0.004,
+      "effect": { "kind": "lose_days", "magnitude": 3, "slot": "instrument" },
+      "description": "The bit binds in ice-cemented ground as hard as concrete.",
+      "unmitigated_why": "The drill jammed. Freeing it by commands from Earth, one careful step at a time, took three days.",
+      "mitigations": [
+        {
+          "condition": {
+            "kind": "slot_property_at_least",
+            "slot": "computer",
+            "property": "autonomy",
+            "value": 2
+          },
+          "probability_factor": 1,
+          "magnitude_factor": 0.2,
+          "why": "The onboard computer sensed the torque rising and backed the bit out by itself before it stuck fast."
+        }
+      ]
+    },
+    {
+      "id": "deep_space_network_conflict",
+      "name": "Deep Space Network conflict",
+      "phase": "surface",
+      "role": "comms",
+      "probability": 0,
+      "rate_per_day": 0.02,
+      "effect": { "kind": "lose_data_fraction", "magnitude": 0.15, "slot": "comms" },
+      "description": "Another mission declares an emergency and takes your antenna time.",
+      "unmitigated_why": "Your passes were handed to a spacecraft in trouble. With the recorder already full, new data overwrote 15 % of what was waiting.",
+      "mitigations": [
+        {
+          "condition": { "kind": "has_part", "slot": "comms", "property": "comms_relay", "value": 0 },
+          "probability_factor": 0,
+          "magnitude_factor": 0,
+          "why": "Your data goes through the commercial relay, which the Deep Space Network schedule does not touch."
+        },
+        {
+          "condition": {
+            "kind": "slot_property_at_least",
+            "slot": "computer",
+            "property": "storage_gb",
+            "value": 128
+          },
+          "probability_factor": 1,
+          "magnitude_factor": 0,
+          "why": "The large recorder held everything until the next pass."
+        }
+      ]
+    },
+    {
+      "id": "colder_than_predicted",
+      "name": "Colder than predicted",
+      "phase": "surface",
+      "role": "engineer",
+      "probability": 0.3,
+      "rate_per_day": 0,
+      "effect": { "kind": "heater_demand_factor", "magnitude": 1.35, "slot": "thermal" },
+      "description": "The shadowed ground turns out colder than the orbital maps said.",
+      "unmitigated_why": "Heaters ran 35 % harder than planned in shadow, draining the battery faster on every sortie and every night.",
+      "mitigations": [
+        {
+          "condition": {
+            "kind": "slot_property_at_least",
+            "slot": "thermal",
+            "property": "radioisotope_heat_w",
+            "value": 1
+          },
+          "probability_factor": 1,
+          "magnitude_factor": 0,
+          "why": "The radioisotope heaters do not care how cold it is outside."
+        },
+        {
+          "condition": { "kind": "has_power_kind", "slot": "power", "property": "rtg", "value": 0 },
+          "probability_factor": 1,
+          "magnitude_factor": 0,
+          "why": "The generator's waste heat kept the vehicle warm without drawing on the battery."
+        }
+      ]
+    },
+    {
+      "id": "dust_on_arrays",
+      "name": "Dust on the solar arrays",
+      "phase": "surface",
+      "role": "engineer",
+      "probability": 0.35,
+      "rate_per_day": 0,
+      "effect": { "kind": "power_loss_fraction", "magnitude": 0.12, "slot": "power" },
+      "description": "Electrostatically charged dust kicked up by the wheels clings to the panels.",
+      "unmitigated_why": "Dust cut solar power by 12 % for the rest of the mission.",
+      "mitigations": [
+        {
+          "condition": { "kind": "has_power_kind", "slot": "power", "property": "rtg", "value": 0 },
+          "probability_factor": 0,
+          "magnitude_factor": 0,
+          "why": "A radioisotope generator has no panels for dust to cover."
+        },
+        {
+          "condition": { "kind": "has_part", "slot": "power", "property": "solar_mast", "value": 0 },
+          "probability_factor": 0.3,
+          "magnitude_factor": 1,
+          "why": "The mast holds the array high above the dust the wheels throw up."
+        }
+      ]
+    }
+  ]
+}

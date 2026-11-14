@@ -1,0 +1,108 @@
+{
+  "source": "Capacities are rounded from the NASA Launch Services Program Launch Vehicle Performance site (https://elvperf.ksc.nasa.gov) and the vendors' public payload user guides and capability pages; prices from public list prices and NASA contract announcements. Approximate values for gameplay, not for mission planning.",
+  "units": "cost_musd in millions of US dollars. c3_capacity is [launch energy C3 in km^2/s^2, payload in kg]. sso_capacity is [circular altitude in km, payload in kg] to sun-synchronous orbit. reliability is the probability of a successful launch.",
+  "vehicles": [
+    {
+      "id": "electron",
+      "name": "Electron",
+      "provider": "Rocket Lab",
+      "cost_musd": 8,
+      "fairing_diameter_m": 1.2,
+      "reliability": 0.93,
+      "min_tier": "cadet",
+      "sso_capacity": [[400, 220], [500, 200], [700, 170], [1000, 130], [1200, 110]],
+      "c3_capacity": [],
+      "summary": "Dedicated small launcher: you choose the orbit and the date, but it lifts only a couple of hundred kilograms and cannot leave Earth orbit with a lander."
+    },
+    {
+      "id": "firefly_alpha",
+      "name": "Alpha",
+      "provider": "Firefly Aerospace",
+      "cost_musd": 15,
+      "fairing_diameter_m": 2.0,
+      "reliability": 0.8,
+      "min_tier": "engineer",
+      "sso_capacity": [[400, 680], [500, 630], [700, 560], [1000, 450], [1200, 390]],
+      "c3_capacity": [],
+      "summary": "Three times Electron's lift for twice the price, with a shorter flight record: more room for payload, more launch risk."
+    },
+    {
+      "id": "falcon9",
+      "name": "Falcon 9 (booster recovered)",
+      "provider": "SpaceX",
+      "cost_musd": 70,
+      "fairing_diameter_m": 5.2,
+      "reliability": 0.99,
+      "min_tier": "cadet",
+      "sso_capacity": [[400, 12000], [500, 11500], [700, 10500], [1000, 9500], [1200, 8800]],
+      "c3_capacity": [[-2, 3600], [0, 3300], [10, 2500], [20, 1800], [30, 1200], [40, 700]],
+      "summary": "The workhorse: very reliable and cheap per kilogram. Its lift drops quickly as the launch energy rises, so heavy designs and fast transfers outgrow it."
+    },
+    {
+      "id": "vulcan_vc2",
+      "name": "Vulcan Centaur VC2",
+      "provider": "United Launch Alliance",
+      "cost_musd": 110,
+      "fairing_diameter_m": 5.4,
+      "reliability": 0.97,
+      "min_tier": "engineer",
+      "sso_capacity": [[400, 15000], [500, 14500], [700, 13500], [1000, 12200], [1200, 11400]],
+      "c3_capacity": [[-2, 6300], [0, 5800], [10, 4600], [20, 3600], [40, 2100], [60, 1000]],
+      "summary": "A high-energy upper stage keeps more of its lift on escape trajectories than Falcon 9, for a higher price."
+    },
+    {
+      "id": "atlas5_541",
+      "name": "Atlas V 541",
+      "provider": "United Launch Alliance",
+      "cost_musd": 240,
+      "fairing_diameter_m": 5.4,
+      "reliability": 0.99,
+      "min_tier": "engineer",
+      "sso_capacity": [[400, 15500], [500, 15000], [700, 14000], [1000, 12600], [1200, 11800]],
+      "c3_capacity": [[-2, 6000], [0, 5500], [10, 4500], [20, 3700], [40, 2400], [60, 1400], [80, 700]],
+      "summary": "The rocket that launched Curiosity and Perseverance: a flawless record at a premium price."
+    },
+    {
+      "id": "falcon_heavy",
+      "name": "Falcon Heavy (expendable)",
+      "provider": "SpaceX",
+      "cost_musd": 150,
+      "fairing_diameter_m": 5.2,
+      "reliability": 0.98,
+      "min_tier": "cadet",
+      "sso_capacity": [[400, 50000], [500, 48000], [700, 45000], [1000, 41000], [1200, 38000]],
+      "c3_capacity": [
+        [-2, 20000],
+        [0, 18500],
+        [10, 15500],
+        [20, 12500],
+        [40, 8000],
+        [60, 5000],
+        [80, 2800],
+        [100, 1300]
+      ],
+      "summary": "Three boosters thrown away for one launch: it forgives a heavy design, and the bill shows it."
+    },
+    {
+      "id": "sls_block1",
+      "name": "Space Launch System Block 1",
+      "provider": "NASA",
+      "cost_musd": 2200,
+      "fairing_diameter_m": 5.1,
+      "reliability": 0.97,
+      "min_tier": "director",
+      "sso_capacity": [[400, 80000], [500, 78000], [700, 74000], [1000, 69000], [1200, 65000]],
+      "c3_capacity": [
+        [-2, 27000],
+        [0, 25500],
+        [10, 21500],
+        [20, 18000],
+        [40, 12500],
+        [60, 8500],
+        [80, 5500],
+        [100, 3300]
+      ],
+      "summary": "The most powerful rocket flying. It lifts anything, and costs more than most whole missions."
+    }
+  ]
+}

@@ -1,0 +1,217 @@
+{
+  "source": "Modelled on NASA's VIPER mission and the Commercial Lunar Payload Services programme (NASA VIPER fact sheet and mission pages: 100-day mission at Mons Mouton, one-metre drill, direct-to-Earth communications; NASA Artemis III candidate landing region descriptions for the Shackleton connecting ridge and Haworth). Transfer and descent velocity changes are typical published values for a 100 km polar lunar orbit (Apollo and LRO-era mission design). Site coordinates are real; horizon masks, ice quality and hazard factors are simplified for gameplay.",
+  "units": "delta_v in m/s; c3 in km^2/s^2; angles in degrees (longitude east positive); horizon_mask_deg has 12 values, one per 30-degree sector of azimuth starting at north and going east, giving the elevation of the local horizon in that direction (negative on a ridge that looks down on its surroundings).",
+  "id": "lunar_ice_prospector",
+  "number": 2,
+  "name": "Lunar south pole ice prospector",
+  "tagline": "Find the water that could supply a Moon base.",
+  "briefing": "Orbiters have seen hydrogen in the permanently shadowed craters of the Moon's south pole. Nobody has touched it. Land a robotic prospector, drive into the cold, drill, and prove how much water ice is there and how deep. At the pole the Sun crawls along the horizon and the Earth dips below it every month: power and warmth decide whether you come back with an answer.",
+  "trajectory_mode": "lunar",
+  "target_body": "moon",
+  "critical_resources": ["power", "thermal"],
+  "budget_cap_musd": 400,
+  "operations_cost_musd_per_month": 4.5,
+  "surface_duration_days": 100,
+  "required_slots": [
+    "bus",
+    "power",
+    "battery",
+    "propulsion",
+    "adcs",
+    "computer",
+    "comms",
+    "thermal",
+    "landing"
+  ],
+  "optional_slots": ["mobility"],
+  "max_instruments": 6,
+  "catalog": [
+    "bus_light",
+    "bus_standard",
+    "bus_heavy",
+    "solar_body",
+    "solar_vertical",
+    "solar_mast",
+    "rtg_mmrtg",
+    "battery_small",
+    "battery_medium",
+    "battery_large",
+    "prop_monoprop",
+    "prop_biprop",
+    "prop_methalox",
+    "adcs_basic",
+    "adcs_star_tracker",
+    "obc_commercial",
+    "obc_rad_hard",
+    "obc_hpsc",
+    "comms_low_gain",
+    "comms_medium_gain",
+    "comms_high_gain",
+    "comms_relay",
+    "thermal_passive",
+    "thermal_louvers",
+    "thermal_rhu",
+    "mobility_basic",
+    "mobility_agile",
+    "landing_altimeter",
+    "landing_trn",
+    "landing_hazard_lidar",
+    "inst_neutron_spectrometer",
+    "inst_nir_spectrometer",
+    "inst_mass_spectrometer",
+    "inst_drill_1m",
+    "inst_drill_2m",
+    "inst_stereo_camera",
+    "inst_ground_radar",
+    "inst_thermal_radiometer"
+  ],
+  "launch_vehicles": ["electron", "falcon9", "vulcan_vc2", "falcon_heavy", "sls_block1"],
+  "launch_adapter_mass_kg": 60,
+  "landing_window": { "start_date": "2027-10-01", "end_date": "2028-06-30" },
+  "transfers": [
+    {
+      "id": "direct",
+      "name": "Direct transfer",
+      "duration_days": 4.5,
+      "c3_km2_s2": -2.0,
+      "correction_delta_v_m_s": 25,
+      "orbit_insertion_delta_v_m_s": 850,
+      "summary": "Four and a half days to the Moon. The spacecraft arrives fast and must brake hard into orbit."
+    },
+    {
+      "id": "low_energy",
+      "name": "Low-energy transfer",
+      "duration_days": 105,
+      "c3_km2_s2": -0.7,
+      "correction_delta_v_m_s": 60,
+      "orbit_insertion_delta_v_m_s": 640,
+      "summary": "A three-month loop far past the Moon lets the Sun's gravity do part of the braking. It saves about 175 m/s of propellant and costs months of operations and exposure."
+    }
+  ],
+  "descent": {
+    "delta_v_m_s": 1900,
+    "min_thrust_to_weight": 1.3,
+    "summary": "From a 100 km orbit to a soft touchdown."
+  },
+  "environment": {
+    "solar_distance_au": 1.0,
+    "mounting_factors": [
+      { "mounting": "body", "factor": 0.06 },
+      { "mounting": "vertical", "factor": 0.33 },
+      { "mounting": "tracking_mast", "factor": 0.9 }
+    ],
+    "heater_demand_shadow_w": 110,
+    "heater_reference_mass_kg": 500,
+    "survival_heater_fraction": 0.5,
+    "hibernation_load_w": 5,
+    "dust_degradation_per_day": 0.0002
+  },
+  "operations": {
+    "drive_fraction": 0.25,
+    "science_fraction": 0.2,
+    "comms_fraction": 0.3,
+    "drill_hours_per_sample": 6,
+    "shadow_sortie_hours": 12,
+    "min_sun_clearance_deg": 0.3,
+    "min_earth_clearance_deg": 2.0,
+    "relay_coverage_fraction": 0.55,
+    "ground_station": "dsn_34m",
+    "ground_pass_hours_per_day": 10
+  },
+  "sites": [
+    {
+      "id": "mons_mouton",
+      "name": "Mons Mouton",
+      "latitude_deg": -85.42,
+      "longitude_deg": 31.63,
+      "horizon_mask_deg": [0.5, 1.0, 2.5, 4.0, 2.0, 1.0, 0.5, 1.5, 3.0, 1.5, 0.8, 0.4],
+      "ice_quality": 0.7,
+      "shadow_distance_km": 0.6,
+      "landing_hazard_factor": 1.0,
+      "slope_deg": 10,
+      "summary": "A flat-topped mountain with small cold traps a short drive away, about two weeks of sunlight at a time and a good view of Earth. VIPER's chosen site."
+    },
+    {
+      "id": "shackleton_ridge",
+      "name": "Shackleton connecting ridge",
+      "latitude_deg": -89.45,
+      "longitude_deg": -137.3,
+      "horizon_mask_deg": [-1.2, -1.0, -0.6, 0.4, -0.8, -1.2, -1.0, 0.6, -0.9, -1.1, -1.2, -1.3],
+      "ice_quality": 0.85,
+      "shadow_distance_km": 2.5,
+      "landing_hazard_factor": 1.6,
+      "slope_deg": 18,
+      "summary": "A narrow ridge almost at the pole, in sunlight most of the year. The ice lies down steep slopes several kilometres away, the landing zone is tight, and Earth is hidden half of every month."
+    },
+    {
+      "id": "haworth_floor",
+      "name": "Haworth crater floor",
+      "latitude_deg": -87.45,
+      "longitude_deg": -5.0,
+      "horizon_mask_deg": [9, 10, 11, 10, 9, 9, 10, 11, 10, 9, 9, 10],
+      "ice_quality": 1.0,
+      "shadow_distance_km": 0,
+      "landing_hazard_factor": 2.2,
+      "slope_deg": 8,
+      "summary": "Land inside the cold trap itself, on ground that has not seen the Sun for two billion years. The richest ice, no sunlight ever, no view of Earth, and a landing in the dark."
+    }
+  ],
+  "objectives": [
+    {
+      "id": "hydrogen_traverse",
+      "name": "Map hydrogen along a traverse",
+      "summary": "Drive with a hydrogen sensor running to show where the ice is and where it is not.",
+      "requires_measures": ["hydrogen_map"],
+      "metric": "traverse_km",
+      "threshold": 2,
+      "target": 8,
+      "weight": 0.25
+    },
+    {
+      "id": "confirm_ice",
+      "name": "Confirm water ice below the surface",
+      "summary": "Drill in shadowed ground and analyse what comes up: at least 1 % water by weight counts as a find.",
+      "requires_measures": ["subsurface_access", "volatile_composition"],
+      "metric": "ice_samples",
+      "threshold": 1,
+      "target": 4,
+      "weight": 0.4
+    },
+    {
+      "id": "return_data",
+      "name": "Return the data to Earth",
+      "summary": "Science only counts once it is on the ground.",
+      "requires_measures": [],
+      "metric": "data_returned_gb",
+      "threshold": 4,
+      "target": 15,
+      "weight": 0.2
+    },
+    {
+      "id": "context",
+      "name": "Characterise the site",
+      "summary": "Each extra kind of measurement (images, minerals, temperature, buried layers) tells future crews what to expect.",
+      "requires_measures": [],
+      "metric": "context_measures",
+      "threshold": 1,
+      "target": 4,
+      "weight": 0.15
+    }
+  ],
+  "events": [
+    "budget_cut",
+    "launch_slip",
+    "solar_particle_event",
+    "landing_dust_blackout",
+    "wheel_actuator_fault",
+    "drill_jam",
+    "deep_space_network_conflict",
+    "colder_than_predicted",
+    "dust_on_arrays"
+  ],
+  "nasa_reference": {
+    "mission": "VIPER (Volatiles Investigating Polar Exploration Rover)",
+    "summary": "NASA designed VIPER for exactly this job: a 430 kg solar-powered rover with three spectrometers and a one-metre drill, built to work 100 days at Mons Mouton, keeping in direct contact with Earth and parking on high ground to wait out the dark. Its team chose solar panels on three sides because the polar Sun never rises more than a few degrees, and planned every drive around a map of moving shadows.",
+    "url": "https://science.nasa.gov/mission/viper/"
+  }
+}

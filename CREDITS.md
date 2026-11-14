@@ -9,6 +9,12 @@ something enters the repo.
 | Data | Source | Licence | Used for |
 | --- | --- | --- | --- |
 | `src/data/ephemeris_planets.json` | NASA JPL Solar System Dynamics, [Approximate Positions of the Planets](https://ssd.jpl.nasa.gov/planets/approx_pos.html), Table 1 (E. M. Standish) | Public domain (NASA/JPL) | Planet positions, launch windows, porkchop plots |
+| `src/data/bodies_solar_system.json` | NASA NSSDCA [Planetary Fact Sheets](https://nssdc.gsfc.nasa.gov/planetary/factsheet/) (Earth, Moon, Mars); JPL SSD astrodynamic parameters; U.S. Standard Atmosphere 1976 | Public domain (NASA) | Gravity, radii, day lengths, drag |
+| `src/data/launch_vehicles.json` | NASA Launch Services Program [Launch Vehicle Performance](https://elvperf.ksc.nasa.gov) and vendor payload user guides (Rocket Lab, Firefly, SpaceX, ULA), rounded | Public information | Launch capacity against launch energy and orbit, prices |
+| `src/data/parts_catalog.json` | NASA [VIPER](https://science.nasa.gov/mission/viper/) fact sheet and instrument pages, NASA MMRTG fact sheet, NASA [Small Spacecraft Technology State-of-the-Art](https://www.nasa.gov/smallsat-institute/sst-soa/) report; generic parts are representative values | Public domain (NASA) | Part masses, power, data rates, readiness levels |
+| `src/data/scenario_lunar_ice_prospector.json` | NASA VIPER and Commercial Lunar Payload Services mission pages; NASA Artemis III candidate landing regions; horizon masks and ice quality simplified | Public domain (NASA) | Lunar scenario, landing sites, objectives |
+| `src/data/mission_constants.json` | NASA NSSDCA Sun fact sheet (solar constant); NASA GSFC-STD-1000 Gold Rules (margins); NASA Mars Reconnaissance Orbiter telecommunications figures (link reference) | Public domain (NASA) | Power, margins and downlink models |
+| `src/data/events_catalog.json` | Event types from real mission experience; probabilities are game balance values | Own work | Random events |
 
 ## Textures
 
