@@ -24,6 +24,7 @@ import { Input } from '@/player/input';
 import { RobotModel } from '@/player/robot-model';
 import { Scanner } from '@/player/scanner';
 import { Effects } from '@/render/fx/effects';
+import { SurfaceMaps } from '@/render/planet/surface-maps';
 import { TerrainWorkerPool } from '@/render/planet/terrain-worker-pool';
 import { GalaxyBackdrop } from '@/render/space/galaxy-backdrop';
 import { Starfield } from '@/render/space/starfield';
@@ -110,6 +111,8 @@ export class App {
   cockpit = false;
 
   private readonly store = new DisposableStore();
+  /** Measured maps of the real bodies of the system entered at start-up. */
+  private surfaceMaps: SurfaceMaps | null = null;
   private readonly pool: TerrainWorkerPool;
   private readonly detailTexture: THREE.Texture;
   private readonly terrainTextures: TerrainTextures;
@@ -185,11 +188,11 @@ export class App {
     const engine = await Engine.create(options.canvas);
     const app = new App(engine, options);
     if (options.start?.dateJd !== undefined) app.simJd = options.start.dateJd;
-    app.enterSystem(
-      options.start?.solarSystem
-        ? createSolarSystem()
-        : app.findHomeSystem(options.start?.kind, options.start?.rings),
-    );
+    const system = options.start?.solarSystem
+      ? createSolarSystem()
+      : app.findHomeSystem(options.start?.kind, options.start?.rings);
+    app.surfaceMaps = app.store.add(await SurfaceMaps.load(system, app.simJd));
+    app.enterSystem(system);
     app.placeAtStart(options.start ?? {});
     engine.renderer.setAnimationLoop(() => app.frame());
     return app;
@@ -239,6 +242,7 @@ export class App {
       pool: this.pool,
       detailTexture: this.detailTexture,
       terrainTextures: this.terrainTextures,
+      surfaceMaps: system.real ? this.surfaceMaps : null,
     });
     this.system.setEpoch(this.simJd);
   }

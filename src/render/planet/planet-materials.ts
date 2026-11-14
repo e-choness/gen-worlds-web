@@ -8,12 +8,15 @@
  */
 
 import {
+  acos,
+  atan,
   attribute,
   cameraPosition,
   clamp,
   dot,
   exp,
   float,
+  fract,
   max,
   mix,
   mx_fractal_noise_float,
@@ -41,6 +44,10 @@ import { atmSunAtSurface } from '@/render/atmosphere/atmosphere-wgsl';
 import type { BodyDesc, Vec3Tuple } from '@/universe/types';
 import type { BiomeTextures } from './biome-texture';
 import { ringProfile } from './ring-view';
+import type { SurfaceMap } from './surface-maps';
+
+/** Brightness applied to measured colour maps so they sit in range with the generated worlds. */
+const MEASURED_ALBEDO_GAIN = 0.5;
 
 const color3 = (c: Vec3Tuple) => new THREE.Vector3(c[0], c[1], c[2]);
 
@@ -70,6 +77,8 @@ export class PlanetShading {
     readonly detailTexture: THREE.Texture,
     readonly textures: TerrainTextures,
     readonly biomes: BiomeTextures,
+    /** Measured colour and elevation of a real body, or null for generated worlds. */
+    readonly surfaceMap: SurfaceMap | null = null,
   ) {
     this.radius = body.radius;
     this.axis.value.set(...body.axis);
@@ -258,6 +267,19 @@ export function createTerrainMaterial(shading: PlanetShading): THREE.NodeMateria
       snow,
     );
     layerBump = mix(layerBump, snowLayer.bump.mul(0.6), snow);
+  }
+
+  // Real bodies: the measured colour replaces the generated palette; the photographed ground
+  // layers still supply structure below the map's resolution (about 2.7 km per texel on the Moon).
+  if (shading.surfaceMap) {
+    const meridian = shading.surfaceMap.heightmap.meridian;
+    const longitude = atan(up.z.negate(), up.x).sub(meridian);
+    const mapUv = vec2(fract(longitude.div(Math.PI * 2).add(0.5)), acos(up.y.clamp(-1, 1)).div(Math.PI));
+    const measured = texture(shading.surfaceMap.albedo, mapUv).xyz;
+    const structure = mix(groundLayer.detail, rockLayer.detail, rockMask).clamp(0.55, 1.6);
+    // The mosaic is stretched for display; scale it back toward the true (dark) reflectance.
+    albedo = measured.mul(MEASURED_ALBEDO_GAIN).mul(structure).mul(dn.mul(0.3).add(0.85));
+    snow = float(0);
   }
 
   // Final shading normal: geometric normal + procedural relief + the photographed micro-surface

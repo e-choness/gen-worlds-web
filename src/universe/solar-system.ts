@@ -11,7 +11,6 @@ import { moonPosition } from '@/astro/moon';
 import { Rng } from '@/core/random';
 import { type BodyData, getBody } from '@/data/bodies';
 import { PLANET_IDS, type PlanetId } from '@/data/planet-elements';
-import { blackbody } from './color';
 import { AU, SOLAR_RADIUS } from './constants';
 import { makeCatalogBody } from './system';
 import type { BodyDesc, PlanetKind, StarDesc, SystemDesc, Vec3Tuple } from './types';
@@ -34,7 +33,8 @@ const SUN: StarDesc = {
   radius: SOLAR_RADIUS,
   massSolar: 1,
   luminositySolar: 1,
-  color: blackbody(5772),
+  // Sunlight is the white point here: real colour maps are balanced for it.
+  color: [1, 1, 1],
   // About 26,000 light-years from the galactic centre, a little above the plane.
   positionLy: [26000, 55, 900],
   ageGyr: 4.6,

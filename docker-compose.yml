@@ -40,3 +40,13 @@ services:
       - .:/app
     depends_on:
       - web
+
+  # GDAL for the surface-map pipeline:  docker compose run --rm gdal sh tools/build-surface-maps.sh
+  gdal:
+    image: ghcr.io/osgeo/gdal:alpine-small-latest
+    profiles: ["tools"]
+    working_dir: /app
+    environment:
+      XDG_CACHE_HOME: /app/.cache
+    volumes:
+      - .:/app

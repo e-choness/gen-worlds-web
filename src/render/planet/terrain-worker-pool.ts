@@ -1,6 +1,7 @@
 import type { Disposable } from '@/core/disposable';
+import type { HeightmapData } from '@/universe/heightmap';
 import type { ChunkData } from './chunk-builder';
-import type { ChunkRequest, ChunkResponse } from './terrain.worker';
+import type { ChunkRequest, ChunkResponse, HeightmapMessage } from './terrain.worker';
 
 type Job = Omit<ChunkRequest, 'requestId'>;
 
@@ -28,6 +29,7 @@ export class TerrainWorkerPool implements Disposable {
   private readonly queue: Pending[] = [];
   private readonly running = new Map<number, Pending>();
   private nextId = 1;
+  private readonly heightmapsSent = new Set<string>();
 
   constructor(size = Math.max(2, Math.min(8, (navigator.hardwareConcurrency || 4) - 2))) {
     for (let i = 0; i < size; i++) {
@@ -44,6 +46,17 @@ export class TerrainWorkerPool implements Disposable {
 
   get pendingCount(): number {
     return this.queue.length + this.running.size;
+  }
+
+  /**
+   * Gives every worker the measured elevation of a real body (a copy each: no shared memory on
+   * GitHub Pages). Must be called before the body's first chunk request; repeat calls are ignored.
+   */
+  setHeightmap(bodyId: string, heightmap: HeightmapData): void {
+    if (this.heightmapsSent.has(bodyId)) return;
+    this.heightmapsSent.add(bodyId);
+    const message: HeightmapMessage = { heightmapFor: bodyId, heightmap };
+    for (const worker of this.workers) worker.postMessage(message);
   }
 
   request(job: Job, priority: () => number): ChunkTicket {

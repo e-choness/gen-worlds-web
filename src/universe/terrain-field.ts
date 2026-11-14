@@ -13,6 +13,7 @@
  *   canyons, terraces, dunes, craters depending on the planet class
  */
 import { cellHash, clamp, lerp, Noise3, smoothstep } from '@/core/noise';
+import { type HeightmapData, heightmapResolution, sampleHeightmap } from './heightmap';
 import type { TerrainDesc } from './types';
 
 const LACUNARITY = 2.03;
@@ -31,6 +32,8 @@ export class TerrainField {
   constructor(
     readonly desc: TerrainDesc,
     readonly radius: number,
+    /** Measured elevation of a real body; replaces the generated continents and mountains. */
+    readonly base: HeightmapData | null = null,
   ) {
     this.nContinent = new Noise3(desc.seed);
     this.nWarp = new Noise3(desc.seed ^ 0x1b873593);
@@ -53,6 +56,15 @@ export class TerrainField {
     if (this.flat) return 0;
     const d = this.desc;
     const R = this.radius;
+    if (this.base) {
+      // Real relief down to the data's resolution, generated relief only below it.
+      const resolution = heightmapResolution(this.base, R);
+      let real = sampleHeightmap(this.base, dx, dy, dz);
+      real +=
+        Math.min(d.hillHeight, 260) * 0.6 * this.erodedFbm(dx * R, dy * R, dz * R, resolution, minWavelength);
+      if (d.craterDensity > 0) real += this.craters(dx, dy, dz, minWavelength, resolution * 1.5);
+      return real;
+    }
     let px = dx * R;
     let py = dy * R;
     let pz = dz * R;
@@ -218,13 +230,21 @@ export class TerrainField {
   }
 
   /** Multi-scale crater field. Each scale is a jittered 3D grid of impact sites projected to the sphere. */
-  private craters(dx: number, dy: number, dz: number, minWavelength: number): number {
+  private craters(
+    dx: number,
+    dy: number,
+    dz: number,
+    minWavelength: number,
+    /** Largest crater cell to generate, m: larger craters are already in the measured base. */
+    maxCell = Number.POSITIVE_INFINITY,
+  ): number {
     const d = this.desc;
     const R = this.radius;
     const minCell = Math.max(minWavelength * 5, 40);
     let total = 0;
     let cell = R * 0.6;
     for (let s = 0; s < 18 && cell > minCell; s++, cell /= 2.1) {
+      if (cell > maxCell) continue;
       const inv = 1 / cell;
       const px = dx * R * inv;
       const py = dy * R * inv;

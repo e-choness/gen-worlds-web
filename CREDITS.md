@@ -14,6 +14,7 @@ something enters the repo.
 | `src/data/parts_catalog.json` | NASA [VIPER](https://science.nasa.gov/mission/viper/) fact sheet and instrument pages, NASA MMRTG fact sheet, NASA [Small Spacecraft Technology State-of-the-Art](https://www.nasa.gov/smallsat-institute/sst-soa/) report; generic parts are representative values | Public domain (NASA) | Part masses, power, data rates, readiness levels |
 | `src/data/scenario_lunar_ice_prospector.json` | NASA VIPER and Commercial Lunar Payload Services mission pages; NASA Artemis III candidate landing regions; horizon masks and ice quality simplified | Public domain (NASA) | Lunar scenario, landing sites, objectives |
 | `src/data/mission_constants.json` | NASA NSSDCA Sun fact sheet (solar constant); NASA GSFC-STD-1000 Gold Rules (margins); NASA Mars Reconnaissance Orbiter telecommunications figures (link reference) | Public domain (NASA) | Power, margins and downlink models |
+| `public/maps/moon_albedo_4k.jpg`, `public/maps/moon_height_2880x1440.i16` | NASA Scientific Visualization Studio, [CGI Moon Kit](https://svs.gsfc.nasa.gov/4720/): LROC wide-angle colour mosaic and LOLA gridded elevation | Public domain (NASA) | The Moon's real colour and terrain |
 | `src/data/events_catalog.json` | Event types from real mission experience; probabilities are game balance values | Own work | Random events |
 
 ## Textures

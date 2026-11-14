@@ -20,6 +20,7 @@ import {
 } from './planet-materials';
 import { PlanetTerrain } from './planet-terrain';
 import { RingView } from './ring-view';
+import type { SurfaceMaps } from './surface-maps';
 import { SurfaceScatter } from './surface-scatter';
 import type { TerrainWorkerPool } from './terrain-worker-pool';
 
@@ -28,6 +29,8 @@ export interface PlanetViewDeps {
   pool: TerrainWorkerPool;
   detailTexture: THREE.Texture;
   terrainTextures: TerrainTextures;
+  /** Measured maps of real bodies; null in generated systems. */
+  surfaceMaps: SurfaceMaps | null;
 }
 
 export class PlanetView implements Disposable {
@@ -48,7 +51,9 @@ export class PlanetView implements Disposable {
     readonly body: BodyDesc,
     deps: PlanetViewDeps,
   ) {
-    this.field = new TerrainField(body.terrain, body.radius);
+    const surfaceMap = deps.surfaceMaps?.get(body) ?? null;
+    if (surfaceMap) deps.pool.setHeightmap(body.id, surfaceMap.heightmap);
+    this.field = new TerrainField(body.terrain, body.radius, surfaceMap?.heightmap ?? null);
     this.atmosphere = body.atmosphere
       ? this.store.add(new AtmosphereModel(body.atmosphere, body.radius))
       : null;
@@ -63,6 +68,7 @@ export class PlanetView implements Disposable {
       deps.detailTexture,
       deps.terrainTextures,
       biomeTextures,
+      surfaceMap,
     );
     const giant = body.bands !== null;
     const terrainMaterial = this.store.add(
