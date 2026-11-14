@@ -1,10 +1,12 @@
 // Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 /**
  * Where a scenario's pictures come from. Catalog scenarios ship theirs; a generated world's picture
- * is the view the player had when they chose to plan a mission there, kept for the browser session.
+ * is the view the player had when they chose to plan a mission there, kept for the browser session,
+ * or else a portrait drawn from the world's own terrain and colours.
  */
 import { hashString } from '@/core/random';
-import { isWorldId } from '@/data/world';
+import { decodeWorld, isWorldId } from '@/data/world';
+import { worldPortrait } from '@/ui/world-portrait';
 
 const shotKey = (scenarioId: string): string => `gen-worlds.shot.${hashString(scenarioId)}`;
 
@@ -24,7 +26,13 @@ export function artUrl(path: string, scenarioId: string): string {
       const shot = sessionStorage.getItem(shotKey(scenarioId));
       if (shot) return shot;
     } catch {
-      // Storage blocked: fall through to the stock picture.
+      // Storage blocked: fall through to the drawn portrait.
+    }
+    try {
+      const portrait = worldPortrait(scenarioId, decodeWorld(scenarioId));
+      if (portrait) return portrait;
+    } catch {
+      // An id that does not decode: the stock picture stands in.
     }
   }
   return import.meta.env.BASE_URL + path;

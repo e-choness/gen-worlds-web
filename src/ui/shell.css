@@ -2265,8 +2265,11 @@ dialog.glossary dd {
 .world-body .actions {
   margin-top: 0.5rem;
 }
+/* The picture fills the card's height beside the text. */
 .world-art {
-  align-self: flex-start;
+  align-self: stretch;
+  aspect-ratio: auto;
+  min-height: 14rem;
 }
 
 /* ==== Galaxy map: list on the left, chart in the middle, the selected star or world on the right ==== */
