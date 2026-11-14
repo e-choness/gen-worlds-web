@@ -6,7 +6,7 @@
 import { effect } from '@preact/signals';
 import { GameStore } from '@/app/game-store';
 import { MonteCarloClient } from '@/app/monte-carlo-client';
-import { onlineAdapterFactory } from '@/app/online';
+import { onlineAdapterFactory, scoreBoardFactory } from '@/app/online';
 import { mountShell } from '@/app/shell';
 import { hasWebgpu } from '@/app/webgpu-support';
 import { screenFromHash } from '@/ui/screen-id';
@@ -31,7 +31,14 @@ function main(): void {
     direct ? 'sandbox' : screenFromHash(location.hash),
     new MonteCarloClient(),
     onlineAdapterFactory(),
+    scoreBoardFactory(),
   );
+  // A shared mission link carries its design (and seed) in the query string.
+  const code = params.get('m');
+  if (code && store.openMissionCode(code)) {
+    history.replaceState(null, '', `${location.pathname}#/design`);
+    store.navigate('design');
+  }
   mountShell(shellRoot, store);
 
   void hasWebgpu().then((supported) => {

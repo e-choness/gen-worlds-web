@@ -5,10 +5,17 @@ export interface TitleScreenProps {
   sandboxAvailable: boolean;
   onNewMission: () => void;
   onCrew: () => void;
+  onDaily: () => void;
   onSandbox: () => void;
 }
 
-export function TitleScreen({ sandboxAvailable, onNewMission, onCrew, onSandbox }: TitleScreenProps) {
+export function TitleScreen({
+  sandboxAvailable,
+  onNewMission,
+  onCrew,
+  onDaily,
+  onSandbox,
+}: TitleScreenProps) {
   return (
     <section class="screen title-screen">
       <div class="eyebrow">{TEXT.title.eyebrow}</div>
@@ -17,6 +24,9 @@ export function TitleScreen({ sandboxAvailable, onNewMission, onCrew, onSandbox 
       <div class="actions column">
         <button type="button" class="button primary" data-autofocus onClick={onNewMission}>
           {TEXT.title.newMission}
+        </button>
+        <button type="button" class="button" onClick={onDaily}>
+          {TEXT.title.daily}
         </button>
         <button type="button" class="button" onClick={onCrew}>
           {TEXT.title.crew}

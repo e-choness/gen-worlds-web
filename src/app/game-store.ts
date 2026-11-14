@@ -19,7 +19,9 @@ import {
   rolesOf,
   sameData,
 } from '@/coop/room';
+import type { ScoreBoard, ScoreEntry } from '@/coop/score-board';
 import type { Disposable } from '@/core/disposable';
+import { hashString } from '@/core/random';
 import { ROLE_IDS, type RoleId, type TierId } from '@/data/mission-constants';
 import { findPart, type SlotId } from '@/data/parts';
 import { SCENARIOS } from '@/data/scenarios';
@@ -32,6 +34,7 @@ import {
 import { createEmptyDesign, type MissionDesign, type TrajectoryChoice } from '@/mission/design';
 import { type DesignEvaluation, evaluateDesign } from '@/mission/evaluate-design';
 import { type InputLog, type LandingInput, SCRIPTED_INPUT_LOG } from '@/mission/input-log';
+import { decodeMissionCode, encodeMissionCode } from '@/mission/mission-code';
 import type { MonteCarloSummary } from '@/mission/monte-carlo';
 import { emptyVotes, type PollVotes, pollOutcome, type RoleVote } from '@/mission/poll';
 import { roleForSlot, roleForTrajectoryField } from '@/mission/roles';
@@ -57,6 +60,30 @@ export type ForecastState =
   | { status: 'done'; summary: MonteCarloSummary }
   | { status: 'failed'; error: string };
 
+/** Opens the global leaderboard; null where the build has no online configuration. */
+export type ScoreBoardFactory = (() => Promise<ScoreBoard>) | null;
+
+/** A leaderboard line this client has checked by flying the entry's mission code itself. */
+export interface VerifiedScore {
+  name: string;
+  score: number;
+  scenario: string;
+  daily: string | null;
+  at: number;
+}
+
+export type ScoresState =
+  | { status: 'idle' | 'loading'; entries: VerifiedScore[] }
+  | { status: 'done'; entries: VerifiedScore[] }
+  | { status: 'failed'; entries: VerifiedScore[]; error: string };
+
+/** A fixed seed everyone flies: from a shared mission link, or the daily mission. */
+export interface Challenge {
+  seed: number;
+  /** ISO date of the daily mission, or null for a shared link. */
+  daily: string | null;
+}
+
 /** One flown mission, kept for comparison with later runs. */
 export interface MissionRun {
   id: number;
@@ -78,6 +105,7 @@ const MAX_RUNS = 20;
 const FORECAST_RUNS = 200;
 const HEARTBEAT_MS = 45_000;
 const MAX_LOCAL_PLAYERS = 4;
+const BOARD_SIZE = 100;
 
 function load<T>(key: string): T | null {
   try {
@@ -104,6 +132,28 @@ function knownScenario(design: MissionDesign | null | undefined): design is Miss
 /** A fresh seed for a new flight. Not world content: every run is replayable from the seed it shows. */
 function newSeed(): number {
   return crypto.getRandomValues(new Uint32Array(1))[0];
+}
+
+/** Flies a leaderboard entry's mission code; the entry counts only if the score comes out the same. */
+function verifyScore(entry: ScoreEntry): VerifiedScore[] {
+  const mission = decodeMissionCode(entry.code);
+  if (!mission || mission.seed === null || mission.design.scenarioId !== entry.scenario) return [];
+  try {
+    const result = simulateMission(mission.design, mission.seed, mission.inputLog ?? SCRIPTED_INPUT_LOG);
+    if (result.score.total !== entry.score) return [];
+  } catch {
+    // A design that cannot launch never flew.
+    return [];
+  }
+  return [
+    {
+      name: String(entry.name).slice(0, 20),
+      score: entry.score,
+      scenario: entry.scenario,
+      daily: entry.daily ?? null,
+      at: entry.at,
+    },
+  ];
 }
 
 export class GameStore implements Disposable {
@@ -149,6 +199,14 @@ export class GameStore implements Disposable {
   readonly playerName = signal(load<string>(NAME_KEY) ?? '');
 
   readonly onlineAvailable: boolean;
+  /** Set while a shared link or the daily mission fixes the seed of the next launch. */
+  readonly challenge = signal<Challenge | null>(null);
+  /** The global leaderboard as far as it has been loaded and verified. */
+  readonly scores = signal<ScoresState>({ status: 'idle', entries: [] });
+  /** True once the current result has been sent to the leaderboard. */
+  readonly scoreSubmitted = signal(false);
+  readonly leaderboardAvailable: boolean;
+  private board: Promise<ScoreBoard> | null = null;
 
   private adapter: NetAdapter | null = null;
   private heartbeat: ReturnType<typeof setInterval> | null = null;
@@ -163,8 +221,10 @@ export class GameStore implements Disposable {
     initial: ScreenId,
     private readonly forecaster: Forecaster,
     private readonly online: OnlineAdapterFactory = null,
+    private readonly boardFactory: ScoreBoardFactory = null,
   ) {
     this.onlineAvailable = online !== null;
+    this.leaderboardAvailable = boardFactory !== null;
     const saved = load<MissionDesign>(DESIGN_KEY);
     this.design = signal(knownScenario(saved) ? saved : null);
     if (this.design.value) this.tier.value = this.design.value.tier;
@@ -312,7 +372,7 @@ export class GameStore implements Disposable {
    * there for the landing to be flown by hand or handed to the guidance computer; one lost earlier
    * goes straight to its result. Pass a seed to replay a run.
    */
-  launch(seed: number = newSeed()): void {
+  launch(seed: number = this.challenge.value?.seed ?? newSeed()): void {
     const evaluation = this.evaluation.value;
     if (!evaluation || !pollOutcome(this.votes.value, evaluation).canLaunch) return;
     if (!this.holds('director')) return;
@@ -331,6 +391,7 @@ export class GameStore implements Disposable {
     this.flight = { seed, design, log: SCRIPTED_INPUT_LOG };
     this.result.value = null;
     this.handFlown.value = false;
+    this.scoreSubmitted.value = false;
     if (scripted.lostIn === 'launch' || scripted.lostIn === 'cruise' || !plan) {
       this.arrival.value = null;
       this.finish(scripted);
@@ -414,6 +475,93 @@ export class GameStore implements Disposable {
       headline: result.headline,
     };
     this.history.value = [run, ...this.history.value].slice(0, MAX_RUNS);
+  }
+
+  // ---------------------------------------------------------------- sharing and scores
+
+  /** Loads the design of a mission code; a code that carries a seed also fixes the next launch to it. */
+  openMissionCode(code: string): boolean {
+    const mission = decodeMissionCode(code);
+    if (!mission) return false;
+    this.loadDesign(mission.design);
+    this.challenge.value = mission.seed === null ? null : { seed: mission.seed, daily: null };
+    return true;
+  }
+
+  /** A link that opens the flight just flown: same design, same seed, same luck. Null before a flight. */
+  missionLink(): string | null {
+    const flight = this.flight;
+    if (!flight) return null;
+    const code = encodeMissionCode({ design: flight.design, seed: flight.seed, inputLog: null });
+    return `${location.origin}${location.pathname}?m=${code}`;
+  }
+
+  /** Today's mission: one scenario and one seed for everybody, changing at midnight UTC. */
+  startDaily(now: number = Date.now()): void {
+    if (!this.holds('director')) return;
+    const daily = new Date(now).toISOString().slice(0, 10);
+    const scenario = SCENARIOS[Math.floor(now / 86_400_000) % SCENARIOS.length];
+    this.selectScenario(scenario.id);
+    this.challenge.value = { seed: hashString(`daily:${daily}`), daily };
+  }
+
+  /** Back to a fresh seed on every launch. */
+  clearChallenge(): void {
+    this.challenge.value = null;
+  }
+
+  private openBoard(): Promise<ScoreBoard> | null {
+    if (!this.boardFactory) return null;
+    this.board ??= this.boardFactory();
+    return this.board;
+  }
+
+  /** Fetches the leaderboard and keeps the entries whose score this client can reproduce. */
+  loadScores(): void {
+    const board = this.openBoard();
+    if (!board || this.scores.value.status === 'loading') return;
+    this.scores.value = { status: 'loading', entries: this.scores.value.entries };
+    board
+      .then((service) => service.top(BOARD_SIZE))
+      .then(
+        (entries) => {
+          this.scores.value = { status: 'done', entries: entries.flatMap((entry) => verifyScore(entry)) };
+        },
+        (error: Error) => {
+          // A board that failed to open is retried on the next request.
+          this.board = null;
+          this.scores.value = { status: 'failed', entries: [], error: error.message };
+        },
+      );
+  }
+
+  /** Sends the flight just flown to the leaderboard under `name`. */
+  submitScore(name: string): void {
+    const flight = this.flight;
+    const result = this.result.value;
+    const board = this.openBoard();
+    if (!flight || !result || !board || !name.trim() || this.scoreSubmitted.value) return;
+    this.playerName.value = name.trim();
+    const challenge = this.challenge.value;
+    const entry: ScoreEntry = {
+      name: name.trim().slice(0, 20),
+      score: result.score.total,
+      scenario: flight.design.scenarioId,
+      seed: flight.seed,
+      daily: challenge?.seed === flight.seed ? challenge.daily : null,
+      code: encodeMissionCode({ design: flight.design, seed: flight.seed, inputLog: flight.log }),
+      at: Date.now(),
+    };
+    this.scoreSubmitted.value = true;
+    board
+      .then((service) => service.submit(entry))
+      .then(
+        () => this.loadScores(),
+        (error: Error) => {
+          this.scoreSubmitted.value = false;
+          this.scores.value = { status: 'failed', entries: this.scores.value.entries, error: error.message };
+        },
+      );
   }
 
   // ---------------------------------------------------------------- crew
@@ -538,6 +686,7 @@ export class GameStore implements Disposable {
 
   dispose(): void {
     this.leaveRoom();
+    void this.board?.then((service) => service.dispose());
     removeEventListener('hashchange', this.onHashChange);
     this.stopPersisting();
   }

@@ -6,6 +6,7 @@ import { num, percent } from '@/mission/format';
 import type { MissionOutcome } from '@/mission/scoring';
 import type { MissionResult } from '@/mission/simulate-mission';
 import { SLOT_NAMES } from '@/mission/slot-names';
+import { Leaderboard, type LeaderboardProps } from '@/ui/leaderboard';
 import { StatusBadge } from '@/ui/status-badge';
 import { TEXT } from '@/ui/text';
 
@@ -23,6 +24,7 @@ export interface DebriefScreenProps {
   scenario: Scenario;
   /** Newest first; the first entry is the run being debriefed. */
   history: readonly RunSummary[];
+  board: LeaderboardProps;
   /** Opens the screen where the given part of the design is decided. */
   onRevise: (target: 'design' | 'trajectory') => void;
   onFlyAgain: () => void;
@@ -41,6 +43,7 @@ export function DebriefScreen({
   result,
   scenario,
   history,
+  board,
   onRevise,
   onFlyAgain,
   onNewMission,
@@ -189,6 +192,8 @@ export function DebriefScreen({
           </table>
         </>
       )}
+
+      <Leaderboard {...board} />
 
       <details class="timeline-details">
         <summary>{t.timeline}</summary>

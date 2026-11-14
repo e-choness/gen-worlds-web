@@ -5,6 +5,7 @@
  */
 import type { FirebaseWebConfig } from '@/coop/firebase-adapter';
 import type { NetAdapter } from '@/coop/net-adapter';
+import type { ScoreBoard } from '@/coop/score-board';
 
 function webConfig(): FirebaseWebConfig | null {
   const env = import.meta.env;
@@ -24,4 +25,11 @@ export function onlineAdapterFactory(): (() => Promise<NetAdapter>) | null {
   if (!config) return null;
   // The SDK is a separate chunk: nobody who plays alone downloads it.
   return async () => (await import('@/coop/firebase-adapter')).FirebaseAdapter.connect(config);
+}
+
+/** Opens the global leaderboard, or null when this build has no online configuration. */
+export function scoreBoardFactory(): (() => Promise<ScoreBoard>) | null {
+  const config = webConfig();
+  if (!config) return null;
+  return async () => (await import('@/coop/firebase-scores')).FirebaseScoreBoard.connect(config);
 }

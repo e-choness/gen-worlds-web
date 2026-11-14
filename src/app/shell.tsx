@@ -10,6 +10,7 @@ import { getScenario, SCENARIOS } from '@/data/scenarios';
 import { createEmptyDesign, createReferenceDesign } from '@/mission/design';
 import type { MissionPhase } from '@/mission/phases';
 import { type CrewView, roleWithHolder } from '@/ui/crew-view';
+import type { LeaderboardProps } from '@/ui/leaderboard';
 import { PhaseStepper } from '@/ui/phase-stepper';
 import { isMissionPhase } from '@/ui/screen-id';
 import { ArrivalScreen } from '@/ui/screens/arrival-screen';
@@ -51,6 +52,30 @@ function crewView(store: GameStore): CrewView | null {
   };
 }
 
+/** The leaderboard of one scenario: the verified global board when online, this device's runs otherwise. */
+function boardProps(store: GameStore, scenarioId: string, score: number): LeaderboardProps {
+  const scores = store.scores.value;
+  // Without a reachable board the debrief still ranks this device's own flights.
+  const online = store.leaderboardAvailable && scores.status !== 'failed';
+  const lines = online
+    ? scores.entries.filter((entry) => entry.scenario === scenarioId)
+    : store.history.value
+        .filter((run) => run.design.scenarioId === scenarioId)
+        .map((run) => ({ name: `${TEXT.debrief.run} ${run.id}`, score: run.score, daily: null }))
+        .sort((a, b) => b.score - a.score);
+  return {
+    lines,
+    scope: online ? 'global' : 'local',
+    status: online ? scores.status : 'done',
+    error: scores.status === 'failed' ? scores.error : null,
+    score,
+    defaultName: store.playerName.value,
+    onSubmit: online && scores.status === 'done' ? (name) => store.submitScore(name) : null,
+    submitted: store.scoreSubmitted.value,
+    link: store.missionLink(),
+  };
+}
+
 function Shell({ store }: ShellProps) {
   const screen = store.screen.value;
   const webgpu = store.webgpu.value;
@@ -61,6 +86,10 @@ function Shell({ store }: ShellProps) {
   const crew = crewView(store);
   // Events are only routed to roles when there is more than one person to route them to.
   const flightCrew = store.crewed.value ? crew : null;
+  // The board is fetched when a debrief opens, not on every render.
+  useEffect(() => {
+    if (screen === 'debrief') store.loadScores();
+  }, [screen, store]);
   const openRequests = crew?.requests.filter((request) => request.status === 'open').length ?? 0;
 
   // Keyboard and gamepad users land on the screen's main action after every screen change.
@@ -141,6 +170,10 @@ function Shell({ store }: ShellProps) {
             sandboxAvailable={webgpu === 'available'}
             onNewMission={() => store.navigate('scenarios')}
             onCrew={() => store.navigate('crew')}
+            onDaily={() => {
+              store.startDaily();
+              store.navigate('briefing');
+            }}
             onSandbox={() => store.navigate('sandbox')}
           />
         )}
@@ -212,6 +245,8 @@ function Shell({ store }: ShellProps) {
             votes={store.votes.value}
             forecast={store.forecast.value}
             crew={crew}
+            challenge={store.challenge.value}
+            onClearChallenge={() => store.clearChallenge()}
             onVote={(role, vote) => store.setVote(role, vote)}
             onAllGo={() => store.voteAllGo()}
             onForecast={() => store.requestForecast()}
@@ -248,6 +283,7 @@ function Shell({ store }: ShellProps) {
             result={result}
             scenario={scenario}
             history={store.history.value}
+            board={boardProps(store, scenario.id, result.score.total)}
             onRevise={(target) => store.navigate(target)}
             onFlyAgain={() => store.launch()}
             onNewMission={() => store.navigate('scenarios')}

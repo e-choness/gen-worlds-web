@@ -21,6 +21,9 @@ export interface PollScreenProps {
   forecast: ForecastView;
   /** Null when playing alone. */
   crew: CrewView | null;
+  /** Set when the next launch flies a fixed seed (a shared link or the daily mission). */
+  challenge: { seed: number; daily: string | null } | null;
+  onClearChallenge: () => void;
   onVote: (role: RoleId, vote: Partial<RoleVote>) => void;
   onAllGo: () => void;
   onForecast: () => void;
@@ -105,6 +108,15 @@ export function PollScreen(props: PollScreenProps) {
       <div>
         <h1>{t.heading}</h1>
         <p class="lede">{t.summary}</p>
+        {props.challenge && (
+          <p class="banner challenge" role="status">
+            {props.challenge.daily ? t.dailyChallenge : t.challenge} {props.challenge.seed}
+            {t.challengeEnd}{' '}
+            <button type="button" class="link" onClick={props.onClearChallenge}>
+              {t.freshLuck}
+            </button>
+          </p>
+        )}
         <ul class="role-grid">
           {roleReadiness(evaluation).map(({ role, status, lines, issues }, index) => {
             const vote = votes[role.id];

@@ -32,7 +32,7 @@ const ROOMS = 'rooms';
 const ANSWER_TIMEOUT_MS = 12_000;
 
 /** Rejects when the service has not answered in time, so a dead backend shows as an error. */
-function answered<T>(request: Promise<T>): Promise<T> {
+export function answered<T>(request: Promise<T>): Promise<T> {
   return new Promise((resolve, reject) => {
     const timer = setTimeout(
       () =>
