@@ -59,6 +59,7 @@ await page
     () => {
       const app = window.__app;
       const body = app?.flight.telemetry.body;
+      if (!app) return window.__status === 'running';
       return body && (!body.view || (body.view.terrain.ready && body.view.terrain.stats.pending === 0));
     },
     null,

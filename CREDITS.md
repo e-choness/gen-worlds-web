@@ -31,6 +31,7 @@ _None shipped yet. Entries are added with the data files in `src/data/`._
 | [three.js](https://threejs.org) | MIT | WebGPU renderer, TSL shading |
 | [@dgreenheck/ez-tree](https://github.com/dgreenheck/ez-tree) | MIT | Procedural trees |
 | [@dgreenheck/three-pinata](https://github.com/dgreenheck/three-pinata) | MIT | Rock fracture when drilling |
+| [Preact](https://preactjs.com), [@preact/signals](https://github.com/preactjs/signals) | MIT | 2D screens and the game-state store |
 | [Vite](https://vite.dev), [TypeScript](https://www.typescriptlang.org), [Vitest](https://vitest.dev), [Biome](https://biomejs.dev), [Playwright](https://playwright.dev) | MIT / Apache-2.0 | Build, checks and captures |
 
 ## Techniques

@@ -1,0 +1,107 @@
+/**
+ * The 2D shell: header with the mission stepper plus the current screen. It wires the store to the
+ * screens (state down as props, navigation up as callbacks) and must not import the engine.
+ */
+import { render } from 'preact';
+import { useEffect, useRef } from 'preact/hooks';
+import type { GameStore } from '@/app/game-store';
+import { type MissionPhase, nextPhase, previousPhase } from '@/mission/phases';
+import { PhaseStepper } from '@/ui/phase-stepper';
+import { isMissionPhase } from '@/ui/screen-id';
+import { StubScreen } from '@/ui/screens/stub-screen';
+import { TitleScreen } from '@/ui/screens/title-screen';
+import { PHASE_TEXT, TEXT } from '@/ui/text';
+
+interface ShellProps {
+  store: GameStore;
+}
+
+function Shell({ store }: ShellProps) {
+  const screen = store.screen.value;
+  const webgpu = store.webgpu.value;
+  const main = useRef<HTMLElement>(null);
+
+  // Keyboard and gamepad users land on the screen's main action after every screen change.
+  useEffect(() => {
+    main.current?.querySelector<HTMLElement>('[data-autofocus]')?.focus({ preventScroll: true });
+  }, [screen]);
+
+  if (screen === 'sandbox') {
+    const error = store.engineError.value;
+    // The engine's own HUD and menus take over once it runs; until then show progress or the error.
+    if (webgpu !== 'unavailable' && !error) return <p class="shell-status">{TEXT.webgpu.sandboxStarting}</p>;
+    return (
+      <div class="shell">
+        <main ref={main}>
+          <section class="screen">
+            <h1>{TEXT.webgpu.sandboxFailed}</h1>
+            <p class="lede">{error ?? TEXT.webgpu.unavailable}</p>
+            <div class="actions">
+              <button
+                type="button"
+                class="button primary"
+                data-autofocus
+                onClick={() => store.navigate('title')}
+              >
+                {TEXT.nav.home}
+              </button>
+            </div>
+          </section>
+        </main>
+      </div>
+    );
+  }
+
+  const phase = isMissionPhase(screen) ? screen : null;
+  return (
+    <div class="shell" data-screen={screen}>
+      <header class="shell-header">
+        <button type="button" class="brand" title={TEXT.nav.home} onClick={() => store.navigate('title')}>
+          {TEXT.brand}
+          <span>{TEXT.tagline}</span>
+        </button>
+        {screen !== 'title' && (
+          <PhaseStepper current={phase} onSelect={(target: MissionPhase) => store.navigate(target)} />
+        )}
+      </header>
+      <main ref={main}>
+        {screen === 'title' && (
+          <TitleScreen
+            sandboxAvailable={webgpu === 'available'}
+            onNewMission={() => store.navigate('scenarios')}
+            onSandbox={() => store.navigate('sandbox')}
+          />
+        )}
+        {screen === 'scenarios' && (
+          <StubScreen
+            heading={TEXT.scenarios.heading}
+            summary={TEXT.scenarios.summary}
+            nextLabel={TEXT.scenarios.next}
+            onNext={() => store.navigate('briefing')}
+            onBack={() => store.navigate('title')}
+          />
+        )}
+        {phase && (
+          <StubScreen
+            heading={PHASE_TEXT[phase].heading}
+            summary={PHASE_TEXT[phase].summary}
+            nextLabel={PHASE_TEXT[phase].next}
+            // The debrief loops back to the design: iterate and rerun.
+            onNext={() => store.navigate(nextPhase(phase) ?? 'design')}
+            onBack={() => store.navigate(previousPhase(phase) ?? 'scenarios')}
+          >
+            {phase === 'flight' && webgpu === 'unavailable' && (
+              <p class="banner" role="status">
+                {TEXT.webgpu.unavailable}
+              </p>
+            )}
+          </StubScreen>
+        )}
+      </main>
+    </div>
+  );
+}
+
+export function mountShell(root: HTMLElement, store: GameStore): void {
+  render(<Shell store={store} />, root);
+}
