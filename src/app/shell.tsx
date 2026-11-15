@@ -345,6 +345,7 @@ function Shell({ store, sound }: ShellProps) {
             onAcknowledge={(key, seconds) => store.acknowledge(key, seconds)}
             onDebrief={() => store.navigate('debrief')}
             onCue={sound?.onCue}
+            theatre={webgpu === 'available'}
             stageArt={artUrl(
               getScenario(result.flownDesign.scenarioId).stageArt,
               result.flownDesign.scenarioId,

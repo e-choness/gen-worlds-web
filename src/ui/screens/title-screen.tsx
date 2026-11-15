@@ -60,14 +60,6 @@ export function TitleScreen({
           <span class="dim">{sandboxAvailable ? t.sandboxHint : t.needsWebgpu}</span>
         </button>
       </div>
-      <dl class="title-facts">
-        {t.facts.map((fact) => (
-          <div key={fact.label}>
-            <dt>{fact.label}</dt>
-            <dd>{fact.value}</dd>
-          </div>
-        ))}
-      </dl>
     </section>
   );
 }

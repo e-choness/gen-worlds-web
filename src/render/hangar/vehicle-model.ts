@@ -69,6 +69,8 @@ function panel(width: number, depth: number, m: VehicleMaterials): THREE.Group {
 
 function wheel(radius: number, m: VehicleMaterials): THREE.Group {
   const group = new THREE.Group();
+  // Named so a view that drives the vehicle can find the wheels and turn them about x.
+  group.name = 'wheel';
   const tyre = mesh(new THREE.CylinderGeometry(radius, radius, radius * 0.7, 28), m.tyre);
   tyre.rotation.z = Math.PI / 2;
   group.add(tyre);
@@ -312,6 +314,7 @@ export function buildVehicle(spec: VehicleSpec, m: VehicleMaterials): THREE.Grou
     root.add(tower);
     const length = Math.min(spec.drillM, 2) * 0.5 + 0.2;
     const bit = rod(0.022, length, m.metal);
+    bit.name = 'drill';
     bit.position.set(width * 0.32, clearance - length / 2 + 0.05, depth / 2 + 0.09);
     root.add(bit);
   }

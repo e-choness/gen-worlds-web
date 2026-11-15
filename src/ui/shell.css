@@ -1906,30 +1906,6 @@ dialog.glossary dd {
   font-size: 0.82rem;
   font-weight: 400;
 }
-.title-facts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem 2rem;
-  max-width: 34rem;
-  margin: 1.75rem 0 0;
-  padding-top: 1rem;
-  border-top: 1px solid var(--ui-line);
-}
-.title-facts div {
-  display: flex;
-  flex-direction: column-reverse;
-  gap: 0.1rem;
-}
-.title-facts dt {
-  color: var(--ui-dim);
-  font-size: 0.72rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-.title-facts dd {
-  margin: 0;
-  font: 500 1.35rem var(--ui-mono, ui-monospace, monospace);
-}
 @media (max-width: 520px) {
   .title-menu {
     grid-template-columns: minmax(0, 1fr);
@@ -2069,11 +2045,20 @@ dialog.glossary dd {
   border: 1px solid var(--ui-line);
   background: #05080d;
 }
-.flight-stage img {
+.flight-stage img,
+.flight-theatre {
   display: block;
   width: 100%;
   aspect-ratio: 16 / 8;
   object-fit: cover;
+}
+/* Over the 3D scene the caption is a strip along the bottom, so the action above it stays clear. */
+.flight-stage:has(.flight-theatre) .stage-event {
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-width: 1px 0 0 4px;
+  background: rgba(6, 11, 18, 0.8);
 }
 .stage-event {
   position: absolute;
