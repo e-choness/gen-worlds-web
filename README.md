@@ -1,12 +1,68 @@
-# Gen Worlds
+<!-- Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md. -->
+<a href="https://gen-worlds.surf"><img src="media/banners/banner-animated.svg" alt="Gen Worlds: design a space mission, then fly it. NASA Space Apps Challenge 2026, Calgary." width="100%"></a>
 
-**A space mission design game for 1 to 4 players.** Plan a NASA-style mission from the science goal
-to the spacecraft to the launch, then fly it and see every trade-off play out.
+<h1 align="center">Gen Worlds</h1>
 
-Built for the NASA Space Apps Challenge 2026 (Calgary), challenge *Space Mission Design Game*.
+<p align="center">
+  <b>A space mission design game for 1 to 4 players.</b><br>
+  Plan a NASA-style mission from the science goal to the spacecraft to the launch,<br>
+  then fly it and see every trade-off play out.
+</p>
 
-**Play it: <https://gen-worlds.surf>** (any modern browser; the 3D parts need WebGPU, and the whole
-game also plays without it).
+<p align="center">
+  <a href="https://gen-worlds.surf"><img alt="Play now at gen-worlds.surf" src="https://img.shields.io/badge/%E2%96%B6%20play%20now-gen--worlds.surf-6fd3ff?style=for-the-badge&labelColor=04070d"></a>
+  <a href="https://gen-worlds.surf/gen-worlds-demo.mp4"><img alt="Watch the 29-second demo" src="https://img.shields.io/badge/watch-29%20s%20demo-ffb454?style=for-the-badge&labelColor=04070d"></a>
+  <a href="media/README.md"><img alt="Media kit" src="https://img.shields.io/badge/press-media%20kit-8fa3b8?style=for-the-badge&labelColor=04070d"></a>
+</p>
+
+<!-- Live: the site and deploy status, and endpoint badges written by tools/badges.mjs on every deploy. -->
+<p align="center">
+  <a href="https://gen-worlds.surf"><img alt="Site status" src="https://img.shields.io/website?url=https%3A%2F%2Fgen-worlds.surf&label=site&up_message=online&down_message=offline&style=flat-square"></a>
+  <a href="https://github.com/e-choness/nasa-space-app-calgary/actions/workflows/deploy.yml"><img alt="Deploy" src="https://img.shields.io/github/actions/workflow/status/e-choness/nasa-space-app-calgary/deploy.yml?branch=main&label=deploy&logo=githubactions&logoColor=white&style=flat-square"></a>
+  <img alt="Tests" src="https://img.shields.io/endpoint?url=https%3A%2F%2Fgen-worlds.surf%2Fbadges%2Ftests.json&logo=vitest&logoColor=white&style=flat-square">
+  <img alt="First load, gzipped" src="https://img.shields.io/endpoint?url=https%3A%2F%2Fgen-worlds.surf%2Fbadges%2Fbundle.json&style=flat-square">
+  <img alt="Last deployed" src="https://img.shields.io/endpoint?url=https%3A%2F%2Fgen-worlds.surf%2Fbadges%2Fdeployed.json&style=flat-square">
+  <a href="LICENSE.md"><img alt="Licence: Apache-2.0" src="https://img.shields.io/badge/licence-Apache--2.0-3a7bd5?style=flat-square"></a>
+  <a href="https://www.spaceappschallenge.org/"><img alt="NASA Space Apps Challenge 2026, Calgary" src="https://img.shields.io/badge/NASA%20Space%20Apps-2026%20%C2%B7%20Calgary-0b3d91?logo=nasa&logoColor=white&style=flat-square"></a>
+</p>
+
+<!-- What is in the game, counted from src/data on every deploy. -->
+<p align="center">
+  <img alt="Missions" src="https://img.shields.io/endpoint?url=https%3A%2F%2Fgen-worlds.surf%2Fbadges%2Fmissions.json&style=flat-square">
+  <img alt="Spacecraft parts" src="https://img.shields.io/endpoint?url=https%3A%2F%2Fgen-worlds.surf%2Fbadges%2Fparts.json&style=flat-square">
+  <img alt="Launch vehicles" src="https://img.shields.io/endpoint?url=https%3A%2F%2Fgen-worlds.surf%2Fbadges%2Flaunchers.json&style=flat-square">
+  <img alt="Random events" src="https://img.shields.io/endpoint?url=https%3A%2F%2Fgen-worlds.surf%2Fbadges%2Fevents.json&style=flat-square">
+  <img alt="Players: 1 to 4" src="https://img.shields.io/badge/players-1%E2%80%934-6fd3ff?style=flat-square">
+  <img alt="Live budgets: 9" src="https://img.shields.io/badge/live%20budgets-9-6fd3ff?style=flat-square">
+</p>
+
+<!-- The stack, with versions read from package.json on GitHub. -->
+<p align="center">
+  <img alt="TypeScript" src="https://img.shields.io/github/package-json/dependency-version/e-choness/nasa-space-app-calgary/dev/typescript?logo=typescript&logoColor=white&color=3178c6&style=flat-square">
+  <img alt="three.js" src="https://img.shields.io/github/package-json/dependency-version/e-choness/nasa-space-app-calgary/three?logo=threedotjs&logoColor=white&color=222&label=three.js&style=flat-square">
+  <img alt="WebGPU" src="https://img.shields.io/badge/renderer-WebGPU-005a9c?logo=webgpu&logoColor=white&style=flat-square">
+  <img alt="Preact" src="https://img.shields.io/github/package-json/dependency-version/e-choness/nasa-space-app-calgary/preact?logo=preact&logoColor=white&color=673ab8&style=flat-square">
+  <img alt="Vite" src="https://img.shields.io/github/package-json/dependency-version/e-choness/nasa-space-app-calgary/dev/vite?logo=vite&logoColor=white&color=646cff&style=flat-square">
+  <img alt="Biome" src="https://img.shields.io/github/package-json/dependency-version/e-choness/nasa-space-app-calgary/dev/@biomejs/biome?logo=biome&logoColor=white&color=60a5fa&label=biome&style=flat-square">
+</p>
+
+<!-- The repository, live from GitHub. -->
+<p align="center">
+  <img alt="Last commit" src="https://img.shields.io/github/last-commit/e-choness/nasa-space-app-calgary?style=flat-square">
+  <img alt="Commits" src="https://img.shields.io/github/commit-activity/t/e-choness/nasa-space-app-calgary?label=commits&style=flat-square">
+  <img alt="Top language" src="https://img.shields.io/github/languages/top/e-choness/nasa-space-app-calgary?style=flat-square">
+  <img alt="Code size" src="https://img.shields.io/github/languages/code-size/e-choness/nasa-space-app-calgary?style=flat-square">
+  <a href="https://github.com/e-choness/nasa-space-app-calgary/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/e-choness/nasa-space-app-calgary?style=flat-square&logo=github"></a>
+</p>
+
+<p align="center">
+  <img src="media/gameplay-flight.gif" alt="The flight in 3D: lift-off, the coast past Earth, the parachute and landing burn on Mars, and the rover at work" width="100%">
+  <br><sub>After launch the mission log plays out in 3D with the vehicle you designed. Staged for clarity, not to scale.</sub>
+</p>
+
+Built for the **NASA Space Apps Challenge 2026** (Calgary), challenge *Space Mission Design Game*.
+Runs in any modern browser with nothing to install; the 3D views need WebGPU, and the whole game
+also plays without it.
 
 ## What you do
 
@@ -26,6 +82,29 @@ game also plays without it).
    propellant your design left you.
 6. **Debrief.** Every outcome is traced back to the design decision behind it, with a link to the
    screen where you can change it. Change one thing, fly again, compare.
+
+<table>
+  <tr>
+    <td width="33%"><img src="media/screenshots/02-hangar.jpg" alt="Hangar: parts, live budgets and the 3D rover"></td>
+    <td width="33%"><img src="media/screenshots/03-trajectory.jpg" alt="Trajectory: rocket capacity and porkchop plot"></td>
+    <td width="33%"><img src="media/screenshots/11-debrief.jpg" alt="Debrief: score, objectives and what decided the mission"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub><b>Hangar.</b> Every part moves the budgets, with the reason.</sub></td>
+    <td align="center"><sub><b>Trajectory.</b> Launch windows from real ephemerides.</sub></td>
+    <td align="center"><sub><b>Debrief.</b> The decision behind each outcome.</sub></td>
+  </tr>
+  <tr>
+    <td><img src="media/screenshots/04-flight-launch.jpg" alt="Lift-off from the pad"></td>
+    <td><img src="media/screenshots/08-flight-moon-rover.jpg" alt="The rover at the lunar south pole"></td>
+    <td><img src="media/screenshots/09-flight-earth-orbit.jpg" alt="An Earth-observation satellite scanning the ground"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub><b>Launch</b> from the pad.</sub></td>
+    <td align="center"><sub><b>Moon:</b> the ice prospector at the south pole.</sub></td>
+    <td align="center"><sub><b>Earth orbit:</b> the imager at work.</sub></td>
+  </tr>
+</table>
 
 ## Missions
 
@@ -138,11 +217,18 @@ The code was written with Claude Code (Anthropic) under the team's direction, an
 sound effects were generated with a locally run audio model. Details are in
 [`CREDITS.md`](CREDITS.md).
 
-## Demo video
+## Demo video and media kit
 
-[`public/gen-worlds-demo.mp4`](public/gen-worlds-demo.mp4) is the 30-second demo. It is recorded from the
-running game by `tools/record-video.mjs`, which steps the page's clock one frame at a time in the
-capture container, and encoded with ffmpeg at 30 frames per second.
+- **Demo:** [29 seconds](https://gen-worlds.surf/gen-worlds-demo.mp4), the whole loop from design
+  to debrief ([`public/gen-worlds-demo.mp4`](public/gen-worlds-demo.mp4)). It is recorded from the
+  running game by `tools/record-video.mjs`, which steps the page's clock one frame at a time in the
+  capture container, and encoded with ffmpeg at 30 frames per second.
+- **[Media kit](media/README.md):** logo and wordmarks, the animated banner (SVG and GIF), the social
+  card, app icons, twelve screenshots, the flight GIF, descriptions of three lengths, a fact sheet,
+  colours and type. All of it is generated from the game by `tools/media/`.
+- **Live badges:** the tests, content and size badges at the top are endpoint files written by
+  [`tools/badges.mjs`](tools/badges.mjs) on every deploy and served from the site, so they always
+  describe what is live.
 
 ## Licence
 

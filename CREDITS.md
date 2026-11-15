@@ -21,6 +21,7 @@ something enters the repo.
 | `public/maps/mars_albedo_4k.jpg`, `public/maps/mars_height_2880x1440.i16` | USGS Astrogeology Science Center: [Viking MDIM 2.1 colour mosaic](https://astrogeology.usgs.gov/search/map/mars_viking_colorized_global_mosaic_232m) (NASA Viking Orbiters) and [MGS MOLA elevation mosaic](https://astrogeology.usgs.gov/search/map/mars_mgs_mola_dem_463m) (NASA Mars Global Surveyor) | Public domain (NASA / USGS) | Mars's real colour and terrain |
 | `public/maps/earth_albedo_4k.jpg` | NASA [Blue Marble Next Generation](https://earthobservatory.nasa.gov/features/BlueMarble), cloud-free, served by [NASA GIBS](https://gibs.earthdata.nasa.gov) | Public domain (NASA) | The Earth's real colour |
 | `public/maps/earth_height_2880x1440.i16` | NOAA NCEI [ETOPO 2022](https://www.ncei.noaa.gov/products/etopo-global-relief-model) 60 arc-second global relief, doi:10.25921/fd45-gt74 | Public domain (NOAA) | The Earth's real terrain and sea floor |
+| `media/`, `public/og-image.png`, `public/favicon.svg` | Logos and banners drawn for this project; screenshots taken from the running game; the banner's Earth is the Blue Marble map above | Own work (Apache-2.0) from public-domain data | Media kit, link previews, favicon |
 | `public/art/*.jpg` | Rendered by this game's engine from the maps above | Own work from public-domain data | Mission card, title, trajectory, flight and debrief pictures |
 | `src/data/events_catalog.json` | Event types from real mission experience; probabilities are game balance values | Own work | Random events |
 
@@ -50,6 +51,10 @@ something enters the repo.
 | [Preact](https://preactjs.com), [@preact/signals](https://github.com/preactjs/signals) | MIT | 2D screens and the game-state store |
 | [Firebase JavaScript SDK](https://firebase.google.com/docs/web/setup) (Auth, Firestore) | Apache-2.0 | Online co-op rooms and the global leaderboard (Space Apps Global Offer via Google Cloud) |
 | [Vite](https://vite.dev), [TypeScript](https://www.typescriptlang.org), [Vitest](https://vitest.dev), [Biome](https://biomejs.dev), [Playwright](https://playwright.dev) | MIT / Apache-2.0 | Build, checks and captures |
+| [opentype.js](https://opentype.js.org) | MIT | Media kit: text converted to outlines in the banner and logos |
+| [Space Grotesk](https://github.com/floriankarsten/space-grotesk), [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono) (via Fontsource) | SIL OFL 1.1 | Media kit: wordmark, banner and social card type |
+| [shields.io](https://shields.io) | CC0 (service) | README badges |
+| [FFmpeg](https://ffmpeg.org) (container image `mwader/static-ffmpeg`) | LGPL / GPL (tool, not distributed) | Encoding the demo video and GIFs |
 
 ## Techniques
 
