@@ -4,18 +4,20 @@
 // software. Runs inside the `capture` compose service only; frames are encoded afterwards.
 //   node tools/record-video.mjs <framesDir>          every frame
 //   VIDEO_EVERY=15 node tools/record-video.mjs <dir>  a contact sheet: one frame in 15
+//   VIDEO_FROM=700 node tools/record-video.mjs <dir>  retake from frame 700, keeping the frames before
 import { mkdirSync, rmSync } from 'node:fs';
 import { chromium } from 'playwright-core';
 
 const [framesDir = '.cache/video/frames'] = process.argv.slice(2);
 const every = Number(process.env.VIDEO_EVERY ?? '1');
+const from = Number(process.env.VIDEO_FROM ?? '0');
 const base = process.env.CAPTURE_BASE_URL ?? 'http://localhost:5173';
 const FPS = 30;
 const FRAME_MS = 1000 / FPS;
 /** Fixed start time: the mission seed and the Earth's turn follow the clock, so runs repeat. */
 const START = new Date(process.env.VIDEO_START ?? '2026-11-15T18:00:00Z');
 
-rmSync(framesDir, { recursive: true, force: true });
+if (from === 0) rmSync(framesDir, { recursive: true, force: true });
 mkdirSync(framesDir, { recursive: true });
 
 const browser = await chromium.launch({
@@ -78,7 +80,7 @@ async function shoot(speed = 1) {
   const whole = Math.floor(elapsed);
   elapsed -= whole;
   if (whole > 0) await page.clock.runFor(whole);
-  if (frame % every === 0) {
+  if (frame >= from && frame % every === 0) {
     await page.screenshot({
       path: `${framesDir}/${String(frame).padStart(4, '0')}.jpg`,
       type: 'jpeg',
@@ -163,7 +165,7 @@ const auto = page.locator('button', { hasText: 'guidance computer land' });
 if (await auto.count()) await auto.first().click();
 await page.waitForSelector('.flight-theatre', { timeout: 30000 });
 // Room to scroll the 3D scene to the top of the frame, whatever the page's height is yet.
-await page.addStyleTag({ content: 'main { min-height: 220vh; }' });
+const room = await page.addStyleTag({ content: 'main { min-height: 220vh; }' });
 await scrollTo(Math.max(0, (await topOf('.phase-rail')) - 14));
 // The 3D scene starts in real time: let it load its textures and build its pipelines, drawing a
 // few frames, before the clock moves on.
@@ -208,10 +210,16 @@ await caption('Surface operations, hour by hour');
 await shootFor(85);
 
 // --- 5. Debrief -----------------------------------------------------------------------------
-const skip = page.locator('button', { hasText: 'Skip to the end' });
-if (await skip.count()) await skip.first().click();
+// Pressed from the page: with the clock held, a scrolled button never counts as settled for a real click.
+const press = (text) =>
+  page.evaluate((label) => {
+    [...document.querySelectorAll('button')].find((button) => button.textContent.includes(label))?.click();
+  }, text);
+await press('Skip to the end');
 await page.clock.runFor(300);
-await click('Open the debrief');
+await press('Open the debrief');
+await page.clock.runFor(300);
+await room.evaluate((style) => style.remove());
 await scrollTo(0);
 await settle(1500);
 mark('debrief');

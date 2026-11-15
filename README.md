@@ -138,6 +138,12 @@ The code was written with Claude Code (Anthropic) under the team's direction, an
 sound effects were generated with a locally run audio model. Details are in
 [`CREDITS.md`](CREDITS.md).
 
+## Demo video
+
+[`public/gen-worlds-demo.mp4`](public/gen-worlds-demo.mp4) is the 30-second demo. It is recorded from the
+running game by `tools/record-video.mjs`, which steps the page's clock one frame at a time in the
+capture container, and encoded with ffmpeg at 30 frames per second.
+
 ## Licence
 
 Gen Worlds is open source, © 2026 Echo Yin, under the
