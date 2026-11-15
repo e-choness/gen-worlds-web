@@ -1822,6 +1822,34 @@ dialog.glossary dd {
     display: none;
   }
 }
+/* Wide screens: the copy and the globe sit side by side as one centred composition across the whole
+   width. The globe is sized by the viewport, so inside the capped 68rem screen it would grow over the
+   menu and leave the right of the page empty. */
+@media (min-width: 1100px) {
+  .title-screen {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(3rem, 7vw, 10rem);
+    max-width: none;
+    padding-bottom: 4vh;
+  }
+  .title-copy {
+    flex: 0 1 36rem;
+    min-width: 28rem;
+  }
+  .title-hero {
+    position: relative;
+    top: auto;
+    right: auto;
+    flex: 0 1 min(80vh, 56rem);
+    width: min(80vh, 56rem);
+    min-width: 0;
+    transform: none;
+    /* First in the DOM so it stays behind the copy on narrow screens; here it reads after the copy. */
+    order: 1;
+  }
+}
 
 /* Briefing: the destination beside the mission statement, dropped on narrow screens. */
 .briefing-art {
