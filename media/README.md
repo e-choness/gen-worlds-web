@@ -68,6 +68,7 @@ around it; don't recolour, stretch or add effects.
 | <img src="banners/banner.png" width="260" alt=""> | [`banners/banner-animated.svg`](banners/banner-animated.svg) | 1280 × 360, 300 kB | Animated header (README, web pages): the Earth turns, a spacecraft orbits, a rocket climbs, the budgets fill |
 | | [`banners/banner-animated.gif`](banners/banner-animated.gif) | 960 × 270, 12 s loop | The same where SVG animation is not shown (forums, chat, slides) |
 | | [`banners/banner.png`](banners/banner.png) | 2560 × 720 | Still header |
+| <img src="banners/youtube-thumbnail.png" width="260" alt=""> | [`banners/youtube-thumbnail.png`](banners/youtube-thumbnail.png) | 1280 × 720, 600 kB | YouTube thumbnail (16:9): the banner recomposed to read at thumbnail size |
 | <img src="banners/social-preview.png" width="260" alt=""> | [`banners/social-preview.png`](banners/social-preview.png) | 1280 × 640 | GitHub social preview, Open Graph and X/Twitter cards (also served as `og-image.png` by the site) |
 
 ## Motion
