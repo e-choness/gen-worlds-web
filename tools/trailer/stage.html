@@ -1,0 +1,37 @@
+<!doctype html>
+<!-- Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md. -->
+<!-- The trailer's stage for the flight theatre: the same 3D scene the flight screen shows, full screen,
+     with its phases switched by the recorder instead of the mission log. Served by the dev server only
+     (http://localhost:5173/tools/trailer/stage.html); not part of the build. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Gen Worlds trailer stage</title>
+    <style>
+      html, body { margin: 0; height: 100%; background: #020409; overflow: hidden; }
+      canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; }
+    </style>
+  </head>
+  <body>
+    <canvas id="stage"></canvas>
+    <script type="module">
+      import { getScenario } from '/src/data/scenarios.ts';
+      import { createReferenceDesign } from '/src/mission/design.ts';
+      import { MissionTheatre } from '/src/render/theatre/mission-theatre.ts';
+      import { theatreSetup } from '/src/ui/theatre-setup.ts';
+
+      let theatre = null;
+      /** Builds the theatre for the NASA-style reference design of `scenarioId`. */
+      window.stageMission = async (scenarioId) => {
+        theatre?.dispose();
+        const design = createReferenceDesign(getScenario(scenarioId), 'engineer');
+        theatre = await MissionTheatre.create(document.getElementById('stage'), theatreSetup(design), {
+          still: false,
+        });
+        return true;
+      };
+      window.stagePhase = (phase) => theatre.show(phase, false);
+      window.stageReady = true;
+    </script>
+  </body>
+</html>
