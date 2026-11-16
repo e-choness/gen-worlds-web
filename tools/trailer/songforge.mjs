@@ -1,13 +1,14 @@
 // Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 // Talks to a local SongForge (the AI music studio, run in its own Docker stack) to make the
-// trailer's sung narration, its orchestral score and its sound effects, and to fetch the results.
+// trailer's sung narration and its sound effects, and to fetch the results. The trailer's only music
+// is the narration song: its instrumental passages are the song's own band, split off by `vocals`.
 // Runs in a node container on SongForge's network (base http://web:8080):
 //   docker run --rm --network songforge_default -v "$PWD:/app" -w /app node:26-slim \
 //     node tools/trailer/songforge.mjs <command> ...
-//   song   <lyricsFile> <variations> [seed]          sung narration (YuE2 Studio)
-//   score  <name> <seconds> <key> <bpm> <style...>   instrumental score (Cinematic)
-//   sound  <name> <seconds> <prompt...>              one-shot sound effect (TangoFlux)
-//   wait   <id...>                                   waits for songs, then saves them to .cache/trailer/audio
+//   song   <lyricsFile> <variations> [seed]   sung narration (YuE2 Studio)
+//   sound  <name> <seconds> <prompt...>       one-shot sound effect (TangoFlux)
+//   wait   <id...>                            waits for songs, then saves them to .cache/trailer/audio
+//   vocals <id...>                            splits songs into vocals and band, saves both stems
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 
 const base = process.env.SONGFORGE_URL ?? 'http://web:8080';
@@ -55,21 +56,6 @@ if (command === 'song') {
     ...(seed === undefined ? {} : { seed: Number(seed) }),
   });
   printSongs(data);
-} else if (command === 'score') {
-  const [name, seconds, key, bpm, ...style] = args;
-  const data = await post('/api/generate', {
-    mode: 'custom',
-    title: `Trailer score ${name}`,
-    style: style.join(' '),
-    instrumental: true,
-    model: 'cinematic',
-    duration: Number(seconds),
-    ...(key && key !== '-' ? { keyscale: key } : {}),
-    ...(bpm && bpm !== '-' ? { bpm: Number(bpm) } : {}),
-    variations: 2,
-    visual: { cover: false },
-  });
-  printSongs(data);
 } else if (command === 'sound') {
   const [name, seconds, ...prompt] = args;
   const data = await post('/api/sounds', {
@@ -80,20 +66,25 @@ if (command === 'song') {
   console.log(`# ${name}`);
   printSongs(data);
 } else if (command === 'vocals') {
-  // Splits each song into vocals and instrumental (Demucs) and saves <id>.vocals.wav: the lyric
-  // alignment hears the singer far better without the band.
+  // Splits each song into vocals and instrumental (Demucs), reusing an earlier split of the same
+  // song, and saves <id>.vocals.wav and <id>.instrumental.wav. The lyric alignment hears the singer
+  // far better without the band; the trailer's instrumental passages are the song's own band.
   mkdirSync(outDir, { recursive: true });
+  const listing = await (await fetch(`${base}/api/separations?mode=vocals&limit=100`)).json();
   for (const songId of args) {
-    const job = await post('/api/separations', { song_id: songId, mode: 'vocals' });
+    const earlier = listing.items.find((s) => s.source_song_id === songId && s.status !== 'failed');
+    const job = earlier ?? (await post('/api/separations', { song_id: songId, mode: 'vocals' }));
     for (;;) {
       const response = await fetch(`${base}/api/separations/${job.id}`);
       const sep = await response.json();
       if (sep.status === 'failed') throw new Error(`separation ${job.id}: ${sep.error}`);
       if (sep.status === 'complete') {
-        const stem = await fetch(`${base}/api/separations/${job.id}/download?format=wav&stem=vocals`);
-        if (!stem.ok) throw new Error(`stem download: HTTP ${stem.status}`);
-        writeFileSync(`${outDir}/${songId}.vocals.wav`, Buffer.from(await stem.arrayBuffer()));
-        console.log(`${songId} vocals -> ${outDir}/${songId}.vocals.wav`);
+        for (const key of ['vocals', 'instrumental']) {
+          const stem = await fetch(`${base}/api/separations/${job.id}/download?format=wav&stem=${key}`);
+          if (!stem.ok) throw new Error(`${key} stem download: HTTP ${stem.status}`);
+          writeFileSync(`${outDir}/${songId}.${key}.wav`, Buffer.from(await stem.arrayBuffer()));
+          console.log(`${songId} ${key} -> ${outDir}/${songId}.${key}.wav`);
+        }
         break;
       }
       await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -125,6 +116,6 @@ if (command === 'song') {
     if (Date.now() - started > 3600_000) throw new Error('gave up after an hour');
   }
 } else {
-  console.log('commands: song | score | sound | wait');
+  console.log('commands: song | sound | wait | vocals');
   process.exit(1);
 }

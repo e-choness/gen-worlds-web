@@ -55,7 +55,6 @@ body { position: relative; color: ${C.fg}; font-family: 'Space Grotesk'; }
 .end .wordmark span { font-size: 132px; }
 .end .url { font: 600 60px/1 'JetBrains Mono'; color: ${C.accent}; letter-spacing: .04em; margin-top: 18px; }
 .end .facts { font: 500 30px/1 'JetBrains Mono'; color: ${C.dust}; letter-spacing: .1em; text-transform: uppercase; }
-.end .event { position: absolute; bottom: 92px; left: 0; right: 0; font: 500 28px/1.4 'Space Grotesk'; color: ${C.dust}; }
 .end .glow { position: absolute; inset: 0;
   background: radial-gradient(ellipse 50% 40% at 50% 46%, rgba(29,94,158,.35), rgba(4,7,13,0) 70%); }
 `;
@@ -84,8 +83,7 @@ function html(card) {
       return `<div class="end"><div class="glow"></div>${wordmark()}
         <div class="tagline">Design a space mission. <b>Then fly it.</b></div>
         <div class="url">gen-worlds.surf</div>
-        <div class="facts">Free · In your browser · 1 to 4 players</div>
-        <div class="event">Made for the NASA Space Apps Challenge 2026 · Calgary</div></div>`;
+        <div class="facts">Free · In your browser · 1 to 4 players</div></div>`;
     default:
       throw new Error(`unknown card kind ${card.kind}`);
   }

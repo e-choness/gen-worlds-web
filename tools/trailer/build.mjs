@@ -1,6 +1,6 @@
 // Gen Worlds © 2026 Echo Yin. Licensed under Apache-2.0: see LICENSE.md.
 // Turns plan.mjs into an ffmpeg job: the picture as a list of recorded frames, the cards laid over
-// it with fades, the dips to black, and the mix of song, score and sound effects. Writes
+// it with fades, the dips to black, and the mix of the song, its band and the sound effects. Writes
 // .cache/trailer/frames.ffconcat, filter.txt and args.txt; encode.sh runs ffmpeg with them.
 // Runs in a node container:  node tools/trailer/build.mjs
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';

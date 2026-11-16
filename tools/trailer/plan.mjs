@@ -8,32 +8,38 @@ export const TOTAL = 300;
 
 /** The audio files, made with SongForge (see songforge.mjs), saved under .cache/trailer/audio. */
 export const AUDIO_FILES = {
-  song: '93579bd8-41dd-488c-a4e6-596990f46b78', // "Design It, Fly It", YuE2 Studio, B♭ major, 72 BPM
-  open: '81f55021-9c58-489d-9669-1b34d437f8a9', // Cinematic: space ambient opening, builds
-  launch: 'd45322d5-537f-4186-b216-3c0805bc04ce', // Cinematic: launch sequence, builds
-  worlds: '138b5c52-34af-44f1-8386-8cab13fd66ab', // Cinematic: majestic, choir and horns
-  boom: '154af667-17f4-4bfe-954b-e5888dc07c35', // TangoFlux: trailer boom
+  song: '93579bd8-41dd-488c-a4e6-596990f46b78', // "Design It, Fly It", YuE2 Studio
+  band: '93579bd8-41dd-488c-a4e6-596990f46b78.instrumental', // the same song without the voice (Demucs)
   rocket: '9f7dafc6-7e32-45c5-988d-3a6db3408a31', // TangoFlux: rocket ignition and roar
-  whoosh: 'ec840ec7-f5fd-46c3-a430-4e14f1f7b915',
-  riser: '67993094-4d98-4ba3-8a79-87e162d7dff0',
-  thrusters: 'd3fa944f-d186-4f12-b376-ae267ae8c4b3',
+  thrusters: 'd3fa944f-d186-4f12-b376-ae267ae8c4b3', // TangoFlux: landing thrusters
 };
 
 /**
- * Where the song is cut. Song seconds, measured on the isolated vocals: 110.64 is the breath before
- * "Lift off", 170.6 the end of the bar after "same luck for everyone", 172.6 two bars before the last
- * chorus. Each song part is placed so the parts and the score between them fill the timeline.
+ * The music is the one song, nothing else: three sung parts, and the song's own band (its
+ * instrumental stem) carrying the launch and the tour of worlds between them. Song seconds.
+ * Each band passage starts where the sung part stopped, so that join is seamless; it ends by
+ * jumping back to where the next sung part starts, at a point joins.py found to match in harmony
+ * and rhythm on both sides. The trailer opens on the song's own ending, its last hit under the
+ * title card.
  */
-const SONG_A = { from: 0, to: 110.64, at: 30 };
-const SONG_B = { from: 110.64, to: 170.6, at: 173.64 };
-const SONG_C = { from: 172.6, to: 211.5, at: 261.1 };
+const CUT = {
+  launchLand: 110.388, // the breath before "Lift off"
+  launchLeave: 141.23, // the bridge's last bar, which leads back into launchLand
+  worldsLand: 170.225, // the bar after "same luck for everyone"
+  worldsLeave: 197.712, // in the outro, which leads back into worldsLand
+  lastHit: 202.4, // the song's final hit; the song rings out to silence by 211
+  end: 211.5,
+};
+const SONG_AT = 30; // the song starts from the top when the game appears
+const TITLE_AT = 22.6; // the opening title card, on the last hit
+const SEAM = 0.06; // crossfade at each join, seconds: short enough that no beat doubles
 
 /**
  * The picture, shot after shot: each plays `clip` (recorded by record.mjs) from `in` seconds until
  * the trailer reaches `until`. `fade` dips to black over that many seconds at the shot's start.
  */
 export const SHOTS = [
-  // Cold open (score): deep space, the real Earth, the title.
+  // Cold open (the song's own ending): deep space, the real Earth, the title.
   { clip: 'space', in: 0, until: 9, fade: 1.6 },
   { clip: 'earth', in: 0, until: 30 },
   // Song intro and first verse: the game, its missions, the worlds they go to.
@@ -61,34 +67,34 @@ export const SHOTS = [
   { clip: 'th-pad', in: 6.0, until: 128.4 },
   { clip: 'map-galaxy', in: 7.0, until: 132.7 },
   { clip: 'th-moonrover', in: 0, until: 135.3 },
-  { clip: 'earth', in: 12.0, until: 140.64 },
-  // Launch (score and rocket).
+  { clip: 'earth', in: 12.0, until: 140.39 },
+  // Launch (the song's band, the bridge without its words, and the rocket).
   { clip: 'th-pad', in: 0, until: 146.5, fade: 0.5 },
   { clip: 'th-launch', in: 0, until: 160.5 },
-  { clip: 'th-cruise', in: 0, until: 170.0 },
-  { clip: 'mars-approach', in: 0, until: 177.2 }, // "cross the dark between the worlds"
+  { clip: 'th-cruise', in: 0, until: 170.0 }, // the band drops away: the quiet of space
+  { clip: 'mars-approach', in: 0, until: 175.04 }, // "cross the dark between the worlds"
   // Bridge: the landing, the debrief.
   // Entry under the parachute, then the hand-flown descent: the touchdown falls on "alien sands".
-  { clip: 'th-arrival', in: 1.6, until: 178.7 },
-  { clip: 'descent', in: 0, until: 189.1 },
-  { clip: 'debrief', in: 0, until: 205.7 },
+  { clip: 'th-arrival', in: 1.6, until: 176.54 },
+  { clip: 'descent', in: 0, until: 186.94 },
+  { clip: 'debrief', in: 0, until: 203.54 },
   // Last verse: the galaxy, the crew.
-  { clip: 'map-galaxy', in: 0, until: 212.5 },
-  { clip: 'map-world', in: 0, until: 219.0 },
-  { clip: 'crew', in: 0, until: 226.4 },
-  { clip: 'room', in: 0, until: 229.6 },
-  { clip: 'daily', in: 0, until: 233.4 },
-  // Worlds (score): real data, then generated worlds.
-  { clip: 'moon', in: 0, until: 240.4, fade: 0.6 },
-  { clip: 'mars', in: 7.6, until: 247.4 },
-  { clip: 'jezero', in: 0, until: 254.2 },
-  { clip: 'alien-low', in: 0, until: 261.1 },
+  { clip: 'map-galaxy', in: 0, until: 210.34 },
+  { clip: 'map-world', in: 0, until: 216.84 },
+  { clip: 'crew', in: 0, until: 224.24 },
+  { clip: 'room', in: 0, until: 227.44 },
+  { clip: 'daily', in: 0, until: 231.24 },
+  // Worlds (the song's band, the last chorus without its words): real data, then generated worlds.
+  { clip: 'moon', in: 0, until: 238.34, fade: 0.6 },
+  { clip: 'mars', in: 5.0, until: 246.64 },
+  { clip: 'jezero', in: 0, until: 253.73 },
+  { clip: 'alien-low', in: 0, until: 260.93 },
   // Last chorus and the end.
-  { clip: 'rings', in: 0, until: 264.4 },
-  { clip: 'vehicle', in: 9.9, until: 268.0 },
-  { clip: 'title', in: 6.5, until: 271.1 },
-  { clip: 'th-launch', in: 3.5, until: 274.2 },
-  { clip: 'earth-limb', in: 0, until: 286.0 },
+  { clip: 'rings', in: 0, until: 264.23 },
+  { clip: 'vehicle', in: 9.9, until: 267.83 },
+  { clip: 'title', in: 6.5, until: 270.93 },
+  { clip: 'th-launch', in: 3.5, until: 274.03 },
+  { clip: 'earth-limb', in: 0, until: 285.83 },
   { clip: 'black', in: 0, until: TOTAL },
 ];
 
@@ -198,7 +204,7 @@ export const CARDS = [
     at: 123.0,
     until: 125.8,
   },
-  { id: 'title-chorus2', kind: 'title', text: '', at: 137.6, until: 140.5 },
+  { id: 'title-chorus2', kind: 'title', text: '', at: 137.6, until: 140.3 },
   { id: 'f-flight', kind: 'feature', eyebrow: 'Flight', text: 'Then fly it.', at: 141.4, until: 146.2 },
   {
     id: 'c-stage',
@@ -214,32 +220,32 @@ export const CARDS = [
     text: 'Fly the last kilometres yourself',
     sub: 'Over the real terrain, on the propellant your design left',
     top: true,
-    at: 179.0,
-    until: 186.6,
+    at: 176.84,
+    until: 184.44,
   },
   {
     id: 'f-debrief',
     kind: 'feature',
     eyebrow: 'Debrief',
     text: 'Every outcome, traced to its cause',
-    at: 190.2,
-    until: 197.6,
+    at: 188.04,
+    until: 195.44,
   },
   {
     id: 'f-again',
     kind: 'feature',
     eyebrow: 'Change one thing',
     text: 'Fly again. Compare.',
-    at: 199.8,
-    until: 205.4,
+    at: 197.64,
+    until: 203.24,
   },
   {
     id: 'f-galaxy',
     kind: 'feature',
     eyebrow: 'Galaxy map',
     text: 'A generated galaxy to explore',
-    at: 206.3,
-    until: 212.2,
+    at: 204.14,
+    until: 210.04,
   },
   {
     id: 'f-world',
@@ -247,32 +253,32 @@ export const CARDS = [
     eyebrow: 'Any world',
     text: 'Every solid world is a mission',
     sub: 'Its gravity sets the propellant, its star the power, its air the landing',
-    at: 213.0,
-    until: 218.8,
+    at: 210.84,
+    until: 216.64,
   },
   {
     id: 'f-crew',
     kind: 'feature',
     eyebrow: '1 to 4 players',
     text: 'Director · Engineer · Science · Comms',
-    at: 219.6,
-    until: 226.2,
+    at: 217.44,
+    until: 224.04,
   },
   {
     id: 'f-room',
     kind: 'feature',
     eyebrow: 'Play together',
     text: 'Around one screen, or with a room code',
-    at: 226.8,
-    until: 229.4,
+    at: 224.64,
+    until: 227.24,
   },
   {
     id: 'f-daily',
     kind: 'feature',
     eyebrow: 'Daily mission',
     text: 'Same seed, same luck, one leaderboard',
-    at: 229.9,
-    until: 233.2,
+    at: 227.74,
+    until: 231.04,
   },
   {
     id: 'p-moon',
@@ -280,8 +286,8 @@ export const CARDS = [
     eyebrow: 'Measured, not painted',
     text: 'The Moon',
     credit: 'NASA LRO · LOLA elevation · LROC colour',
-    at: 234.2,
-    until: 240.0,
+    at: 232.0,
+    until: 238.0,
   },
   {
     id: 'p-mars',
@@ -289,72 +295,92 @@ export const CARDS = [
     eyebrow: 'Measured, not painted',
     text: 'Mars',
     credit: 'MGS MOLA elevation · Viking colour',
-    at: 241.0,
-    until: 247.0,
+    at: 239.2,
+    until: 246.2,
   },
   {
     id: 'p-jezero',
     kind: 'place',
     eyebrow: 'Mars 2020 landing site',
     text: 'Jezero crater',
-    at: 248.0,
-    until: 253.8,
+    at: 247.4,
+    until: 253.3,
   },
   {
     id: 'p-generated',
     kind: 'place',
     eyebrow: 'Generated from a seed',
     text: 'Worlds no one has seen',
-    at: 254.8,
-    until: 260.8,
+    at: 254.4,
+    until: 260.6,
   },
   {
     id: 'f-free',
     kind: 'feature',
     eyebrow: 'No install',
     text: 'Free, in your browser',
-    at: 268.3,
-    until: 270.9,
+    at: 268.13,
+    until: 270.73,
   },
   {
     id: 'title-end',
     kind: 'title',
     text: 'Design a space mission. <b>Then fly it.</b>',
-    at: 275.0,
-    until: 285.8,
+    at: 274.83,
+    until: 285.63,
   },
-  { id: 'end', kind: 'end', at: 286.0, until: TOTAL },
+  { id: 'end', kind: 'end', at: 285.83, until: TOTAL },
 ];
 
 /**
  * The mix. Each clip plays `file` from `from` to `to` (source seconds) at trailer time `at`, with
  * fades in and out (seconds) and a gain (linear).
  */
-const songPart = (part, fadeIn, fadeOut) => ({
-  file: 'song',
-  from: part.from,
-  to: part.to,
-  at: part.at,
-  fadeIn,
-  fadeOut,
-  gain: 1,
-});
+/** The song from the top, piece after piece with no gaps: sung, band, sung, band, sung. */
+const PIECES = [
+  ['song', 0, CUT.launchLand],
+  ['band', CUT.launchLand, CUT.launchLeave],
+  ['song', CUT.launchLand, CUT.worldsLand],
+  ['band', CUT.worldsLand, CUT.worldsLeave],
+  ['song', CUT.worldsLand, CUT.end],
+];
+
+/** Lays the pieces end to end from SONG_AT, each join a short crossfade centred on the cut. */
+function songPieces() {
+  let at = SONG_AT;
+  return PIECES.map(([file, from, to], index) => {
+    const first = index === 0;
+    const last = index === PIECES.length - 1;
+    const piece = {
+      file,
+      from: first ? from : from - SEAM / 2,
+      to: last ? to : to + SEAM / 2,
+      at: first ? at : at - SEAM / 2,
+      fadeIn: first ? 0.5 : SEAM,
+      fadeOut: last ? 0 : SEAM,
+      gain: 1,
+    };
+    at += to - from;
+    return piece;
+  });
+}
+
 export const MIX = [
-  // The opening score fades under the song's first bar, so the title card never sits in silence.
-  { file: 'open', from: 0, to: 30.8, at: 0, fadeIn: 1.5, fadeOut: 3.6, gain: 1 },
-  { file: 'boom', from: 0, to: 6, at: 22.5, fadeIn: 0, fadeOut: 1.5, gain: 0.85 },
-  songPart(SONG_A, 1.2, 0.04),
-  { file: 'boom', from: 0, to: 6, at: 140.6, fadeIn: 0, fadeOut: 2, gain: 0.8 },
-  { file: 'launch', from: 0, to: 33.6, at: 140.64, fadeIn: 0.3, fadeOut: 1.4, gain: 0.95 },
-  { file: 'rocket', from: 0, to: 20, at: 146.3, fadeIn: 0.2, fadeOut: 4, gain: 0.9 },
-  { file: 'whoosh', from: 0, to: 3, at: 172.4, fadeIn: 0.1, fadeOut: 0.8, gain: 0.5 },
-  songPart(SONG_B, 0.03, 0.6),
-  { file: 'thrusters', from: 0, to: 10, at: 178.4, fadeIn: 0.5, fadeOut: 2, gain: 0.3 },
-  { file: 'whoosh', from: 0, to: 3, at: 232.6, fadeIn: 0.1, fadeOut: 0.8, gain: 0.6 },
-  { file: 'worlds', from: 0, to: 28.4, at: 233.4, fadeIn: 0.8, fadeOut: 1.8, gain: 0.95 },
-  { file: 'riser', from: 0, to: 6, at: 255.2, fadeIn: 0.5, fadeOut: 0.3, gain: 0.55 },
-  songPart(SONG_C, 0.5, 2.5),
-  { file: 'boom', from: 0, to: 6, at: 274.2, fadeIn: 0, fadeOut: 2, gain: 0.5 },
+  // Cold open: the song's last chorus and outro on the band alone; the final hit lands on the
+  // title card and rings out before the song begins.
+  {
+    file: 'band',
+    from: CUT.lastHit - TITLE_AT,
+    to: CUT.lastHit - TITLE_AT + SONG_AT,
+    at: 0,
+    fadeIn: 3,
+    fadeOut: 1,
+    gain: 1,
+  },
+  ...songPieces(),
+  // Sound in the scene, kept under the music: the lift-off and the landing burn.
+  { file: 'rocket', from: 0, to: 20, at: 146.3, fadeIn: 0.2, fadeOut: 4, gain: 0.6 },
+  { file: 'thrusters', from: 0, to: 10, at: 176.24, fadeIn: 0.5, fadeOut: 2, gain: 0.3 },
 ];
 
 /** Seconds each recorded clip must last: its furthest use plus a short handle. */
